@@ -13,10 +13,12 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #ffffff;
             color: #000000;
             text-align: center;
             line-height: 1.6;
+            background: linear-gradient(45deg, #FF9A9E, #FAD0C4, #FAD0C4, #FF9A9E);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
         }
         h1 {
             font-size: 2.5em;
@@ -32,6 +34,11 @@
             border: 2px solid #000000;
             border-radius: 10px;
             display: inline-block;
+        }
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
         }
     </style>
 </head>

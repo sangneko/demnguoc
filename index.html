@@ -16,7 +16,7 @@
             color: #000000;
             text-align: center;
             line-height: 1.6;
-            background: linear-gradient(45deg, #FF9A9E, #FAD0C4, #FAD0C4, #FF9A9E);
+            background: linear-gradient(45deg, #FF9A9E, #FAD0C4, #FFDEE9, #B5FFFC);
             background-size: 400% 400%;
             animation: gradientAnimation 15s ease infinite;
         }
@@ -34,6 +34,29 @@
             border: 2px solid #000000;
             border-radius: 10px;
             display: inline-block;
+            margin-bottom: 20px;
+        }
+        #calendar {
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        #calendar th, #calendar td {
+            border: 1px solid #000000;
+            padding: 10px;
+            text-align: center;
+        }
+        #calendar th {
+            background-color: #FF9A9E;
+            color: #FFFFFF;
+        }
+        #calendar td.today {
+            background-color: #FFD700;
+            font-weight: bold;
+        }
+        #calendar td.holiday {
+            background-color: #FFA07A;
         }
         @keyframes gradientAnimation {
             0% { background-position: 0% 0%; }
@@ -47,6 +70,7 @@
     <h1>Đếm ngược đến Tết Nguyên Đán 2025</h1>
     <div id="currentDate"></div>
     <div id="countdown"></div>
+    <table id="calendar"></table>
 
     <script>
         function updateTime() {
@@ -70,7 +94,81 @@
             }
         }
 
+        function generateCalendar() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const today = now.getDate();
+
+            const holidays = calculateHolidays(year);
+
+            const calendarTable = document.getElementById('calendar');
+            calendarTable.innerHTML = '';
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDay = new Date(year, month, 1).getDay();
+
+            const headerRow = document.createElement('tr');
+            const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+            daysOfWeek.forEach(day => {
+                const th = document.createElement('th');
+                th.innerText = day;
+                headerRow.appendChild(th);
+            });
+            calendarTable.appendChild(headerRow);
+
+            let currentRow = document.createElement('tr');
+            for (let i = 0; i < firstDay; i++) {
+                const td = document.createElement('td');
+                currentRow.appendChild(td);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const formattedDate = date.toISOString().split('T')[0];
+                const td = document.createElement('td');
+                td.innerText = day;
+
+                if (day === today) {
+                    td.classList.add('today');
+                }
+
+                if (holidays[formattedDate]) {
+                    td.classList.add('holiday');
+                    td.title = holidays[formattedDate];
+                }
+
+                currentRow.appendChild(td);
+
+                if (date.getDay() === 6) {
+                    calendarTable.appendChild(currentRow);
+                    currentRow = document.createElement('tr');
+                }
+            }
+
+            if (currentRow.children.length > 0) {
+                calendarTable.appendChild(currentRow);
+            }
+        }
+
+        function calculateHolidays(year) {
+            const holidays = {};
+
+            holidays[`${year}-01-01`] = 'Tết Dương Lịch';
+            holidays[`${year}-04-30`] = 'Ngày Giải phóng Miền Nam';
+            holidays[`${year}-05-01`] = 'Ngày Quốc tế Lao động';
+            holidays[`${year}-09-02`] = 'Ngày Quốc khánh';
+
+            const lunarNewYear = '2025-01-29';
+            holidays[lunarNewYear] = 'Tết Nguyên Đán';
+            holidays['2025-01-30'] = 'Mùng 2 Tết';
+            holidays['2025-01-31'] = 'Mùng 3 Tết';
+
+            return holidays;
+        }
+
         setInterval(updateTime, 1000);
+        generateCalendar();
     </script>
 
 </body>

@@ -10,9 +10,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            justify-content: flex-start;
             margin: 0;
+            padding: 20px;
             color: #000000;
             text-align: center;
             line-height: 1.6;
@@ -45,6 +45,48 @@
             background-color: #FFF;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+        #monthName {
+            font-size: 1.8em;
+            margin: 20px 0;
+        }
+        #calendar {
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        #calendar th, #calendar td {
+            border: 1px solid #000000;
+            padding: 10px;
+            text-align: center;
+        }
+        #calendar th {
+            background-color: #FF9A9E;
+            color: #FFFFFF;
+        }
+        #calendar td.today {
+            background-color: #FFD700;
+            font-weight: bold;
+        }
+        #calendar td.holiday {
+            background-color: #FFA07A;
+        }
+        #progressBarContainer {
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+            height: 20px;
+            background-color: #E0E0E0;
+            border: 1px solid #000000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        #progressBar {
+            height: 100%;
+            background-color: #76C7C0;
+            width: 0;
+            transition: width 0.5s ease-in-out;
+        }
         @keyframes gradientAnimation {
             0% { background-position: 0% 0%; }
             50% { background-position: 100% 100%; }
@@ -58,6 +100,11 @@
     <div id="currentDate"></div>
     <div id="countdown"></div>
     <div id="weather">Đang tải dữ liệu thời tiết...</div>
+    <div id="monthName"></div>
+    <table id="calendar"></table>
+    <div id="progressBarContainer">
+        <div id="progressBar"></div>
+    </div>
 
     <script>
         function updateTime() {
@@ -79,6 +126,94 @@
             } else {
                 countdownElement.innerHTML = "Chúc Mừng Năm Mới 2025!";
             }
+        }
+
+        function generateCalendar() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const today = now.getDate();
+
+            const monthNames = [
+                'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 
+                'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 
+                'Tháng 11', 'Tháng 12'
+            ];
+            document.getElementById('monthName').innerText = monthNames[month] + ` ${year}`;
+
+            const holidays = calculateHolidays(year);
+
+            const calendarTable = document.getElementById('calendar');
+            calendarTable.innerHTML = '';
+
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDay = new Date(year, month, 1).getDay();
+
+            const headerRow = document.createElement('tr');
+            const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+            daysOfWeek.forEach(day => {
+                const th = document.createElement('th');
+                th.innerText = day;
+                headerRow.appendChild(th);
+            });
+            calendarTable.appendChild(headerRow);
+
+            let currentRow = document.createElement('tr');
+            for (let i = 0; i < firstDay; i++) {
+                const td = document.createElement('td');
+                currentRow.appendChild(td);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const formattedDate = date.toISOString().split('T')[0];
+                const td = document.createElement('td');
+                td.innerText = day;
+
+                if (day === today) {
+                    td.classList.add('today');
+                }
+
+                if (holidays[formattedDate]) {
+                    td.classList.add('holiday');
+                    td.title = holidays[formattedDate];
+                }
+
+                currentRow.appendChild(td);
+
+                if (date.getDay() === 6) {
+                    calendarTable.appendChild(currentRow);
+                    currentRow = document.createElement('tr');
+                }
+            }
+
+            if (currentRow.children.length > 0) {
+                calendarTable.appendChild(currentRow);
+            }
+
+            updateProgressBar(today, daysInMonth);
+        }
+
+        function updateProgressBar(today, daysInMonth) {
+            const progressBar = document.getElementById('progressBar');
+            const progress = (today / daysInMonth) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function calculateHolidays(year) {
+            const holidays = {};
+
+            holidays[`${year}-01-01`] = 'Tết Dương Lịch';
+            holidays[`${year}-04-30`] = 'Ngày Giải phóng Miền Nam';
+            holidays[`${year}-05-01`] = 'Ngày Quốc tế Lao động';
+            holidays[`${year}-09-02`] = 'Ngày Quốc khánh';
+
+            const lunarNewYear = '2025-01-29';
+            holidays[lunarNewYear] = 'Tết Nguyên Đán';
+            holidays['2025-01-30'] = 'Mùng 2 Tết';
+            holidays['2025-01-31'] = 'Mùng 3 Tết';
+
+            return holidays;
         }
 
         async function fetchWeather() {
@@ -107,7 +242,9 @@
         }
 
         setInterval(updateTime, 1000);
-	setInterval(fetchWeather, 10 * 60 * 1000);
+setInterval(fetchWeather, 10 * 60 * 1000);
+        updateTime();
+        generateCalendar();
         fetchWeather();
     </script>
 

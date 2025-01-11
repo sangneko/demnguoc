@@ -92,6 +92,10 @@
             50% { background-position: 100% 100%; }
             100% { background-position: 0% 0%; }
         }
+        .lunar {
+            font-size: 0.8em;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -168,7 +172,7 @@
                 const date = new Date(year, month, day);
                 const formattedDate = date.toISOString().split('T')[0];
                 const td = document.createElement('td');
-                td.innerText = day;
+                td.innerHTML = `${day}<div class="lunar">${convertToLunar(date)}</div>`;
 
                 if (day === today) {
                     td.classList.add('today');
@@ -216,6 +220,19 @@
             return holidays;
         }
 
+        function convertToLunar(date) {
+            // Simplified lunar conversion for demonstration purposes
+            const lunarDays = [
+                'Mùng 1', 'Mùng 2', 'Mùng 3', 'Mùng 4', 'Mùng 5', 
+                'Mùng 6', 'Mùng 7', 'Mùng 8', 'Mùng 9', 'Mồng 10', 
+                '11', '12', '13', '14', 'Rằm', '16', '17', '18', '19', '20', 
+                '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'
+            ];
+            const lunarMonth = Math.ceil((date.getDate() + 10) / 29.5);
+            const lunarDay = (date.getDate() + 10) % 29.5;
+            return `${lunarDays[Math.floor(lunarDay)]} Tháng ${lunarMonth}`;
+        }
+
         async function fetchWeather() {
             const weatherElement = document.getElementById('weather');
             const apiKey = 'adbf510244ceece337b1b07bf6317d4c'; // Thay bằng API Key của bạn
@@ -242,7 +259,7 @@
         }
 
         setInterval(updateTime, 1000);
-setInterval(fetchWeather, 10 * 60 * 1000);
+        setInterval(fetchWeather, 10 * 60 * 1000);
         updateTime();
         generateCalendar();
         fetchWeather();

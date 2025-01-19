@@ -16,44 +16,50 @@
             color: #000000;
             text-align: center;
             line-height: 1.6;
-            background: linear-gradient(45deg, #FF9A9E, #FAD0C4, #FFDEE9, #B5FFFC);
+            background: linear-gradient(45deg, #FF4500, #FFD700, #FFA500, #FFFF00);
             background-size: 400% 400%;
-            animation: gradientAnimation 15s ease infinite;
+            animation: gradientAnimation 10s ease infinite;
         }
         h1 {
             font-size: 2.5em;
             margin-bottom: 20px;
+            color: #FFFFFF;
         }
         #currentDate {
             font-size: 1.5em;
             margin-bottom: 20px;
+            color: #FFFFFF;
         }
         #countdown {
             font-size: 2em;
             padding: 10px 20px;
-            border: 2px solid #000000;
+            border: 2px solid #FFFFFF;
             border-radius: 10px;
             display: inline-block;
             margin-bottom: 20px;
+            color: #FFFFFF;
+            background-color: rgba(0, 0, 0, 0.5);
         }
         #weather {
             font-size: 1.2em;
             margin: 20px 0;
             padding: 10px;
-            border: 1px solid #000000;
+            border: 1px solid #FFFFFF;
             border-radius: 10px;
-            background-color: #FFF;
+            background-color: rgba(255, 255, 255, 0.7);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         #monthName {
             font-size: 1.8em;
             margin: 20px 0;
+            color: #FFFFFF;
         }
         #calendar {
             width: 90%;
             max-width: 600px;
             margin: 20px auto;
             border-collapse: collapse;
+            background-color: rgba(255, 255, 255, 0.7);
         }
         #calendar th, #calendar td {
             border: 1px solid #000000;
@@ -62,7 +68,7 @@
             vertical-align: top;
         }
         #calendar th {
-            background-color: #FF9A9E;
+            background-color: #FF4500;
             color: #FFFFFF;
         }
         #calendar td.today {
@@ -78,13 +84,13 @@
             margin: 20px auto;
             height: 20px;
             background-color: #E0E0E0;
-            border: 1px solid #000000;
+            border: 1px solid #FFFFFF;
             border-radius: 10px;
             overflow: hidden;
         }
         #progressBar {
             height: 100%;
-            background-color: #76C7C0;
+            background-color: #FF4500;
             width: 0;
             transition: width 0.5s ease-in-out;
         }
@@ -92,11 +98,6 @@
             0% { background-position: 0% 0%; }
             50% { background-position: 100% 100%; }
             100% { background-position: 0% 0%; }
-        }
-        .lunar {
-            font-size: 0.8em;
-            color: #555;
-            white-space: nowrap;
         }
     </style>
 </head>
@@ -174,7 +175,7 @@
                 const date = new Date(year, month, day);
                 const formattedDate = date.toISOString().split('T')[0];
                 const td = document.createElement('td');
-                td.innerHTML = `${day}<div class="lunar">${convertToLunar(date)}</div>`;
+                td.innerHTML = `${day}`;
 
                 if (day === today) {
                     td.classList.add('today');
@@ -216,23 +217,10 @@
 
             const lunarNewYear = '2025-01-29';
             holidays[lunarNewYear] = 'Tết Nguyên Đán';
-            holidays['2025-01-30'] = '\ 2 Tết';
-            holidays['2025-01-31'] = '\ 3 Tết';
+            holidays['2025-01-30'] = 'Mồng 2 Tết';
+            holidays['2025-01-31'] = 'Mồng 3 Tết';
 
             return holidays;
-        }
-
-        function convertToLunar(date) {
-            // Simplified lunar conversion for demonstration purposes
-            const lunarDays = [
-                '\ 1', '\ 2', '\ 3', '\ 4', '\ 5', 
-                '\ 6', '\ 7', '\ 8', '\ 9', '\ 10', 
-                '11', '12', '13', '14', 'Rằm', '16', '17', '18', '19', '20', 
-                '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'
-            ];
-            const lunarMonth = Math.ceil((date.getDate() + 10) / 29.5);
-            const lunarDay = (date.getDate() + 10) % 29.5;
-            return `${lunarDays[Math.floor(lunarDay)]} Tháng ${lunarMonth}`;
         }
 
         async function fetchWeather() {

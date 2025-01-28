@@ -10,94 +10,28 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
+            height: 100vh;
             margin: 0;
-            padding: 20px;
+            background-color: #ffffff;
             color: #000000;
             text-align: center;
             line-height: 1.6;
-            background: linear-gradient(45deg, #FF4500, #FFD700, #FFA500, #FFFF00);
-            background-size: 400% 400%;
-            animation: gradientAnimation 10s ease infinite;
         }
         h1 {
             font-size: 2.5em;
             margin-bottom: 20px;
-            color: #FFFFFF;
         }
         #currentDate {
             font-size: 1.5em;
             margin-bottom: 20px;
-            color: #FFFFFF;
         }
         #countdown {
             font-size: 2em;
             padding: 10px 20px;
-            border: 2px solid #FFFFFF;
+            border: 2px solid #000000;
             border-radius: 10px;
             display: inline-block;
-            margin-bottom: 20px;
-            color: #FFFFFF;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-        #weather {
-            font-size: 1.2em;
-            margin: 20px 0;
-            padding: 10px;
-            border: 1px solid #FFFFFF;
-            border-radius: 10px;
-            background-color: rgba(255, 255, 255, 0.7);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        #monthName {
-            font-size: 1.8em;
-            margin: 20px 0;
-            color: #FFFFFF;
-        }
-        #calendar {
-            width: 90%;
-            max-width: 600px;
-            margin: 20px auto;
-            border-collapse: collapse;
-            background-color: rgba(255, 255, 255, 0.7);
-        }
-        #calendar th, #calendar td {
-            border: 1px solid #000000;
-            padding: 10px;
-            text-align: center;
-            vertical-align: top;
-        }
-        #calendar th {
-            background-color: #FF4500;
-            color: #FFFFFF;
-        }
-        #calendar td.today {
-            background-color: #FFD700;
-            font-weight: bold;
-        }
-        #calendar td.holiday {
-            background-color: #FFA07A;
-        }
-        #progressBarContainer {
-            width: 90%;
-            max-width: 600px;
-            margin: 20px auto;
-            height: 20px;
-            background-color: #E0E0E0;
-            border: 1px solid #FFFFFF;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        #progressBar {
-            height: 100%;
-            background-color: #FF4500;
-            width: 0;
-            transition: width 0.5s ease-in-out;
-        }
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 0%; }
-            50% { background-position: 100% 100%; }
-            100% { background-position: 0% 0%; }
         }
     </style>
 </head>
@@ -106,12 +40,6 @@
     <h1>Đếm ngược đến Tết Nguyên Đán 2025</h1>
     <div id="currentDate"></div>
     <div id="countdown"></div>
-    <div id="weather">Đang tải dữ liệu thời tiết...</div>
-    <div id="monthName"></div>
-    <table id="calendar"></table>
-    <div id="progressBarContainer">
-        <div id="progressBar"></div>
-    </div>
 
     <script>
         function updateTime() {
@@ -135,124 +63,7 @@
             }
         }
 
-        function generateCalendar() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = now.getMonth();
-            const today = now.getDate();
-
-            const monthNames = [
-                'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 
-                'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 
-                'Tháng 11', 'Tháng 12'
-            ];
-            document.getElementById('monthName').innerText = monthNames[month] + ` ${year}`;
-
-            const holidays = calculateHolidays(year);
-
-            const calendarTable = document.getElementById('calendar');
-            calendarTable.innerHTML = '';
-
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const firstDay = new Date(year, month, 1).getDay();
-
-            const headerRow = document.createElement('tr');
-            const daysOfWeek = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-            daysOfWeek.forEach(day => {
-                const th = document.createElement('th');
-                th.innerText = day;
-                headerRow.appendChild(th);
-            });
-            calendarTable.appendChild(headerRow);
-
-            let currentRow = document.createElement('tr');
-            for (let i = 0; i < firstDay; i++) {
-                const td = document.createElement('td');
-                currentRow.appendChild(td);
-            }
-
-            for (let day = 1; day <= daysInMonth; day++) {
-                const date = new Date(year, month, day);
-                const formattedDate = date.toISOString().split('T')[0];
-                const td = document.createElement('td');
-                td.innerHTML = `${day}`;
-
-                if (day === today) {
-                    td.classList.add('today');
-                }
-
-                if (holidays[formattedDate]) {
-                    td.classList.add('holiday');
-                    td.title = holidays[formattedDate];
-                }
-
-                currentRow.appendChild(td);
-
-                if (date.getDay() === 6) {
-                    calendarTable.appendChild(currentRow);
-                    currentRow = document.createElement('tr');
-                }
-            }
-
-            if (currentRow.children.length > 0) {
-                calendarTable.appendChild(currentRow);
-            }
-
-            updateProgressBar(today, daysInMonth);
-        }
-
-        function updateProgressBar(today, daysInMonth) {
-            const progressBar = document.getElementById('progressBar');
-            const progress = (today / daysInMonth) * 100;
-            progressBar.style.width = `${progress}%`;
-        }
-
-        function calculateHolidays(year) {
-            const holidays = {};
-
-            holidays[`${year}-01-01`] = 'Tết Dương Lịch';
-            holidays[`${year}-04-30`] = 'Ngày Giải phóng Miền Nam';
-            holidays[`${year}-05-01`] = 'Ngày Quốc tế Lao động';
-            holidays[`${year}-09-02`] = 'Ngày Quốc khánh';
-
-            const lunarNewYear = '2025-01-29';
-            holidays[lunarNewYear] = 'Tết Nguyên Đán';
-            holidays['2025-01-30'] = 'Mồng 2 Tết';
-            holidays['2025-01-31'] = 'Mồng 3 Tết';
-
-            return holidays;
-        }
-
-        async function fetchWeather() {
-            const weatherElement = document.getElementById('weather');
-            const apiKey = 'adbf510244ceece337b1b07bf6317d4c'; // Thay bằng API Key của bạn
-            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=Ho%20Chi%20Minh,VN&units=metric&lang=vi&appid=${apiKey}`;
-
-            try {
-                const response = await fetch(apiUrl);
-                const data = await response.json();
-
-                if (data.cod === 200) {
-                    const temperature = data.main.temp;
-                    const weatherDescription = data.weather[0].description;
-
-                    weatherElement.innerHTML = `
-                        Nhiệt độ tại TP.HCM: ${temperature}°C<br>
-                        Trạng thái: ${weatherDescription.charAt(0).toUpperCase() + weatherDescription.slice(1)}
-                    `;
-                } else {
-                    weatherElement.innerHTML = "Không thể lấy dữ liệu thời tiết!";
-                }
-            } catch (error) {
-                weatherElement.innerHTML = "Lỗi khi tải dữ liệu thời tiết!";
-            }
-        }
-
         setInterval(updateTime, 1000);
-        setInterval(fetchWeather, 10 * 60 * 1000);
-        updateTime();
-        generateCalendar();
-        fetchWeather();
     </script>
 
 </body>

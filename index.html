@@ -3,315 +3,157 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Đếm ngược Ngày Lễ Lớn</title>
+<title>Đếm ngược Ngày Lễ Lớn Việt Nam 2025</title>
 <style>
   :root{
-    --bg:#0f172a;      /* slate-900 */
-    --card:#111827;    /* gray-900 */
-    --muted:#94a3b8;   /* slate-400 */
-    --text:#e5e7eb;    /* gray-200 */
-    --accent:#22d3ee;  /* cyan-400 */
-    --accent2:#a78bfa; /* violet-400 */
-    --good:#34d399;    /* emerald-400 */
-    --warn:#f59e0b;    /* amber-500 */
-    --danger:#ef4444;  /* red-500 */
-    --ring: 0 0 0 3px rgba(34,211,238,.25);
+    --bg:#0f172a;
+    --card:#111827;
+    --muted:#94a3b8;
+    --text:#e5e7eb;
+    --accent:#22d3ee;
+    --accent2:#a78bfa;
+    --good:#34d399;
+    --warn:#f59e0b;
+    --danger:#ef4444;
   }
   *{box-sizing:border-box}
   body{
-    margin:0; font-family:system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    background: radial-gradient(1200px 600px at 80% -10%, rgba(167,139,250,.15), transparent 60%),
-                radial-gradient(900px 500px at 10% 110%, rgba(34,211,238,.12), transparent 60%),
-                var(--bg);
-    color:var(--text);
-    min-height:100svh;
-    display:flex; align-items:center; justify-content:center; padding:24px;
+    margin:0; font-family:system-ui, sans-serif;
+    background:var(--bg); color:var(--text);
+    min-height:100vh; padding:20px;
   }
-  .app{
-    width:100%; max-width:980px;
-  }
-  header{
-    display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;
-    margin-bottom:16px;
-  }
-  h1{font-size:clamp(22px, 3.2vw, 34px); margin:0; letter-spacing:.3px}
-  .controls{
-    display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-  }
+  h1{text-align:center; margin:0 0 20px; font-size:28px}
+  header{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
   .ctrl{
-    background: rgba(255,255,255,.04);
-    border:1px solid rgba(255,255,255,.08);
-    color:var(--text); border-radius:12px; padding:10px 12px; display:flex; align-items:center; gap:8px;
+    background:#1e293b; border:1px solid rgba(255,255,255,.08);
+    border-radius:10px; padding:8px 12px; color:var(--text);
+    display:flex; align-items:center; gap:8px;
   }
-  .ctrl input[type="number"], .ctrl input[type="text"]{
-    background:transparent; border:none; color:var(--text); width:90px; outline:none; font-size:14px;
-  }
-  .ctrl input[type="checkbox"]{transform:scale(1.1)}
+  .ctrl input{background:transparent;border:none;color:var(--text);outline:none}
   .list{
-    display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:14px;
+    display:grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
+    gap:14px;
   }
   .card{
-    background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+    background:var(--card);
     border:1px solid rgba(255,255,255,.08);
-    border-radius:18px; padding:16px; position:relative; overflow:hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    transition: transform .2s ease, border-color .2s ease;
+    border-radius:16px; padding:14px;
+    position:relative; transition:.2s;
   }
-  .card:hover{ transform: translateY(-2px); border-color: rgba(34,211,238,.35);}
+  .card:hover{border-color:var(--accent)}
   .badge{
-    position:absolute; top:10px; right:12px; font-size:12px; padding:4px 8px; border-radius:999px;
-    color:#041014; background:linear-gradient(90deg, var(--accent), var(--accent2)); font-weight:700; letter-spacing:.4px;
+    position:absolute; top:10px; right:12px;
+    padding:3px 8px; font-size:12px; border-radius:999px;
+    font-weight:700; color:#041014;
+    background:linear-gradient(90deg,var(--accent),var(--accent2));
   }
-  .name{ display:flex; align-items:center; gap:10px; font-size:16px; font-weight:700; }
-  .name .emoji{ font-size:20px }
-  .date{ color:var(--muted); font-size:13px; margin-top:2px; }
-  .countdown{
-    margin-top:10px; font-variant-numeric: tabular-nums; font-size:26px; font-weight:800;
-  }
-  .sub{
-    color:var(--muted); font-size:12px; margin-top:6px;
-  }
-  .bar{
-    height:7px; background:rgba(255,255,255,.06); border-radius:999px; margin-top:12px; overflow:hidden;
-    outline:1px solid rgba(255,255,255,.06);
-  }
-  .bar > div{
-    height:100%; width:0%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    transition: width .6s ease;
-  }
-  .note{
-    margin-top:16px; color:var(--muted); font-size:13px; line-height:1.5;
-  }
-  footer{ margin-top:14px; display:flex; justify-content:center; color:var(--muted); font-size:12px; }
+  .name{font-size:16px; font-weight:700}
+  .date{font-size:13px; color:var(--muted); margin-top:2px}
+  .countdown{font-size:22px; font-weight:700; margin-top:6px}
+  .sub{font-size:12px; color:var(--muted); margin-top:4px}
+  .bar{height:6px;background:rgba(255,255,255,.06);border-radius:999px;margin-top:8px;overflow:hidden}
+  .bar>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0}
   .status.upcoming{color:var(--good)}
   .status.soon{color:var(--warn)}
   .status.past{color:var(--danger)}
-  .search{ width:180px }
-  @media (max-width:480px){
-    .list{ grid-template-columns: 1fr; }
-    .search{ width:140px }
-  }
 </style>
 </head>
 <body>
-<div class="app">
-  <header>
-    <h1>🗓️ Đếm ngược Ngày Lễ Lớn</h1>
-    <div class="controls">
-      <label class="ctrl">Năm:
-        <input id="yearInput" type="number" min="1900" max="3000" />
-      </label>
-      <label class="ctrl">Tìm:
-        <input id="searchInput" class="search" type="text" placeholder="ví dụ: Quốc khánh, 30/4…" />
-      </label>
-      <label class="ctrl" title="Ẩn/hiện sự kiện đã qua">
-        <input id="togglePast" type="checkbox" checked /> Hiện sự kiện đã qua
-      </label>
-    </div>
-  </header>
+<h1>🗓️ Đếm ngược Ngày Lễ Lớn Việt Nam 2025</h1>
 
-  <section id="list" class="list" aria-live="polite"></section>
+<header>
+  <label class="ctrl">Năm: <input id="yearInput" type="number" min="2000" max="2100"></label>
+  <label class="ctrl">Tìm: <input id="searchInput" type="text" placeholder="ví dụ: Quốc khánh..."></label>
+  <label class="ctrl"><input id="togglePast" type="checkbox" checked> Hiện sự kiện đã qua</label>
+</header>
 
-  <p class="note">
-    💡 <b>Thêm/Sửa sự kiện</b>: chỉnh mảng <code>HOLIDAYS</code> trong code.  
-    🔁 Sự kiện cố định theo ngày/tháng sẽ tự đổi theo <b>Năm</b> bạn chọn.  
-    🌙 Các ngày <b>âm lịch</b> (Tết Âm, Trung Thu, Giỗ Tổ…) thay đổi theo năm — hãy điền ngày dương lịch tương ứng vào trường <code>absolute</code>.
-  </p>
-  <footer>Made for 🇻🇳 • Nhanh - Gọn - Đẹp</footer>
-</div>
+<section id="list" class="list"></section>
 
 <script>
-/** =========================
- *  CẤU HÌNH SỰ KIỆN MẪU
- *  =========================
- *  Có 2 cách đặt ngày:
- *   1) fixed:  { name, emoji, fixed:{month, day} }  → tự thay đổi theo Năm
- *   2) absolute: { name, emoji, absolute:"YYYY-MM-DD" } → dùng cho ngày âm đã quy đổi
- */
 const HOLIDAYS = [
-  // —— Cố định ngày/tháng (tự đổi theo năm) ——
-   { name:"Tết Dương Lịch", emoji:"🎉", date:"2025-01-01" },
-  { name:"Tết Nguyên Đán (Mùng 1 AL)", emoji:"🧧", date:"2025-01-29" },
-  { name:"Mùng 2 Tết", emoji:"🧧", date:"2025-01-30" },
-  { name:"Mùng 3 Tết", emoji:"🧧", date:"2025-01-31" },
-  { name:"Mùng 4 Tết", emoji:"🧧", date:"2025-02-01" },
-  { name:"Mùng 5 Tết", emoji:"🧧", date:"2025-02-02" },
-  { name:"Valentine", emoji:"💘", date:"2025-02-14" },
-  { name:"Quốc tế Phụ nữ", emoji:"🌷", date:"2025-03-08" },
-  { name:"Giỗ Tổ Hùng Vương (10/3 AL)", emoji:"🦚", date:"2025-04-08" },
-  { name:"Ngày Giải phóng Miền Nam", emoji:"🇻🇳", date:"2025-04-30" },
-  { name:"Quốc tế Lao động", emoji:"🛠️", date:"2025-05-01" },
-  { name:"Quốc tế Thiếu nhi", emoji:"🧸", date:"2025-06-01" },
-  { name:"Ngày Thương binh Liệt sĩ", emoji:"🕯️", date:"2025-07-27" },
-  { name:"Quốc khánh", emoji:"🎌", date:"2025-09-02" },
-  { name:"Trung Thu (Rằm 8 AL)", emoji:"🥮", date:"2025-10-06" },
-  { name:"Ngày Phụ nữ Việt Nam", emoji:"👩‍🦱", date:"2025-10-20" },
-  { name:"Ngày Nhà giáo Việt Nam", emoji:"📚", date:"2025-11-20" },
-  { name:"Giáng Sinh", emoji:"🎄", date:"2025-12-25" },
+  { name:"Tết Dương Lịch", emoji:"🎉", absolute:"2025-01-01" },
+  { name:"Tết Nguyên Đán (Mùng 1 AL)", emoji:"🧧", absolute:"2025-01-29" },
+  { name:"Mùng 2 Tết", emoji:"🧧", absolute:"2025-01-30" },
+  { name:"Mùng 3 Tết", emoji:"🧧", absolute:"2025-01-31" },
+  { name:"Mùng 4 Tết", emoji:"🧧", absolute:"2025-02-01" },
+  { name:"Mùng 5 Tết", emoji:"🧧", absolute:"2025-02-02" },
+  { name:"Valentine", emoji:"💘", absolute:"2025-02-14" },
+  { name:"Quốc tế Phụ nữ", emoji:"🌷", absolute:"2025-03-08" },
+  { name:"Giỗ Tổ Hùng Vương (10/3 AL)", emoji:"🦚", absolute:"2025-04-08" },
+  { name:"Giải phóng Miền Nam (30/4)", emoji:"🇻🇳", absolute:"2025-04-30" },
+  { name:"Quốc tế Lao động (1/5)", emoji:"🛠️", absolute:"2025-05-01" },
+  { name:"Quốc tế Thiếu nhi (1/6)", emoji:"🧸", absolute:"2025-06-01" },
+  { name:"Ngày Thương binh Liệt sĩ (27/7)", emoji:"🕯️", absolute:"2025-07-27" },
+  { name:"Quốc khánh (2/9)", emoji:"🎌", absolute:"2025-09-02" },
+  { name:"Trung Thu (Rằm 8 AL)", emoji:"🥮", absolute:"2025-10-06" },
+  { name:"Ngày Phụ nữ Việt Nam (20/10)", emoji:"👩‍🦱", absolute:"2025-10-20" },
+  { name:"Ngày Nhà giáo Việt Nam (20/11)", emoji:"📚", absolute:"2025-11-20" },
+  { name:"Giáng Sinh (Noel)", emoji:"🎄", absolute:"2025-12-25" },
 ];
 
-const listEl = document.getElementById('list');
-const yearInput = document.getElementById('yearInput');
-const searchInput = document.getElementById('searchInput');
-const togglePast = document.getElementById('togglePast');
+const listEl=document.getElementById("list");
+const yearInput=document.getElementById("yearInput");
+const searchInput=document.getElementById("searchInput");
+const togglePast=document.getElementById("togglePast");
 
-const pad = n => String(n).padStart(2,'0');
-
-/** Lấy năm hiện tại ở múi giờ người dùng */
-const nowLocal = () => new Date();
-
-/** Tạo Date lúc 00:00:00 của ngày cần đếm (giữ theo giờ địa phương) */
-function atStartOfDay(y,m,d){
-  return new Date(y, m-1, d, 0,0,0,0);
+const pad=n=>String(n).padStart(2,"0");
+const fmtDate=d=>`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+function diff(ms){
+  const s=Math.max(0,Math.floor(ms/1000));
+  return {
+    d:Math.floor(s/86400),
+    h:Math.floor((s%86400)/3600),
+    m:Math.floor((s%3600)/60),
+    s:s%60
+  };
 }
-
-function getEventsForYear(year){
-  const items = [];
-  for(const h of HOLIDAYS){
-    if(h.fixed){
-      const target = atStartOfDay(year, h.fixed.month, h.fixed.day);
-      items.push({ ...h, date: target });
-    }else if(h.absolute){
-      // absolute có định dạng YYYY-MM-DD → dùng đúng ngày đó
-      const [Y, M, D] = h.absolute.split('-').map(Number);
-      items.push({ ...h, date: atStartOfDay(Y, M, D) });
-    }
-  }
-  // Nếu một sự kiện trong năm đã trôi qua, có thể thêm sự kiện của năm sau (cho fixed)
-  // để luôn có mục "lần kế tiếp" nếu muốn. Ở đây giữ nguyên theo năm đã chọn.
-  return items;
+function status(ms){
+  if(ms<=0)return"past";
+  if(ms<=7*86400*1000)return"soon";
+  return"upcoming";
 }
-
-function fmtDate(d){
-  return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
-}
-
-function diffParts(ms){
-  const total = Math.max(0, Math.floor(ms/1000));
-  const days = Math.floor(total / 86400);
-  const hrs  = Math.floor((total % 86400) / 3600);
-  const mins = Math.floor((total % 3600) / 60);
-  const secs = total % 60;
-  return {days, hrs, mins, secs};
-}
-
-function statusClass(ms){
-  if(ms <= 0) return 'past';
-  // “sắp tới” nếu còn dưới 7 ngày
-  if(ms <= 7*86400*1000) return 'soon';
-  return 'upcoming';
-}
-
-/** Tính % tiến độ (từ đầu năm đến ngày đó) để vẽ thanh */
 function progressOfYear(date){
-  const start = new Date(date.getFullYear(), 0, 1);
-  const end   = new Date(date.getFullYear()+1, 0, 1);
-  const total = end - start;
-  const passed = Math.min(Math.max(date - start, 0), total);
-  return (passed / total) * 100;
+  const start=new Date(date.getFullYear(),0,1);
+  const end=new Date(date.getFullYear()+1,0,1);
+  return ((date-start)/(end-start))*100;
 }
 
-let state = {
-  year: nowLocal().getFullYear(),
-  search: '',
-  showPast: true,
-};
+let state={year:2025, search:"", showPast:true};
 
 function render(){
-  yearInput.value = state.year;
-  const events = getEventsForYear(state.year)
-    .map(e => ({...e, dateMs: e.date.getTime()}))
-    .sort((a,b)=> a.dateMs - b.dateMs);
-
-  const now = nowLocal().getTime();
-
-  const filtered = events.filter(e => {
-    const name = e.name.toLowerCase();
-    const q = state.search.trim().toLowerCase();
-    const isPast = (e.dateMs < now);
-    if(!state.showPast && isPast) return false;
-    if(q && !name.includes(q)) return false;
-    return true;
-  });
-
-  listEl.innerHTML = '';
-  for(const e of filtered){
-    const ms = e.dateMs - now;
-    const {days, hrs, mins, secs} = diffParts(ms);
-    const st = statusClass(ms);
-    const pct = progressOfYear(e.date);
-
-    const card = document.createElement('article');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="badge ${st} status">${st==='past'?'ĐÃ DIỄN RA': (st==='soon'?'SẮP TỚI':'SẮP DIỄN RA')}</div>
-      <div class="name"><span class="emoji">${e.emoji||'📌'}</span> <span>${e.name}</span></div>
-      <div class="date">📅 ${fmtDate(e.date)}</div>
-      <div class="countdown" data-ms="${ms}">
-        ${ms<=0 ? '0 ngày 00:00:00' : `${days} ngày ${pad(hrs)}:${pad(mins)}:${pad(secs)}`}
-      </div>
-      <div class="sub">${ms<=0 ? 'Sự kiện đã qua.' : 'Còn lại đến ngày diễn ra.'}</div>
-      <div class="bar" title="Tiến độ năm đến ngày này">
-        <div style="width:${pct.toFixed(2)}%"></div>
-      </div>
+  yearInput.value=state.year;
+  const now=new Date();
+  listEl.innerHTML="";
+  HOLIDAYS.forEach(h=>{
+    const [Y,M,D]=h.absolute.split("-").map(Number);
+    if(Y!==state.year)return;
+    const d=new Date(Y,M-1,D,0,0,0);
+    const ms=d-now;
+    const {d:dd,h:hh,m:mm,s:ss}=diff(ms);
+    const st=status(ms);
+    if(!state.showPast && st==="past")return;
+    if(state.search && !h.name.toLowerCase().includes(state.search.toLowerCase()))return;
+    const card=document.createElement("div");
+    card.className="card";
+    card.innerHTML=`
+      <div class="badge">${st==="past"?"ĐÃ QUA":st==="soon"?"SẮP TỚI":"SẮP DIỄN RA"}</div>
+      <div class="name">${h.emoji} ${h.name}</div>
+      <div class="date">📅 ${fmtDate(d)}</div>
+      <div class="countdown">${ms<=0?"0 ngày 00:00:00":`${dd} ngày ${pad(hh)}:${pad(mm)}:${pad(ss)}`}</div>
+      <div class="sub">${ms<=0?"Sự kiện đã qua.":"Còn lại đến ngày diễn ra."}</div>
+      <div class="bar"><div style="width:${progressOfYear(d).toFixed(2)}%"></div></div>
     `;
     listEl.appendChild(card);
-  }
-}
-
-/** Cập nhật đếm ngược mỗi giây mà không tái dựng toàn bộ */
-function tick(){
-  const now = nowLocal().getTime();
-  document.querySelectorAll('.countdown').forEach(el=>{
-    const card = el.closest('.card');
-    // Lấy ngày từ phần .date của card
-    const dateText = card.querySelector('.date').textContent.replace('📅','').trim();
-    const [d,m,y] = dateText.split(/[\/\s]/).filter(Boolean)[0].split('/').map(Number);
-    const target = atStartOfDay(y,m,d).getTime();
-
-    const ms = target - now;
-    const parts = diffParts(ms);
-    el.textContent = ms<=0 ? '0 ngày 00:00:00'
-                           : `${parts.days} ngày ${pad(parts.hrs)}:${pad(parts.mins)}:${pad(parts.secs)}`;
-
-    const badge = card.querySelector('.badge');
-    if(ms<=0){
-      badge.textContent = 'ĐÃ DIỄN RA';
-      badge.className = 'badge past status';
-      card.querySelector('.sub').textContent = 'Sự kiện đã qua.';
-    }else if(ms<=7*86400*1000){
-      badge.textContent = 'SẮP TỚI';
-      badge.className = 'badge soon status';
-      card.querySelector('.sub').textContent = 'Còn lại đến ngày diễn ra.';
-    }else{
-      badge.textContent = 'SẮP DIỄN RA';
-      badge.className = 'badge upcoming status';
-      card.querySelector('.sub').textContent = 'Còn lại đến ngày diễn ra.';
-    }
   });
 }
-
-yearInput.addEventListener('change', ()=>{
-  const v = parseInt(yearInput.value, 10);
-  state.year = isNaN(v) ? state.year : v;
+function tick(){
   render();
-});
-
-searchInput.addEventListener('input', ()=>{
-  state.search = searchInput.value;
-  render();
-});
-
-togglePast.addEventListener('change', ()=>{
-  state.showPast = togglePast.checked;
-  render();
-});
-
-// Khởi động
-state.year = nowLocal().getFullYear();
+}
+yearInput.addEventListener("change",()=>{state.year=parseInt(yearInput.value)||2025;render()});
+searchInput.addEventListener("input",()=>{state.search=searchInput.value;render()});
+togglePast.addEventListener("change",()=>{state.showPast=togglePast.checked;render()});
 render();
-setInterval(tick, 1000);
+setInterval(tick,1000);
 </script>
 </body>
 </html>

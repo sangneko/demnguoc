@@ -74,8 +74,109 @@
 
   <div id="eventList"></div>
 
+  <!-- Tích hợp amlich.js trực tiếp -->
   <script>
-    // --- Danh sách ngày lễ cố định ---
+  /*
+   * Một phần rút gọn của amlich.js (Ho Ngoc Duc)
+   * Dùng để chuyển đổi Âm lịch ↔ Dương lịch
+   */
+  function INT(d){return Math.floor(d);}
+  function jdFromDate(dd, mm, yy) {
+    var a = INT((14 - mm) / 12);
+    var y = yy+4800-a;
+    var m = mm+12*a-3;
+    var jd = dd + INT((153*m+2)/5) + 365*y + INT(y/4) - INT(y/100) + INT(y/400) - 32045;
+    if (jd < 2299161) jd = dd + INT((153*m+2)/5) + 365*y + INT(y/4) - 32083;
+    return jd;
+  }
+  function jdToDate(jd) {
+    var a, b, c, d, e, m;
+    if (jd > 2299160) {
+      a = jd + 32044;
+      b = INT((4*a+3)/146097);
+      c = a - INT((b*146097)/4);
+    } else {
+      b = 0;
+      c = jd + 32082;
+    }
+    d = INT((4*c+3)/1461);
+    e = c - INT((1461*d)/4);
+    m = INT((5*e+2)/153);
+    var day = e - INT((153*m+2)/5) + 1;
+    var month = m + 3 - 12*INT(m/10);
+    var year = b*100 + d - 4800 + INT(m/10);
+    return [day, month, year];
+  }
+  function getNewMoonDay(k, timeZone) {
+    var T = k/1236.85;
+    var T2 = T*T; var T3 = T2*T;
+    var dr = Math.PI/180;
+    var Jd1 = 2415020.75933 + 29.53058868*k + 0.0001178*T2 - 0.000000155*T3;
+    Jd1 += 0.00033*Math.sin((166.56+132.87*T-0.009173*T2)*dr);
+    var M = 359.2242 + 29.10535608*k - 0.0000333*T2 - 0.00000347*T3;
+    var Mpr = 306.0253 + 385.81691806*k + 0.0107306*T2 + 0.00001236*T3;
+    var F = 21.2964 + 390.67050646*k - 0.0016528*T2 - 0.00000239*T3;
+    var C1=(0.1734-0.000393*T)*Math.sin(M*dr)+0.0021*Math.sin(2*dr*M);
+    C1 = C1-0.4068*Math.sin(Mpr*dr)+0.0161*Math.sin(dr*2*Mpr);
+    C1 = C1-0.0004*Math.sin(dr*3*Mpr)+0.0104*Math.sin(dr*2*F)-0.0051*Math.sin(dr*(M+Mpr));
+    C1 = C1-0.0074*Math.sin(dr*(M-Mpr))+0.0004*Math.sin(dr*(2*F+M));
+    C1 = C1-0.0004*Math.sin(dr*(2*F-M))-0.0006*Math.sin(dr*(2*F+Mpr))+0.0010*Math.sin(dr*(2*F-Mpr));
+    var deltaT = 0;
+    var JdNew = Jd1 + C1 - deltaT;
+    return INT(JdNew+0.5+timeZone/24);
+  }
+  function getSunLongitude(jdn, timeZone) {
+    var T = (jdn - 2451545.5 - timeZone/24) / 36525;
+    var T2 = T*T;
+    var dr = Math.PI/180;
+    var M = 357.52910 + 35999.05030*T - 0.0001559*T2 - 0.00000048*T*T2;
+    var L0 = 280.46645 + 36000.76983*T + 0.0003032*T2;
+    var DL = (1.914600 - 0.004817*T - 0.000014*T2)*Math.sin(dr*M);
+    DL = DL + (0.019993 - 0.000101*T)*Math.sin(dr*2*M) + 0.000290*Math.sin(dr*3*M);
+    var L = L0 + DL;
+    var omega = 125.04 - 1934.136*T;
+    L = L - 0.00569 - 0.00478*Math.sin(omega*dr);
+    L = L*dr;
+    L = L - 2*Math.PI*INT(L/(2*Math.PI));
+    return INT(L/(Math.PI*6));
+  }
+  function getLunarMonth11(yy, timeZone) {
+    var off = jdFromDate(31, 12, yy) - 2415021;
+    var k = INT(off/29.530588853);
+    var nm = getNewMoonDay(k, timeZone);
+    var sunLong = getSunLongitude(nm, timeZone);
+    if (sunLong >= 9) nm = getNewMoonDay(k-1, timeZone);
+    return nm;
+  }
+  function getLeapMonthOffset(a11, timeZone) {
+    var k = INT(0.5+(a11-2415021.076998695)/29.530588853);
+    var last=0, arc=getSunLongitude(getNewMoonDay(k+1, timeZone), timeZone);
+    var i=1; do {
+      last = arc;
+      arc = getSunLongitude(getNewMoonDay(k+i+1, timeZone), timeZone);
+      i++;
+    } while (arc != last && i < 14);
+    return i-1;
+  }
+  function convertLunar2Solar(dd, mm, yy, leap, timeZone) {
+    var a11, b11, off, k, monthStart;
+    if (mm < 11) {
+      a11 = getLunarMonth11(yy-1, timeZone);
+      b11 = getLunarMonth11(yy, timeZone);
+    } else {
+      a11 = getLunarMonth11(yy, timeZone);
+      b11 = getLunarMonth11(yy+1, timeZone);
+    }
+    off = dd-1;
+    k = INT(0.5+(a11-2415021.076998695)/29.530588853);
+    monthStart = getNewMoonDay(k+mm, timeZone);
+    var jd = monthStart+off;
+    return jdToDate(jd);
+  }
+  </script>
+
+  <script>
+    // --- Ngày lễ Dương lịch ---
     const HOLIDAYS = [
       { name:"Tết Dương lịch", emoji:"🎉", month:1, day:1 },
       { name:"Ngày Quốc tế Phụ nữ", emoji:"🌸", month:3, day:8 },
@@ -88,6 +189,15 @@
       { name:"Ngày Phụ nữ Việt Nam", emoji:"💐", month:10, day:20 },
       { name:"Ngày Nhà giáo Việt Nam", emoji:"📚", month:11, day:20 },
       { name:"Giáng sinh", emoji:"🎄", month:12, day:25 }
+    ];
+
+    // --- Ngày lễ Âm lịch ---
+    const LUNAR_HOLIDAYS = [
+      { name:"Tết Nguyên Đán", emoji:"🎉", month:1, day:1 },
+      { name:"Rằm tháng Giêng", emoji:"🌕", month:1, day:15 },
+      { name:"Tết Đoan Ngọ", emoji:"🍑", month:5, day:5 },
+      { name:"Vu Lan Báo Hiếu", emoji:"🙏", month:7, day:15 },
+      { name:"Trung Thu", emoji:"🥮", month:8, day:15 }
     ];
 
     // --- Theme toggle ---
@@ -115,14 +225,24 @@
       }
     });
 
-    // --- Hàm lấy tất cả sự kiện ---
+    // --- Chuyển Âm lịch sang Dương lịch ---
+    function lunarToSolar(year){
+      return LUNAR_HOLIDAYS.map(e=>{
+        const d = convertLunar2Solar(e.day, e.month, year, 0, 7); 
+        const dateStr = `${d[2]}-${String(d[1]).padStart(2,"0")}-${String(d[0]).padStart(2,"0")}`;
+        return { ...e, absolute: dateStr };
+      });
+    }
+
+    // --- Lấy tất cả sự kiện ---
     function getAllEvents(year){
       const customs=JSON.parse(localStorage.getItem("customEvents")||"[]");
-      const holidayExpanded = HOLIDAYS.map(e=>{
-        if(e.absolute) return e;
-        return { ...e, absolute:`${year}-${String(e.month).padStart(2,"0")}-${String(e.day).padStart(2,"0")}` }
-      });
-      return [...holidayExpanded, ...customs];
+      const holidays=HOLIDAYS.map(e=>({ 
+        ...e, 
+        absolute:`${year}-${String(e.month).padStart(2,"0")}-${String(e.day).padStart(2,"0")}`
+      }));
+      const lunar = lunarToSolar(year);
+      return [...holidays, ...lunar, ...customs];
     }
 
     // --- Render danh sách ---

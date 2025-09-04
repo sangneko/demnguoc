@@ -1,159 +1,168 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Đếm ngược Ngày Lễ Lớn Việt Nam 2025</title>
-<style>
-  :root{
-    --bg:#0f172a;
-    --card:#111827;
-    --muted:#94a3b8;
-    --text:#e5e7eb;
-    --accent:#22d3ee;
-    --accent2:#a78bfa;
-    --good:#34d399;
-    --warn:#f59e0b;
-    --danger:#ef4444;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0; font-family:system-ui, sans-serif;
-    background:var(--bg); color:var(--text);
-    min-height:100vh; padding:20px;
-  }
-  h1{text-align:center; margin:0 0 20px; font-size:28px}
-  header{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:20px}
-  .ctrl{
-    background:#1e293b; border:1px solid rgba(255,255,255,.08);
-    border-radius:10px; padding:8px 12px; color:var(--text);
-    display:flex; align-items:center; gap:8px;
-  }
-  .ctrl input{background:transparent;border:none;color:var(--text);outline:none}
-  .list{
-    display:grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
-    gap:14px;
-  }
-  .card{
-    background:var(--card);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:16px; padding:14px;
-    position:relative; transition:.2s;
-  }
-  .card:hover{border-color:var(--accent)}
-  .badge{
-    position:absolute; top:10px; right:12px;
-    padding:3px 8px; font-size:12px; border-radius:999px;
-    font-weight:700; color:#041014;
-    background:linear-gradient(90deg,var(--accent),var(--accent2));
-  }
-  .name{font-size:16px; font-weight:700}
-  .date{font-size:13px; color:var(--muted); margin-top:2px}
-  .countdown{font-size:22px; font-weight:700; margin-top:6px}
-  .sub{font-size:12px; color:var(--muted); margin-top:4px}
-  .bar{height:6px;background:rgba(255,255,255,.06);border-radius:999px;margin-top:8px;overflow:hidden}
-  .bar>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0}
-  .status.upcoming{color:var(--good)}
-  .status.soon{color:var(--warn)}
-  .status.past{color:var(--danger)}
-</style>
+  <meta charset="UTF-8">
+  <title>Đếm ngược Ngày lễ Việt Nam</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      margin: 0; padding: 20px;
+      transition: background 0.3s, color 0.3s;
+    }
+    h1 { text-align: center; margin-bottom: 20px; }
+    header {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      justify-content: center; margin-bottom: 20px;
+    }
+    .ctrl { padding: 6px 10px; border-radius: 6px; border: none; }
+    input[type="text"], input[type="number"], input[type="date"] {
+      padding: 5px; border-radius: 6px; border: 1px solid #ccc;
+    }
+    #eventList {
+      display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+      gap: 15px;
+    }
+    .card {
+      background: #1e293b;
+      padding: 14px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: scale(1.02); }
+    .name { font-size: 18px; font-weight: bold; }
+    .date { font-size: 14px; color: #94a3b8; margin-top: 4px; }
+    .countdown { font-size: 16px; margin-top: 8px; }
+    /* Light Theme */
+    body.light { background: #f9fafb; color: #111; }
+    body.light .card { background: #fff; color: #111; }
+    body.light .date { color: #555; }
+    /* Form */
+    #eventForm {
+      display:none; background:#1e293b;
+      padding:14px; border-radius:10px; margin-bottom:15px;
+    }
+    body.light #eventForm { background:#e2e8f0; }
+  </style>
 </head>
 <body>
-<h1>🗓️ Đếm ngược Ngày Lễ Lớn Việt Nam 2025</h1>
+  <h1>📅 Đếm ngược Ngày lễ Việt Nam</h1>
 
-<header>
-  <label class="ctrl">Năm: <input id="yearInput" type="number" min="2000" max="2100"></label>
-  <label class="ctrl">Tìm: <input id="searchInput" type="text" placeholder="ví dụ: Quốc khánh..."></label>
-  <label class="ctrl"><input id="togglePast" type="checkbox" checked> Hiện sự kiện đã qua</label>
-</header>
+  <header>
+    <label class="ctrl">Năm:
+      <input id="yearInput" type="number" min="2024" max="2030" value="2025">
+    </label>
+    <label class="ctrl">Tìm:
+      <input id="searchInput" type="text" placeholder="Ví dụ: Quốc khánh...">
+    </label>
+    <label class="ctrl">
+      <input id="togglePast" type="checkbox" checked> Hiện sự kiện đã qua
+    </label>
+    <button id="themeToggle" class="ctrl">🌙 Đổi Theme</button>
+    <button id="addEventBtn" class="ctrl">➕ Thêm sự kiện</button>
+  </header>
 
-<section id="list" class="list"></section>
+  <!-- Form thêm sự kiện -->
+  <div id="eventForm">
+    <h3>Thêm sự kiện cá nhân</h3>
+    <label>Tên: <input id="customName" type="text"></label><br><br>
+    <label>Ngày: <input id="customDate" type="date"></label><br><br>
+    <button id="saveEvent">Lưu</button>
+  </div>
 
-<script>
-const HOLIDAYS = [
-  { name:"Tết Dương Lịch", emoji:"🎉", absolute:"2025-01-01" },
-  { name:"Tết Nguyên Đán (Mùng 1 AL)", emoji:"🧧", absolute:"2025-01-29" },
-  { name:"Mùng 2 Tết", emoji:"🧧", absolute:"2025-01-30" },
-  { name:"Mùng 3 Tết", emoji:"🧧", absolute:"2025-01-31" },
-  { name:"Mùng 4 Tết", emoji:"🧧", absolute:"2025-02-01" },
-  { name:"Mùng 5 Tết", emoji:"🧧", absolute:"2025-02-02" },
-  { name:"Valentine", emoji:"💘", absolute:"2025-02-14" },
-  { name:"Quốc tế Phụ nữ", emoji:"🌷", absolute:"2025-03-08" },
-  { name:"Giỗ Tổ Hùng Vương (10/3 AL)", emoji:"🦚", absolute:"2025-04-08" },
-  { name:"Giải phóng Miền Nam (30/4)", emoji:"🇻🇳", absolute:"2025-04-30" },
-  { name:"Quốc tế Lao động (1/5)", emoji:"🛠️", absolute:"2025-05-01" },
-  { name:"Quốc tế Thiếu nhi (1/6)", emoji:"🧸", absolute:"2025-06-01" },
-  { name:"Ngày Thương binh Liệt sĩ (27/7)", emoji:"🕯️", absolute:"2025-07-27" },
-  { name:"Quốc khánh (2/9)", emoji:"🎌", absolute:"2025-09-02" },
-  { name:"Trung Thu (Rằm 8 AL)", emoji:"🥮", absolute:"2025-10-06" },
-  { name:"Ngày Phụ nữ Việt Nam (20/10)", emoji:"👩‍🦱", absolute:"2025-10-20" },
-  { name:"Ngày Nhà giáo Việt Nam (20/11)", emoji:"📚", absolute:"2025-11-20" },
-  { name:"Giáng Sinh (Noel)", emoji:"🎄", absolute:"2025-12-25" },
-];
+  <div id="eventList"></div>
 
-const listEl=document.getElementById("list");
-const yearInput=document.getElementById("yearInput");
-const searchInput=document.getElementById("searchInput");
-const togglePast=document.getElementById("togglePast");
+  <script>
+    // --- Danh sách ngày lễ cố định ---
+    const HOLIDAYS = [
+      { name:"Tết Dương lịch", emoji:"🎉", month:1, day:1 },
+      { name:"Ngày Quốc tế Phụ nữ", emoji:"🌸", month:3, day:8 },
+      { name:"Giỗ Tổ Hùng Vương", emoji:"👑", month:4, day:18 },
+      { name:"Ngày Giải phóng miền Nam", emoji:"🇻🇳", month:4, day:30 },
+      { name:"Quốc tế Lao động", emoji:"⚒️", month:5, day:1 },
+      { name:"Ngày Quốc tế Thiếu nhi", emoji:"👦👧", month:6, day:1 },
+      { name:"Ngày Thương binh Liệt sĩ", emoji:"🕯️", month:7, day:27 },
+      { name:"Quốc khánh", emoji:"🎆", month:9, day:2 },
+      { name:"Ngày Phụ nữ Việt Nam", emoji:"💐", month:10, day:20 },
+      { name:"Ngày Nhà giáo Việt Nam", emoji:"📚", month:11, day:20 },
+      { name:"Giáng sinh", emoji:"🎄", month:12, day:25 }
+    ];
 
-const pad=n=>String(n).padStart(2,"0");
-const fmtDate=d=>`${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
-function diff(ms){
-  const s=Math.max(0,Math.floor(ms/1000));
-  return {
-    d:Math.floor(s/86400),
-    h:Math.floor((s%86400)/3600),
-    m:Math.floor((s%3600)/60),
-    s:s%60
-  };
-}
-function status(ms){
-  if(ms<=0)return"past";
-  if(ms<=7*86400*1000)return"soon";
-  return"upcoming";
-}
-function progressOfYear(date){
-  const start=new Date(date.getFullYear(),0,1);
-  const end=new Date(date.getFullYear()+1,0,1);
-  return ((date-start)/(end-start))*100;
-}
+    // --- Theme toggle ---
+    const themeToggle=document.getElementById("themeToggle");
+    if(localStorage.getItem("theme")==="light") document.body.classList.add("light");
+    themeToggle.addEventListener("click",()=>{
+      document.body.classList.toggle("light");
+      localStorage.setItem("theme",document.body.classList.contains("light")?"light":"dark");
+    });
 
-let state={year:2025, search:"", showPast:true};
+    // --- Thêm sự kiện cá nhân ---
+    const addEventBtn=document.getElementById("addEventBtn");
+    const eventForm=document.getElementById("eventForm");
+    const saveEvent=document.getElementById("saveEvent");
+    addEventBtn.addEventListener("click",()=>{eventForm.style.display=eventForm.style.display==="none"?"block":"none"});
+    saveEvent.addEventListener("click",()=>{
+      const name=document.getElementById("customName").value;
+      const date=document.getElementById("customDate").value;
+      if(name && date){
+        const events=JSON.parse(localStorage.getItem("customEvents")||"[]");
+        events.push({name,emoji:"⭐",absolute:date});
+        localStorage.setItem("customEvents",JSON.stringify(events));
+        render();
+        eventForm.style.display="none";
+      }
+    });
 
-function render(){
-  yearInput.value=state.year;
-  const now=new Date();
-  listEl.innerHTML="";
-  HOLIDAYS.forEach(h=>{
-    const [Y,M,D]=h.absolute.split("-").map(Number);
-    if(Y!==state.year)return;
-    const d=new Date(Y,M-1,D,0,0,0);
-    const ms=d-now;
-    const {d:dd,h:hh,m:mm,s:ss}=diff(ms);
-    const st=status(ms);
-    if(!state.showPast && st==="past")return;
-    if(state.search && !h.name.toLowerCase().includes(state.search.toLowerCase()))return;
-    const card=document.createElement("div");
-    card.className="card";
-    card.innerHTML=`
-      <div class="badge">${st==="past"?"ĐÃ QUA":st==="soon"?"SẮP TỚI":"SẮP DIỄN RA"}</div>
-      <div class="name">${h.emoji} ${h.name}</div>
-      <div class="date">📅 ${fmtDate(d)}</div>
-      <div class="countdown">${ms<=0?"0 ngày 00:00:00":`${dd} ngày ${pad(hh)}:${pad(mm)}:${pad(ss)}`}</div>
-      <div class="sub">${ms<=0?"Sự kiện đã qua.":"Còn lại đến ngày diễn ra."}</div>
-      <div class="bar"><div style="width:${progressOfYear(d).toFixed(2)}%"></div></div>
-    `;
-    listEl.appendChild(card);
-  });
-}
-function tick(){
-  render();
-}
-yearInput.addEventListener("change",()=>{state.year=parseInt(yearInput.value)||2025;render()});
-searchInput.addEventListener("input",()=>{state.search=searchInput.value;render()});
-togglePast.addEventListener("change",()=>{state.showPast=togglePast.checked;render()});
-render();
-setInterval(tick,1000);
-</script>
+    // --- Hàm lấy tất cả sự kiện ---
+    function getAllEvents(year){
+      const customs=JSON.parse(localStorage.getItem("customEvents")||"[]");
+      const holidayExpanded = HOLIDAYS.map(e=>{
+        if(e.absolute) return e;
+        return { ...e, absolute:`${year}-${String(e.month).padStart(2,"0")}-${String(e.day).padStart(2,"0")}` }
+      });
+      return [...holidayExpanded, ...customs];
+    }
+
+    // --- Render danh sách ---
+    function render(){
+      const list=document.getElementById("eventList");
+      list.innerHTML="";
+      const year=parseInt(document.getElementById("yearInput").value);
+      const search=document.getElementById("searchInput").value.toLowerCase();
+      const showPast=document.getElementById("togglePast").checked;
+      const now=new Date();
+
+      let events=getAllEvents(year).filter(e=>e.name.toLowerCase().includes(search));
+      events=events.map(e=>{
+        const d=new Date(e.absolute);
+        let diff=Math.floor((d-now)/(1000*60*60*24));
+        return { ...e, date:d, diff };
+      });
+      events=events.filter(e=> showPast || e.diff>=0 );
+      events.sort((a,b)=>a.date-b.date);
+
+      events.forEach(ev=>{
+        const card=document.createElement("div");
+        card.className="card";
+        card.innerHTML=`
+          <div class="name">${ev.emoji} ${ev.name}</div>
+          <div class="date">📅 ${ev.date.toLocaleDateString("vi-VN")}</div>
+          <div class="countdown">${ev.diff>=0?`⏳ Còn ${ev.diff} ngày`:`✅ Đã qua ${-ev.diff} ngày`}</div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    // --- Lắng nghe input ---
+    document.getElementById("yearInput").addEventListener("input",render);
+    document.getElementById("searchInput").addEventListener("input",render);
+    document.getElementById("togglePast").addEventListener("change",render);
+
+    // --- Cập nhật liên tục ---
+    setInterval(render,60*1000);
+    render();
+  </script>
 </body>
 </html>

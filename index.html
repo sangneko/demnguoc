@@ -9,7 +9,6 @@
       background: #0f172a;
       color: #f8fafc;
       margin: 0; padding: 20px;
-      transition: background 0.3s, color 0.3s;
     }
     h1 { text-align: center; margin-bottom: 20px; }
     header {
@@ -85,9 +84,8 @@
 
   <div id="eventList"></div>
 
-  <!-- Tích hợp amlich.js trực tiếp -->
+  <!-- amlich.js -->
   <script>
-  /* amlich.js rút gọn (Ho Ngoc Duc) */
   function INT(d){return Math.floor(d);}
   function jdFromDate(dd, mm, yy) {
     var a = INT((14 - mm) / 12);
@@ -164,7 +162,6 @@
   </script>
 
   <script>
-    // --- Ngày lễ Dương lịch ---
     const HOLIDAYS = [
       { name:"Tết Dương lịch", emoji:"🎉", month:1, day:1 },
       { name:"Ngày Quốc tế Phụ nữ", emoji:"🌸", month:3, day:8 },
@@ -178,8 +175,6 @@
       { name:"Ngày Nhà giáo Việt Nam", emoji:"📚", month:11, day:20 },
       { name:"Giáng sinh", emoji:"🎄", month:12, day:25 }
     ];
-
-    // --- Ngày lễ Âm lịch ---
     const LUNAR_HOLIDAYS = [
       { name:"Tết Nguyên Đán", emoji:"🎉", month:1, day:1 },
       { name:"Rằm tháng Giêng", emoji:"🌕", month:1, day:15 },
@@ -188,7 +183,6 @@
       { name:"Trung Thu", emoji:"🥮", month:8, day:15 }
     ];
 
-    // --- Theme toggle ---
     const themeToggle=document.getElementById("themeToggle");
     if(localStorage.getItem("theme")==="light") document.body.classList.add("light");
     themeToggle.addEventListener("click",()=>{
@@ -196,7 +190,6 @@
       localStorage.setItem("theme",document.body.classList.contains("light")?"light":"dark");
     });
 
-    // --- Thêm sự kiện cá nhân ---
     const addEventBtn=document.getElementById("addEventBtn");
     const eventForm=document.getElementById("eventForm");
     const saveEvent=document.getElementById("saveEvent");
@@ -213,7 +206,6 @@
       }
     });
 
-    // --- Chuyển Âm lịch sang Dương lịch ---
     function lunarToSolar(year){
       return LUNAR_HOLIDAYS.map(e=>{
         const d = convertLunar2Solar(e.day, e.month, year, 0, 7); 
@@ -221,8 +213,6 @@
         return { ...e, absolute: dateStr };
       });
     }
-
-    // --- Lấy tất cả sự kiện ---
     function getAllEvents(year){
       const customs=JSON.parse(localStorage.getItem("customEvents")||"[]");
       const holidays=HOLIDAYS.map(e=>({ 
@@ -233,7 +223,6 @@
       return [...holidays, ...lunar, ...customs];
     }
 
-    // --- Render danh sách ---
     function render(){
       const list=document.getElementById("eventList");
       list.innerHTML="";
@@ -246,7 +235,6 @@
       events=events.map(e=>{
         const d=new Date(e.absolute);
         let diff=Math.floor((d-now)/(1000*60*60*24));
-        // % tiến trình từ đầu năm đến ngày lễ
         const startYear=new Date(year,0,1);
         const totalDays=Math.floor((d-startYear)/(1000*60*60*24));
         const passedDays=Math.floor((now-startYear)/(1000*60*60*24));
@@ -270,12 +258,9 @@
       });
     }
 
-    // --- Lắng nghe input ---
     document.getElementById("yearInput").addEventListener("input",render);
     document.getElementById("searchInput").addEventListener("input",render);
     document.getElementById("togglePast").addEventListener("change",render);
-
-    // --- Cập nhật liên tục ---
     setInterval(render,60*1000);
     render();
   </script>

@@ -161,6 +161,66 @@
   }
   </script>
 
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } 
+      from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc } 
+      from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+    // 🔥 TODO: thay bằng config thật của bạn từ Firebase console
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "1234567890",
+      appId: "APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+    const db = getFirestore(app);
+
+    const loginBtn = document.getElementById("loginBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const userInfo = document.getElementById("userInfo");
+
+    let currentUser = null;
+
+    // Login Google
+    loginBtn.onclick = async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (err) {
+        alert("Lỗi đăng nhập: " + err.message);
+      }
+    };
+
+    // Logout
+    logoutBtn.onclick = () => signOut(auth);
+
+    // Theo dõi trạng thái đăng nhập
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        loginBtn.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+        userInfo.innerText = `Xin chào, ${user.displayName}`;
+        await loadPersonalEvents();
+      } else {
+        currentUser = null;
+        loginBtn.style.display = "inline-block";
+        logoutBtn.style.display = "none";
+        userInfo.innerText = "";
+        document.getElementById("personalEvents").innerHTML = "";
+      }
+    });
+
   <script>
     const HOLIDAYS = [
   { name:"Tết Dương lịch", emoji:"🎉", month:1, day:1 },
@@ -278,6 +338,7 @@
   </script>
 </body>
 </html>
+
 
 
 

@@ -4,26 +4,56 @@
   <meta charset="UTF-8">
   <title>Đếm ngược Ngày lễ Việt Nam</title>
   <style>
-    body {font-family: Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px;}
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #f8fafc;
+      margin: 0; padding: 20px;
+    }
     h1 { text-align: center; margin-bottom: 20px; }
-    header { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px; }
+    header {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      justify-content: center; margin-bottom: 20px;
+    }
     .ctrl { padding: 6px 10px; border-radius: 6px; border: none; }
-    input[type="text"], input[type="number"], input[type="date"] { padding: 5px; border-radius: 6px; border: 1px solid #ccc; }
-    #eventList { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 15px; }
-    .card { background: #1e293b; padding: 14px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: transform 0.2s; }
+    input[type="text"], input[type="number"], input[type="date"] {
+      padding: 5px; border-radius: 6px; border: 1px solid #ccc;
+    }
+    #eventList {
+      display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+      gap: 15px;
+    }
+    .card {
+      background: #1e293b;
+      padding: 14px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
     .card:hover { transform: scale(1.02); }
     .name { font-size: 18px; font-weight: bold; }
     .date { font-size: 14px; color: #94a3b8; margin-top: 4px; }
     .countdown { font-size: 16px; margin-top: 8px; }
-    .progress { margin-top: 10px; background: #334155; border-radius: 6px; height: 10px; overflow: hidden; }
-    .progress-bar { height: 100%; background: #22c55e; width: 0%; transition: width 1s ease-in-out; }
+    .progress {
+      margin-top: 10px; background: #334155;
+      border-radius: 6px; height: 10px; overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%; background: #22c55e;
+      width: 0%; transition: width 1s ease-in-out;
+    }
     .passed .progress-bar { background: #9ca3af; }
+    /* Light Theme */
     body.light { background: #f9fafb; color: #111; }
     body.light .card { background: #fff; color: #111; }
     body.light .date { color: #555; }
     body.light .progress { background: #e2e8f0; }
     body.light .passed .progress-bar { background: #cbd5e1; }
-    #eventForm { display:none; background:#1e293b; padding:14px; border-radius:10px; margin-bottom:15px; }
+    /* Form */
+    #eventForm {
+      display:none; background:#1e293b;
+      padding:14px; border-radius:10px; margin-bottom:15px;
+    }
     body.light #eventForm { background:#e2e8f0; }
   </style>
 </head>
@@ -31,14 +61,17 @@
   <h1>📅 Đếm ngược Ngày lễ Việt Nam</h1>
 
   <header>
-    <label class="ctrl">Năm: <input id="yearInput" type="number" min="2024" max="2030" value="2025"></label>
-    <label class="ctrl">Tìm: <input id="searchInput" type="text" placeholder="Ví dụ: Quốc khánh..."></label>
-    <label class="ctrl"><input id="togglePast" type="checkbox" checked> Hiện sự kiện đã qua</label>
+    <label class="ctrl">Năm:
+      <input id="yearInput" type="number" min="2024" max="2030" value="2025">
+    </label>
+    <label class="ctrl">Tìm:
+      <input id="searchInput" type="text" placeholder="Ví dụ: Quốc khánh...">
+    </label>
+    <label class="ctrl">
+      <input id="togglePast" type="checkbox" checked> Hiện sự kiện đã qua
+    </label>
     <button id="themeToggle" class="ctrl">🌙 Đổi Theme</button>
     <button id="addEventBtn" class="ctrl">➕ Thêm sự kiện</button>
-    <button id="loginBtn" class="ctrl">🔑 Đăng nhập Google</button>
-    <button id="logoutBtn" class="ctrl" style="display:none;">🚪 Đăng xuất</button>
-    <span id="userInfo"></span>
   </header>
 
   <!-- Form thêm sự kiện -->
@@ -51,161 +84,201 @@
 
   <div id="eventList"></div>
 
-  <!-- ===== Firebase SDK ===== -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-
-    // 🔥 Firebase config (bạn thay bằng của mình)
-    const firebaseConfig = {
-      apiKey: "AIzaSyCxp0GFYtHfS3myoK_vcofJzwOALqTp5p4",
-      authDomain: "demnguoc-638ad.firebaseapp.com",
-      projectId: "demnguoc-638ad",
-      storageBucket: "demnguoc-638ad.firebasestorage.app",
-      messagingSenderId: "87991055854",
-      appId: "1:87991055854:web:c6ed8ac77c17032a578aff",
-      measurementId: "G-RXEDY2V1K4"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
-
-    const loginBtn = document.getElementById("loginBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const userInfo = document.getElementById("userInfo");
-
-    let currentUser = null;
-    let userEvents = []; // sự kiện cá nhân
-
-    // Đăng nhập Google
-    loginBtn.onclick = async () => {
-      try { await signInWithPopup(auth, provider); }
-      catch (err) { alert("Lỗi đăng nhập: " + err.message); }
-    };
-    // Đăng xuất
-    logoutBtn.onclick = () => signOut(auth);
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-        loginBtn.style.display = "none";
-        logoutBtn.style.display = "inline-block";
-        userInfo.innerText = `Xin chào, ${user.displayName}`;
-        await loadUserEvents();
-      } else {
-        currentUser = null;
-        loginBtn.style.display = "inline-block";
-        logoutBtn.style.display = "none";
-        userInfo.innerText = "";
-        userEvents = [];
-        renderEvents();
-      }
-    });
-
-    // Lưu sự kiện cá nhân
-    document.getElementById("saveEvent").addEventListener("click", async () => {
-      if (!currentUser) {
-        alert("Bạn cần đăng nhập Google trước!");
-        return;
-      }
-      const name = document.getElementById("customName").value;
-      const date = document.getElementById("customDate").value;
-      if (name && date) {
-        await addDoc(collection(db, "events"), {
-          uid: currentUser.uid,
-          name, date
-        });
-        document.getElementById("customName").value = "";
-        document.getElementById("customDate").value = "";
-        await loadUserEvents();
-        alert("✅ Đã lưu sự kiện vào Firestore!");
-      }
-    });
-
-    // Load sự kiện từ Firestore
-    async function loadUserEvents() {
-      if (!currentUser) return;
-      const q = query(collection(db, "events"), where("uid", "==", currentUser.uid));
-      const snap = await getDocs(q);
-      userEvents = [];
-      snap.forEach(doc => {
-        const data = doc.data();
-        userEvents.push({ name: data.name, date: data.date, personal: true });
-      });
-      renderEvents();
+  <!-- amlich.js -->
+  <script>
+  function INT(d){return Math.floor(d);}
+  function jdFromDate(dd, mm, yy) {
+    var a = INT((14 - mm) / 12);
+    var y = yy+4800-a;
+    var m = mm+12*a-3;
+    var jd = dd + INT((153*m+2)/5) + 365*y + INT(y/4) - INT(y/100) + INT(y/400) - 32045;
+    if (jd < 2299161) jd = dd + INT((153*m+2)/5) + 365*y + INT(y/4) - 32083;
+    return jd;
+  }
+  function jdToDate(jd) {
+    var a, b, c, d, e, m;
+    if (jd > 2299160) {
+      a = jd + 32044;
+      b = INT((4*a+3)/146097);
+      c = a - INT((b*146097)/4);
+    } else {
+      b = 0; c = jd + 32082;
     }
+    d = INT((4*c+3)/1461);
+    e = c - INT((1461*d)/4);
+    m = INT((5*e+2)/153);
+    var day = e - INT((153*m+2)/5) + 1;
+    var month = m + 3 - 12*INT(m/10);
+    var year = b*100 + d - 4800 + INT(m/10);
+    return [day, month, year];
+  }
+  function getNewMoonDay(k, timeZone) {
+    var T = k/1236.85, T2=T*T, T3=T2*T;
+    var dr = Math.PI/180;
+    var Jd1 = 2415020.75933 + 29.53058868*k + 0.0001178*T2 - 0.000000155*T3;
+    Jd1 += 0.00033*Math.sin((166.56+132.87*T-0.009173*T2)*dr);
+    var M = 359.2242 + 29.10535608*k - 0.0000333*T2 - 0.00000347*T3;
+    var Mpr = 306.0253 + 385.81691806*k + 0.0107306*T2 + 0.00001236*T3;
+    var F = 21.2964 + 390.67050646*k - 0.0016528*T2 - 0.00000239*T3;
+    var C1=(0.1734-0.000393*T)*Math.sin(M*dr)+0.0021*Math.sin(2*dr*M);
+    C1 -=0.4068*Math.sin(Mpr*dr)+0.0161*Math.sin(dr*2*Mpr);
+    C1 -=0.0004*Math.sin(dr*3*Mpr)+0.0104*Math.sin(dr*2*F)-0.0051*Math.sin(dr*(M+Mpr));
+    C1 -=0.0074*Math.sin(dr*(M-Mpr))+0.0004*Math.sin(dr*(2*F+M));
+    C1 -=0.0004*Math.sin(dr*(2*F-M))-0.0006*Math.sin(dr*(2*F+Mpr))+0.0010*Math.sin(dr*(2*F-Mpr));
+    var JdNew = Jd1 + C1;
+    return INT(JdNew+0.5+timeZone/24);
+  }
+  function getSunLongitude(jdn, timeZone) {
+    var T = (jdn - 2451545.5 - timeZone/24) / 36525;
+    var T2 = T*T, dr=Math.PI/180;
+    var M = 357.52910 + 35999.05030*T - 0.0001559*T2 - 0.00000048*T*T2;
+    var L0 = 280.46645 + 36000.76983*T + 0.0003032*T2;
+    var DL = (1.914600 - 0.004817*T - 0.000014*T2)*Math.sin(dr*M);
+    DL += (0.019993 - 0.000101*T)*Math.sin(dr*2*M)+0.000290*Math.sin(dr*3*M);
+    var L = L0 + DL;
+    var omega = 125.04 - 1934.136*T;
+    L -=0.00569+0.00478*Math.sin(omega*dr);
+    L = L*dr;
+    L = L-2*Math.PI*INT(L/(2*Math.PI));
+    return INT(L/(Math.PI*6));
+  }
+  function getLunarMonth11(yy, timeZone) {
+    var off = jdFromDate(31, 12, yy) - 2415021;
+    var k = INT(off/29.530588853);
+    var nm = getNewMoonDay(k, timeZone);
+    if (getSunLongitude(nm, timeZone) >= 9) nm = getNewMoonDay(k-1, timeZone);
+    return nm;
+  }
+  function convertLunar2Solar(dd, mm, yy, leap, timeZone) {
+    var a11, off, k, monthStart;
+    if (mm < 11) { a11 = getLunarMonth11(yy-1, timeZone); } 
+    else { a11 = getLunarMonth11(yy, timeZone); }
+    off = dd-1;
+    k = INT(0.5+(a11-2415021.076998695)/29.530588853);
+    monthStart = getNewMoonDay(k+mm, timeZone);
+    var jd = monthStart+off;
+    return jdToDate(jd);
+  }
+  </script>
 
-    // ===== DỮ LIỆU NGÀY LỄ =====
+  <script>
     const HOLIDAYS = [
-      { name: "Tết Dương lịch", date: "2025-01-01" },
-      { name: "Ngày Giải phóng miền Nam", date: "2025-04-30" },
-      { name: "Quốc tế Lao động", date: "2025-05-01" },
-      { name: "Quốc khánh", date: "2025-09-02" },
-      // bạn có thể thêm Tết âm bằng thư viện amlich.js ở đây
+  { name:"Tết Dương lịch", emoji:"🎉", month:1, day:1 },
+  { name:"Ngày thành lập Đảng Cộng sản Việt Nam", emoji:"🚩", month:2, day:3 },
+  { name:"Ngày Thầy thuốc Việt Nam", emoji:"⚕️", month:2, day:27 },
+  { name:"Lễ Tình nhân (Valentine)", emoji:"❤️", month:2, day:14 },
+  { name:"Ngày Quốc tế Phụ nữ", emoji:"🌸", month:3, day:8 },
+  { name:"Ngày thành lập Đoàn Thanh niên Cộng sản Hồ Chí Minh", emoji:"🕊️", month:3, day:26 },
+  { name:"Ngày Quốc tế Hạnh phúc", emoji:"😊", month:3, day:20 },
+  { name:"Giỗ Tổ Hùng Vương", emoji:"👑", month:4, day:18 }, // (Âm lịch 10/3 nhưng VN quy định nghỉ, ta có thể thêm riêng bằng amlich)
+  { name:"Ngày Trái đất", emoji:"🌍", month:4, day:22 },
+  { name:"Ngày Giải phóng miền Nam", emoji:"🇻🇳", month:4, day:30 },
+  { name:"Ngày Quốc tế Lao động", emoji:"⚒️", month:5, day:1 },
+  { name:"Ngày sinh Chủ tịch Hồ Chí Minh", emoji:"🌟", month:5, day:19 },
+  { name:"Ngày Quốc tế Thiếu nhi", emoji:"👦👧", month:6, day:1 },
+  { name:"Ngày Thương binh Liệt sĩ", emoji:"🕯️", month:7, day:27 },
+  { name:"Ngày Cách mạng tháng Tám thành công", emoji:"🔥", month:8, day:19 },
+  { name:"Quốc khánh", emoji:"🎆", month:9, day:2 },
+  { name:"Ngày thành lập Đài Truyền hình Việt Nam", emoji:"📺", month:9, day:7 },
+  { name:"Ngày Doanh nhân Việt Nam", emoji:"💼", month:10, day:13 },
+  { name:"Ngày thành lập Hội Nông dân Việt Nam", emoji:"🌾", month:10, day:14 },
+  { name:"Ngày Phụ nữ Việt Nam", emoji:"💐", month:10, day:20 },
+  { name:"Ngày Nhà giáo Việt Nam", emoji:"📚", month:11, day:20 },
+  { name:"Ngày thành lập Quân đội Nhân dân Việt Nam", emoji:"🪖", month:12, day:22 },
+  { name:"Giáng sinh", emoji:"🎄", month:12, day:25 }
+    ];
+    const LUNAR_HOLIDAYS = [
+      { name:"Tết Nguyên Đán", emoji:"🎉", month:1, day:1 },
+      { name:"Rằm tháng Giêng", emoji:"🌕", month:1, day:15 },
+      { name:"Tết Đoan Ngọ", emoji:"🍑", month:5, day:5 },
+      { name:"Vu Lan Báo Hiếu", emoji:"🙏", month:7, day:15 },
+      { name:"Trung Thu", emoji:"🥮", month:10, day:6 }
     ];
 
-    // Render sự kiện
-    function renderEvents() {
-      const year = document.getElementById("yearInput").value;
-      const keyword = document.getElementById("searchInput").value.toLowerCase();
-      const showPast = document.getElementById("togglePast").checked;
-      const now = new Date();
+    const themeToggle=document.getElementById("themeToggle");
+    if(localStorage.getItem("theme")==="light") document.body.classList.add("light");
+    themeToggle.addEventListener("click",()=>{
+      document.body.classList.toggle("light");
+      localStorage.setItem("theme",document.body.classList.contains("light")?"light":"dark");
+    });
 
-      const allEvents = [...HOLIDAYS, ...userEvents];
-      const list = document.getElementById("eventList");
-      list.innerHTML = "";
+    const addEventBtn=document.getElementById("addEventBtn");
+    const eventForm=document.getElementById("eventForm");
+    const saveEvent=document.getElementById("saveEvent");
+    addEventBtn.addEventListener("click",()=>{eventForm.style.display=eventForm.style.display==="none"?"block":"none"});
+    saveEvent.addEventListener("click",()=>{
+      const name=document.getElementById("customName").value;
+      const date=document.getElementById("customDate").value;
+      if(name && date){
+        const events=JSON.parse(localStorage.getItem("customEvents")||"[]");
+        events.push({name,emoji:"⭐",absolute:date});
+        localStorage.setItem("customEvents",JSON.stringify(events));
+        render();
+        eventForm.style.display="none";
+      }
+    });
 
-      allEvents.forEach(ev => {
-        const evDate = new Date(ev.date);
-        if (evDate.getFullYear() != year) return;
-        if (!showPast && evDate < now) return;
-        if (keyword && !ev.name.toLowerCase().includes(keyword)) return;
+    function lunarToSolar(year){
+      return LUNAR_HOLIDAYS.map(e=>{
+        const d = convertLunar2Solar(e.day, e.month, year, 0, 7); 
+        const dateStr = `${d[2]}-${String(d[1]).padStart(2,"0")}-${String(d[0]).padStart(2,"0")}`;
+        return { ...e, absolute: dateStr };
+      });
+    }
+    function getAllEvents(year){
+      const customs=JSON.parse(localStorage.getItem("customEvents")||"[]");
+      const holidays=HOLIDAYS.map(e=>({ 
+        ...e, 
+        absolute:`${year}-${String(e.month).padStart(2,"0")}-${String(e.day).padStart(2,"0")}`
+      }));
+      const lunar = lunarToSolar(year);
+      return [...holidays, ...lunar, ...customs];
+    }
 
-        const card = document.createElement("div");
-        card.className = "card" + (evDate < now ? " passed" : "");
-        card.innerHTML = `
-          <div class="name">${ev.name} ${ev.personal ? "⭐" : ""}</div>
-          <div class="date">📅 ${evDate.toLocaleDateString("vi-VN")}</div>
-          <div class="countdown">${countdownText(evDate)}</div>
-          <div class="progress"><div class="progress-bar" style="width:${progressPercent(evDate)}%"></div></div>
+    function render(){
+      const list=document.getElementById("eventList");
+      list.innerHTML="";
+      const year=parseInt(document.getElementById("yearInput").value);
+      const search=document.getElementById("searchInput").value.toLowerCase();
+      const showPast=document.getElementById("togglePast").checked;
+      const now=new Date();
+
+      let events=getAllEvents(year).filter(e=>e.name.toLowerCase().includes(search));
+      events=events.map(e=>{
+        const d=new Date(e.absolute);
+        let diff=Math.floor((d-now)/(1000*60*60*24));
+        const startYear=new Date(year,0,1);
+        const totalDays=Math.floor((d-startYear)/(1000*60*60*24));
+        const passedDays=Math.floor((now-startYear)/(1000*60*60*24));
+        let percent = Math.min(100, Math.max(0, (passedDays/totalDays)*100));
+        if(diff<0) percent=100;
+        return { ...e, date:d, diff, percent };
+      });
+      events=events.filter(e=> showPast || e.diff>=0 );
+      events.sort((a,b)=>a.date-b.date);
+
+      events.forEach(ev=>{
+        const card=document.createElement("div");
+        card.className="card"+(ev.diff<0?" passed":"");
+        card.innerHTML=`
+          <div class="name">${ev.emoji} ${ev.name}</div>
+          <div class="date">📅 ${ev.date.toLocaleDateString("vi-VN")}</div>
+          <div class="countdown">${ev.diff>=0?`⏳ Còn ${ev.diff} ngày`:`✅ Đã qua ${-ev.diff} ngày`}</div>
+          <div class="progress"><div class="progress-bar" style="width:${ev.percent}%"></div></div>
         `;
         list.appendChild(card);
       });
     }
 
-    function countdownText(date) {
-      const now = new Date();
-      const diff = date - now;
-      const days = Math.floor(diff / (1000*60*60*24));
-      if (days > 0) return `⏳ Còn ${days} ngày`;
-      if (days === 0) return "🎉 Chính là hôm nay!";
-      return `✅ Đã qua ${Math.abs(days)} ngày`;
-    }
-
-    function progressPercent(date) {
-      const start = new Date(new Date().getFullYear(), 0, 1);
-      const end = new Date(new Date().getFullYear(), 11, 31);
-      const total = end - start;
-      const done = date - start;
-      return Math.min(100, Math.max(0, (done / total) * 100));
-    }
-
-    // Sự kiện UI
-    document.getElementById("yearInput").addEventListener("input", renderEvents);
-    document.getElementById("searchInput").addEventListener("input", renderEvents);
-    document.getElementById("togglePast").addEventListener("change", renderEvents);
-    document.getElementById("themeToggle").addEventListener("click", () => {
-      document.body.classList.toggle("light");
-    });
-    document.getElementById("addEventBtn").addEventListener("click", () => {
-      const f = document.getElementById("eventForm");
-      f.style.display = f.style.display === "block" ? "none" : "block";
-    });
-
-    renderEvents();
+    document.getElementById("yearInput").addEventListener("input",render);
+    document.getElementById("searchInput").addEventListener("input",render);
+    document.getElementById("togglePast").addEventListener("change",render);
+    setInterval(render,60*1000);
+    render();
   </script>
 </body>
 </html>
+
+
+
+

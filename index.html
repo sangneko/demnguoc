@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Đếm Ngược Ngày Lễ Việt Nam</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700;800&family=Montserrat:wght@700;800&family=Nunito:wght@400;600;700;800&family=Quicksand:wght@700&family=VT323&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #6366f1;
@@ -16,6 +16,9 @@
       --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
       --radius: 16px;
       --red: #ef4444;
+      --obs-scale: 1;
+      --obs-alpha: 0.95;
+      --font-family: 'Nunito', sans-serif;
     }
 
     body.dark {
@@ -28,13 +31,112 @@
 
     * { box-sizing: border-box; }
     body {
-      font-family: 'Nunito', sans-serif;
+      font-family: var(--font-family);
       background: var(--bg-color); color: var(--text-main);
       margin: 0; padding: 0; min-height: 100vh;
       transition: background 0.3s, color 0.3s;
     }
 
-    /* ---- HEADER ---- */
+    /* ---- OBS MODE CSS ---- */
+    body.is-obs-mode {
+      background: transparent !important;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+    body.is-obs-mode header,
+    body.is-obs-mode .controls,
+    body.is-obs-mode .section-title,
+    body.is-obs-mode #eventList,
+    body.is-obs-mode .modal-overlay {
+      display: none !important;
+    }
+    body.is-obs-mode.chroma-green { background: #00FF00 !important; }
+    body.is-obs-mode.chroma-blue { background: #0000FF !important; }
+
+    /* Vị trí mặc định khi dùng OBS */
+    body.is-obs-mode #featuredSection {
+      position: absolute;
+      margin-bottom: 0;
+      width: auto;
+      max-width: 620px;
+      transform-origin: top left;
+      transform: scale(var(--obs-scale));
+      cursor: grab;
+      user-select: none;
+      z-index: 50;
+    }
+    body.is-obs-mode #featuredSection:active { cursor: grabbing; }
+
+    body.is-obs-mode.pos-top-left #featuredSection { top: 25px; left: 25px; }
+    body.is-obs-mode.pos-top-right #featuredSection { top: 25px; right: 25px; transform-origin: top right; }
+    body.is-obs-mode.pos-bottom-left #featuredSection { bottom: 25px; left: 25px; transform-origin: bottom left; }
+    body.is-obs-mode.pos-bottom-right #featuredSection { bottom: 25px; right: 25px; transform-origin: bottom right; }
+    body.is-obs-mode.pos-center #featuredSection { top: 30px; left: 50%; transform: translateX(-50%) scale(var(--obs-scale)); transform-origin: top center; }
+
+    body.is-obs-mode .featured-card {
+      background: rgba(15, 23, 42, var(--obs-alpha));
+      backdrop-filter: blur(8px);
+    }
+    body.is-obs-mode.obs-glow .featured-card {
+      box-shadow: 0 0 25px var(--primary);
+    }
+    body.is-obs-mode.hide-emoji .featured-header { display: none !important; }
+    body.is-obs-mode.hide-date .featured-date { display: none !important; }
+    body.is-obs-mode.hide-badge .featured-badge { display: none !important; }
+
+    /* FLOATING CUSTOMIZER PANEL TRONG OBS (MỞ KHI INTERACT TRONG OBS HOẶC NHẤN 'C') */
+    #obsControlDock {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 99999;
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 14px;
+      padding: 16px;
+      width: 320px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      font-size: 0.8rem;
+      color: #fff;
+      display: none;
+      backdrop-filter: blur(10px);
+    }
+    #obsControlDock.active { display: flex; flex-direction: column; gap: 10px; }
+    .dock-title {
+      font-weight: 800; font-size: 0.9rem; color: #38bdf8;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;
+    }
+    .dock-row { display: flex; flex-direction: column; gap: 4px; }
+    .dock-row label { font-weight: 700; color: #94a3b8; font-size: 0.72rem; text-transform: uppercase; }
+    .dock-input {
+      background: #1e293b; border: 1px solid rgba(255,255,255,0.2); color: #fff;
+      padding: 6px 8px; border-radius: 6px; font-size: 0.8rem; outline: none; width: 100%;
+    }
+    .dock-btn {
+      background: var(--primary); color: #fff; border: none; border-radius: 6px;
+      padding: 6px 12px; cursor: pointer; font-weight: 700; font-size: 0.75rem; transition: 0.2s;
+    }
+    .dock-btn:hover { filter: brightness(1.1); }
+    .dock-btn.alt { background: #334155; }
+    .dock-trigger-btn {
+      position: fixed; bottom: 15px; right: 15px; z-index: 99998;
+      width: 36px; height: 36px; border-radius: 50%; background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.2); color: #fff; cursor: pointer;
+      display: none; align-items: center; justify-content: center; font-size: 1rem;
+    }
+    body.is-obs-mode .dock-trigger-btn { display: flex; }
+
+    /* CANVAS PHÁO HOA */
+    #confettiCanvas {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none; z-index: 9999;
+    }
+
+    /* ---- HEADER GỐC ---- */
     header {
       background: var(--card-bg); padding: 15px 5%;
       display: flex; justify-content: space-between; align-items: center;
@@ -60,7 +162,7 @@
     }
     button.btn-primary:hover { transform: translateY(-2px); }
 
-    /* ---- CONTROLS ---- */
+    /* ---- CONTROLS GỐC ---- */
     .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
     .controls {
       display: flex; gap: 15px; background: var(--card-bg); padding: 15px 20px;
@@ -69,14 +171,15 @@
     }
     .control-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 150px; }
     .control-group label { font-size: 0.8rem; font-weight: 700; color: var(--text-sub); }
-    input {
+    input, select {
       padding: 8px 12px; border-radius: 8px; border: 1px solid var(--text-sub);
       background: var(--bg-color); color: var(--text-main); width: 100%; outline: none;
+      font-family: inherit;
     }
     .checkbox-wrapper { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; }
     .checkbox-wrapper input { width: 16px; height: 16px; accent-color: var(--primary); }
 
-    /* ---- REAL-TIME COUNTDOWN SECTION ---- */
+    /* ---- REAL-TIME COUNTDOWN GỐC ---- */
     #featuredSection { display: none; margin-bottom: 40px; animation: slideDown 0.5s ease; }
     .section-title {
       font-size: 1.1rem; font-weight: 800; margin-bottom: 15px;
@@ -103,9 +206,7 @@
     .featured-date { font-size: 1.2rem; color: var(--text-sub); margin-bottom: 25px; }
 
     /* CLOCK STYLES */
-    .timer-wrapper {
-      display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;
-    }
+    .timer-wrapper { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
     .time-box {
       background: var(--bg-color); padding: 10px 15px; border-radius: 12px;
       min-width: 80px; display: flex; flex-direction: column; align-items: center;
@@ -114,7 +215,7 @@
     .time-val {
       font-size: 2rem; font-weight: 800;
       background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      font-variant-numeric: tabular-nums; /* Giữ số không bị nhảy */
+      font-variant-numeric: tabular-nums;
     }
     .time-lbl { font-size: 0.75rem; font-weight: 700; color: var(--text-sub); text-transform: uppercase; margin-top: 5px; }
 
@@ -125,7 +226,7 @@
       .featured-emoji { font-size: 5rem; }
     }
 
-    /* ---- GRID LIST ---- */
+    /* ---- GRID LIST GỐC ---- */
     #eventList {
       display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
       gap: 20px; padding-bottom: 50px;
@@ -148,6 +249,16 @@
     .progress-bar { height: 6px; background: var(--bg-color); border-radius: 10px; overflow: hidden; margin-top: auto; }
     .progress-fill { height: 100%; background: var(--primary-gradient); width: 0%; transition: 1s; }
     
+    .card-actions-bar {
+      display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 12px;
+    }
+    .btn-obs-card {
+      background: rgba(99, 102, 241, 0.1); color: var(--primary); border: none;
+      padding: 5px 12px; border-radius: 8px; font-weight: 700; font-size: 0.8rem;
+      cursor: pointer; transition: 0.2s;
+    }
+    .btn-obs-card:hover { background: var(--primary); color: #fff; }
+
     .delete-btn {
       position: absolute; top: 10px; right: 10px; opacity: 0;
       background: rgba(239,68,68,0.1); color: var(--red); border: none;
@@ -156,17 +267,34 @@
     .card:hover .delete-btn { opacity: 1; }
     .delete-btn:hover { background: var(--red); color: white; }
 
-    /* ---- MODAL ---- */
+    /* ---- MODAL GỐC ---- */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 100;
       display: none; align-items: center; justify-content: center;
     }
     .modal-overlay.show { display: flex; animation: fadeIn 0.3s; }
-    .modal-box { background: var(--card-bg); padding: 25px; border-radius: 16px; width: 90%; max-width: 380px; }
+    .modal-box {
+      background: var(--card-bg); padding: 25px; border-radius: 16px;
+      width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+    }
     .modal-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
-    .btn-sec { background: transparent; border: 1px solid var(--text-sub); padding: 8px 16px; border-radius: 8px; cursor: pointer; color: var(--text-main); }
+    .btn-sec {
+      background: transparent; border: 1px solid var(--text-sub); padding: 8px 16px;
+      border-radius: 8px; cursor: pointer; color: var(--text-main); font-weight: 700;
+    }
     
+    .obs-row { margin-bottom: 12px; }
+    .obs-row label { font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px; }
+    .obs-link-box {
+      display: flex; gap: 8px; align-items: center; background: var(--bg-color);
+      border: 1px solid var(--text-sub); padding: 6px 10px; border-radius: 8px; margin-top: 8px;
+    }
+    .obs-link-input {
+      border: none; background: transparent; color: var(--primary); font-family: monospace;
+      font-size: 0.8rem; width: 100%; outline: none;
+    }
+
     @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -174,10 +302,87 @@
 </head>
 <body>
 
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- NÚT MỞ BẢNG ĐIỀU KHIỂN TRONG OBS (HOẶC NHẤN PHÍM 'C') -->
+  <button class="dock-trigger-btn" id="openDockBtn" title="Mở bảng tùy biến OBS (Phím C)">⚙️</button>
+
+  <!-- BẢNG ĐIỀU KHIỂN TÙY BIẾN THỎA THÍCH BÊN TRONG OBS -->
+  <div id="obsControlDock">
+    <div class="dock-title">
+      <span>🎨 OBS LIVE CUSTOMIZER</span>
+      <button id="closeDockBtn" style="background:transparent; border:none; color:#fff; cursor:pointer;">✕</button>
+    </div>
+
+    <div class="dock-row">
+      <label>Chọn sự kiện chiếu</label>
+      <select id="dockEventSelect" class="dock-input"></select>
+    </div>
+
+    <div class="dock-row">
+      <label>Vị trí</label>
+      <select id="dockPosSelect" class="dock-input">
+        <option value="free">Kéo thả tự do (Drag & Drop)</option>
+        <option value="pos-top-left">Góc trên Trái (Top-Left)</option>
+        <option value="pos-top-right">Góc trên Phải (Top-Right)</option>
+        <option value="pos-bottom-left">Góc dưới Trái (Bottom-Left)</option>
+        <option value="pos-bottom-right">Góc dưới Phải (Bottom-Right)</option>
+        <option value="pos-center">Chính giữa Trên (Top-Center)</option>
+      </select>
+    </div>
+
+    <div class="dock-row">
+      <label>Phông chữ (Font)</label>
+      <select id="dockFontSelect" class="dock-input">
+        <option value="'Nunito', sans-serif">Nunito (Mặc định)</option>
+        <option value="'JetBrains Mono', monospace">JetBrains Mono (Coding / Tech)</option>
+        <option value="'Montserrat', sans-serif">Montserrat (Esports / Đậm)</option>
+        <option value="'Quicksand', sans-serif">Quicksand (Bo tròn / Chill)</option>
+        <option value="'VT323', monospace">VT323 (Retro 8-bit Pixel)</option>
+      </select>
+    </div>
+
+    <div class="dock-row">
+      <label>Màu chủ đạo (Color)</label>
+      <input type="color" id="dockColorPicker" value="#6366f1" style="height:32px; width:100%; border-radius:6px; cursor:pointer;">
+    </div>
+
+    <div class="dock-row">
+      <label>Kích thước (Scale: <span id="dockScaleVal">100%</span>)</label>
+      <input type="range" id="dockScaleRange" min="50" max="150" value="100">
+    </div>
+
+    <div class="dock-row">
+      <label>Độ mờ đục nền (Opacity: <span id="dockAlphaVal">95%</span>)</label>
+      <input type="range" id="dockAlphaRange" min="0" max="100" value="95">
+    </div>
+
+    <div class="dock-row">
+      <label>Tùy chọn ẩn / hiện</label>
+      <div style="display:flex; flex-direction:column; gap:4px;">
+        <label class="checkbox-wrapper" style="font-size:0.75rem;"><input type="checkbox" id="dockChkGlow" checked> Viền sáng Neon</label>
+        <label class="checkbox-wrapper" style="font-size:0.75rem;"><input type="checkbox" id="dockChkHideEmoji"> Ẩn Emoji</label>
+        <label class="checkbox-wrapper" style="font-size:0.75rem;"><input type="checkbox" id="dockChkHideDate"> Ẩn Ngày tháng</label>
+        <label class="checkbox-wrapper" style="font-size:0.75rem;"><input type="checkbox" id="dockChkHideBadge"> Ẩn Badge "TIẾP THEO"</label>
+      </div>
+    </div>
+
+    <div class="dock-row">
+      <label>Thông báo khi đến giờ:</label>
+      <input type="text" id="dockCustomAlertMsg" class="dock-input" value="🎉 ĐANG DIỄN RA!">
+    </div>
+
+    <div style="display:flex; gap:6px; margin-top:6px;">
+      <button class="dock-btn" id="dockBtnFireworks" style="flex:1;">🎆 Test Pháo Hoa</button>
+      <button class="dock-btn alt" id="dockBtnResetPos">Reset vị trí</button>
+    </div>
+  </div>
+
+  <!-- HEADER GỐC -->
   <header>
     <div class="brand">📅 VN Countdown</div>
     <div class="header-actions">
-      <button id="themeToggle" class="btn-icon">🌙</button>
+      <button id="themeToggle" class="btn-icon" title="Đổi theme">🌙</button>
       <button id="addEventBtn" class="btn-primary">➕ Thêm</button>
     </div>
   </header>
@@ -186,7 +391,7 @@
     <div class="controls">
       <div class="control-group">
         <label>Năm</label>
-        <input id="yearInput" type="number" min="2020" max="2035" value="2025">
+        <input id="yearInput" type="number" min="2020" max="2035" value="2026">
       </div>
       <div class="control-group" style="flex: 2;">
         <label>Tìm kiếm</label>
@@ -229,7 +434,6 @@
           <div id="todayMessage" style="display:none; font-size: 2rem; font-weight: 800; color: var(--primary);">
             🎉 ĐANG DIỄN RA!
           </div>
-
         </div>
       </div>
     </div>
@@ -238,11 +442,14 @@
     <div id="eventList"></div>
   </div>
 
+  <!-- MODAL THÊM SỰ KIỆN GỐC -->
   <div id="modal-backdrop" class="modal-overlay">
     <div class="modal-box">
       <h3 style="margin-top:0">Tạo sự kiện mới</h3>
-      <label>Tên sự kiện</label><input id="customName" type="text" style="margin-bottom:15px">
-      <label>Ngày diễn ra</label><input id="customDate" type="date">
+      <label style="font-size:0.8rem; font-weight:700;">Tên sự kiện</label>
+      <input id="customName" type="text" style="margin-bottom:15px">
+      <label style="font-size:0.8rem; font-weight:700;">Ngày diễn ra</label>
+      <input id="customDate" type="date">
       <div class="modal-btns">
         <button id="cancelEvent" class="btn-sec">Hủy</button>
         <button id="saveEvent" class="btn-primary">Lưu</button>
@@ -250,8 +457,87 @@
     </div>
   </div>
 
+  <!-- MODAL LẤY LINK OBS TRÊN TRÌNH DUYỆT -->
+  <div id="obs-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 style="margin-top:0; color:var(--primary);">🎥 Tùy biến Link cho OBS</h3>
+      
+      <div class="obs-row">
+        <label>Sự kiện chọn chiếu</label>
+        <input id="obsEventName" type="text" readonly style="font-weight:700;">
+      </div>
+
+      <div class="obs-row">
+        <label>Vị trí ban đầu trên OBS</label>
+        <select id="obsPosSelect">
+          <option value="pos-top-left">Góc trên Trái (Top-Left)</option>
+          <option value="pos-top-right">Góc trên Phải (Top-Right)</option>
+          <option value="pos-bottom-left">Góc dưới Trái (Bottom-Left)</option>
+          <option value="pos-bottom-right">Góc dưới Phải (Bottom-Right)</option>
+          <option value="pos-center">Chính giữa phía trên (Top-Center)</option>
+        </select>
+      </div>
+
+      <div class="obs-row">
+        <label>Phông nền</label>
+        <select id="obsBgSelect">
+          <option value="transparent">Trong suốt (Browser Source)</option>
+          <option value="green">Phông xanh lá (Chroma Green)</option>
+          <option value="blue">Phông xanh dương (Chroma Blue)</option>
+        </select>
+      </div>
+
+      <div class="obs-row">
+        <label>Kích thước HUD: <span id="lblObsScale">100%</span></label>
+        <input type="range" id="obsScaleRange" min="50" max="150" value="100" style="padding:0;">
+      </div>
+
+      <div class="obs-row">
+        <label>Độ mờ đục nền hộp: <span id="lblObsAlpha">95%</span></label>
+        <input type="range" id="obsAlphaRange" min="0" max="100" value="95" style="padding:0;">
+      </div>
+
+      <div class="obs-row">
+        <label>Tông màu chủ đạo</label>
+        <input type="color" id="obsColorPicker" value="#6366f1" style="height:36px; padding:2px; cursor:pointer;">
+      </div>
+
+      <div class="obs-row">
+        <label>Phông chữ hiển thị</label>
+        <select id="obsFontSelect">
+          <option value="'Nunito', sans-serif">Nunito (Mặc định)</option>
+          <option value="'JetBrains Mono', monospace">JetBrains Mono (Coding / Tech)</option>
+          <option value="'Montserrat', sans-serif">Montserrat (Esports / Đậm nét)</option>
+          <option value="'Quicksand', sans-serif">Quicksand (Bo tròn / Dễ thương)</option>
+          <option value="'VT323', monospace">VT323 (Retro 8-bit Pixel)</option>
+        </select>
+      </div>
+
+      <div class="obs-row">
+        <label>Tùy chọn hiển thị</label>
+        <div style="display:flex; flex-direction:column; gap:6px; margin-top:4px;">
+          <label class="checkbox-wrapper" style="font-size:0.85rem;"><input type="checkbox" id="chkObsGlow" checked> Viền sáng Neon</label>
+          <label class="checkbox-wrapper" style="font-size:0.85rem;"><input type="checkbox" id="chkObsHideEmoji"> Ẩn Icon Emoji</label>
+          <label class="checkbox-wrapper" style="font-size:0.85rem;"><input type="checkbox" id="chkObsHideDate"> Ẩn Ngày tháng diễn ra</label>
+        </div>
+      </div>
+
+      <div class="obs-row">
+        <label>Link chèn vào OBS Browser Source:</label>
+        <div class="obs-link-box">
+          <input id="obsUrlResult" class="obs-link-input" readonly>
+          <button id="copyObsBtn" class="btn-primary" style="height:32px; padding:0 12px; font-size:0.75rem; white-space:nowrap;">Copy Link</button>
+        </div>
+      </div>
+
+      <div class="modal-btns">
+        <button id="closeObsModal" class="btn-sec">Đóng</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-  // --- CORE LOGIC (GIỮ NGUYÊN) ---
+  // --- CORE LOGIC TOÁN HỌC (GIỮ NGUYÊN GỐC) ---
   function INT(d){return Math.floor(d);}
   function jdFromDate(dd, mm, yy) {
     var a = INT((14 - mm) / 12); var y = yy+4800-a; var m = mm+12*a-3;
@@ -304,167 +590,216 @@
 
   <script>
     const HOLIDAYS = [
-      { name:"Tết Dương lịch", emoji:"🎉", month:1, day:1 },
-      { name:"Thành lập Đảng", emoji:"🚩", month:2, day:3 },
-      { name:"Valentine", emoji:"❤️", month:2, day:14 },
-      { name:"Thầy thuốc VN", emoji:"⚕️", month:2, day:27 },
-      { name:"Quốc tế Phụ nữ", emoji:"🌸", month:3, day:8 },
-      { name:"Giỗ Tổ Hùng Vương", emoji:"👑", month:4, day:18 },
-      { name:"Giải phóng miền Nam", emoji:"🇻🇳", month:4, day:30 },
-      { name:"Quốc tế Lao động", emoji:"⚒️", month:5, day:1 },
-      { name:"Sinh nhật Bác", emoji:"🌟", month:5, day:19 },
-      { name:"Quốc tế Thiếu nhi", emoji:"🎈", month:6, day:1 },
-      { name:"Thương binh Liệt sĩ", emoji:"🕯️", month:7, day:27 },
-      { name:"CM Tháng Tám", emoji:"🔥", month:8, day:19 },
-      { name:"Quốc khánh", emoji:"🎆", month:9, day:2 },
-      { name:"Phụ nữ Việt Nam", emoji:"💐", month:10, day:20 },
-      { name:"Nhà giáo Việt Nam", emoji:"📚", month:11, day:20 },
-      { name:"Thành lập QĐND", emoji:"🪖", month:12, day:22 },
-      { name:"Giáng sinh", emoji:"🎄", month:12, day:25 }
+      { name:"Tết Dương lịch", emoji:"🎉", month:1, day:1, id:"s_1_1" },
+      { name:"Thành lập Đảng", emoji:"🚩", month:2, day:3, id:"s_2_3" },
+      { name:"Valentine", emoji:"❤️", month:2, day:14, id:"s_2_14" },
+      { name:"Thầy thuốc VN", emoji:"⚕️", month:2, day:27, id:"s_2_27" },
+      { name:"Quốc tế Phụ nữ", emoji:"🌸", month:3, day:8, id:"s_3_8" },
+      { name:"Giỗ Tổ Hùng Vương", emoji:"👑", month:4, day:18, id:"s_4_18" },
+      { name:"Giải phóng miền Nam", emoji:"🇻🇳", month:4, day:30, id:"s_4_30" },
+      { name:"Quốc tế Lao động", emoji:"⚒️", month:5, day:1, id:"s_5_1" },
+      { name:"Sinh nhật Bác", emoji:"🌟", month:5, day:19, id:"s_5_19" },
+      { name:"Quốc tế Thiếu nhi", emoji:"🎈", month:6, day:1, id:"s_6_1" },
+      { name:"Thương binh Liệt sĩ", emoji:"🕯️", month:7, day:27, id:"s_7_27" },
+      { name:"CM Tháng Tám", emoji:"🔥", month:8, day:19, id:"s_8_19" },
+      { name:"Quốc khánh", emoji:"🎆", month:9, day:2, id:"s_9_2" },
+      { name:"Phụ nữ Việt Nam", emoji:"💐", month:10, day:20, id:"s_10_20" },
+      { name:"Nhà giáo Việt Nam", emoji: "📚", month:11, day:20, id:"s_11_20" },
+      { name:"Thành lập QĐND", emoji:"🪖", month:12, day:22, id:"s_12_22" },
+      { name:"Giáng sinh", emoji:"🎄", month:12, day:25, id:"s_12_25" }
     ];
     const LUNAR_HOLIDAYS = [
-      { name:"Tết Nguyên Đán", emoji:"🧧", month:1, day:1 },
-      { name:"Rằm tháng Giêng", emoji:"🌕", month:1, day:15 },
-      { name:"Tết Đoan Ngọ", emoji:"🍑", month:5, day:5 },
-      { name:"Vu Lan Báo Hiếu", emoji:"🙏", month:7, day:15 },
-      { name:"Tết Trung Thu", emoji:"🥮", month:8, day:15 }
+      { name:"Tết Nguyên Đán", emoji:"🧧", month:1, day:1, id:"l_1_1" },
+      { name:"Rằm tháng Giêng", emoji:"🌕", month:1, day:15, id:"l_1_15" },
+      { name:"Tết Đoan Ngọ", emoji:"🍑", month:5, day:5, id:"l_5_5" },
+      { name:"Vu Lan Báo Hiếu", emoji:"🙏", month:7, day:15, id:"l_7_15" },
+      { name:"Tết Trung Thu", emoji:"🥮", month:8, day:15, id:"l_8_15" }
     ];
 
-    // --- LOGIC GIAO DIỆN ---
-    const themeToggle=document.getElementById("themeToggle");
-    const modal=document.getElementById("modal-backdrop");
-    let activeEventDate = null; // Biến lưu ngày của sự kiện đang được ghim
+    const themeToggle = document.getElementById("themeToggle");
+    const modal = document.getElementById("modal-backdrop");
+    const obsModal = document.getElementById("obs-modal");
+    let activeEventDate = null;
     let timerInterval = null;
+    let currentObsEventId = "";
 
-    if(localStorage.getItem("theme")==="dark") document.body.classList.add("dark");
-    themeToggle.addEventListener("click",()=>{
+    // ĐỌC THAM SỐ URL KHI CHẠY TRONG OBS
+    const urlParams = new URLSearchParams(window.location.search);
+    const isObsMode = urlParams.get("overlay") === "1";
+    let obsTargetId = urlParams.get("id");
+    let obsPos = urlParams.get("pos") || "pos-top-left";
+    let obsChroma = urlParams.get("chroma") || "transparent";
+    let obsScale = parseFloat(urlParams.get("scale") || "1");
+    let obsAlpha = parseFloat(urlParams.get("alpha") || "0.95");
+    let obsColor = urlParams.get("color") ? decodeURIComponent(urlParams.get("color")) : "#6366f1";
+    let obsFont = urlParams.get("font") ? decodeURIComponent(urlParams.get("font")) : "'Nunito', sans-serif";
+    let obsGlow = urlParams.get("glow") !== "0";
+    let obsHideEmoji = urlParams.get("noemoji") === "1";
+    let obsHideDate = urlParams.get("nodate") === "1";
+    let obsHideBadge = false;
+
+    function applyObsStyles() {
+      if (!isObsMode) return;
+      document.body.className = "is-obs-mode " + obsPos;
+      if (obsChroma === "green") document.body.classList.add("chroma-green");
+      if (obsChroma === "blue") document.body.classList.add("chroma-blue");
+      if (obsGlow) document.body.classList.add("obs-glow");
+      if (obsHideEmoji) document.body.classList.add("hide-emoji");
+      if (obsHideDate) document.body.classList.add("hide-date");
+      if (obsHideBadge) document.body.classList.add("hide-badge");
+
+      document.documentElement.style.setProperty("--obs-scale", obsScale);
+      document.documentElement.style.setProperty("--obs-alpha", obsAlpha);
+      document.documentElement.style.setProperty("--primary", obsColor);
+      document.documentElement.style.setProperty("--primary-gradient", `linear-gradient(135deg, ${obsColor} 0%, #a855f7 100%)`);
+      document.documentElement.style.setProperty("--font-family", obsFont);
+    }
+    applyObsStyles();
+
+    if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
+    themeToggle.addEventListener("click", () => {
       const isDark = document.body.classList.toggle("dark");
-      localStorage.setItem("theme", isDark?"dark":"light");
+      localStorage.setItem("theme", isDark ? "dark" : "light");
     });
 
-    document.getElementById("addEventBtn").addEventListener("click", ()=> modal.classList.add("show"));
-    document.getElementById("cancelEvent").addEventListener("click", ()=> modal.classList.remove("show"));
-    modal.addEventListener("click", (e)=> { if(e.target===modal) modal.classList.remove("show"); });
+    document.getElementById("addEventBtn").addEventListener("click", () => modal.classList.add("show"));
+    document.getElementById("cancelEvent").addEventListener("click", () => modal.classList.remove("show"));
+    modal.addEventListener("click", (e) => { if (e.target === modal) modal.classList.remove("show"); });
     
-    document.getElementById("saveEvent").addEventListener("click",()=>{
-      const name=document.getElementById("customName").value;
-      const date=document.getElementById("customDate").value;
-      if(name && date){
-        const events=JSON.parse(localStorage.getItem("customEvents")||"[]");
-        events.push({name, emoji:"⭐", absolute:date, id:Date.now()}); 
-        localStorage.setItem("customEvents",JSON.stringify(events));
+    document.getElementById("closeObsModal").addEventListener("click", () => obsModal.classList.remove("show"));
+    obsModal.addEventListener("click", (e) => { if (e.target === obsModal) obsModal.classList.remove("show"); });
+
+    document.getElementById("saveEvent").addEventListener("click", () => {
+      const name = document.getElementById("customName").value;
+      const date = document.getElementById("customDate").value;
+      if (name && date) {
+        const events = JSON.parse(localStorage.getItem("customEvents") || "[]");
+        events.push({ name, emoji: "⭐", absolute: date, id: "c_" + Date.now() }); 
+        localStorage.setItem("customEvents", JSON.stringify(events));
         render();
         modal.classList.remove("show");
-        document.getElementById("customName").value="";
-        document.getElementById("customDate").value="";
+        document.getElementById("customName").value = "";
+        document.getElementById("customDate").value = "";
       }
     });
 
     window.deleteEvent = function(id) {
-      if(!confirm("Xóa sự kiện này?")) return;
-      let events=JSON.parse(localStorage.getItem("customEvents")||"[]");
-      events=events.filter(e=>e.id!==id);
-      localStorage.setItem("customEvents",JSON.stringify(events));
+      if (!confirm("Xóa sự kiện này?")) return;
+      let events = JSON.parse(localStorage.getItem("customEvents") || "[]");
+      events = events.filter(e => String(e.id) !== String(id));
+      localStorage.setItem("customEvents", JSON.stringify(events));
       render();
-    }
+    };
 
-    function lunarToSolar(year){
-      return LUNAR_HOLIDAYS.map(e=>{
-        const d=convertLunar2Solar(e.day, e.month, year, 0, 7); 
-        return { ...e, absolute: `${d[2]}-${String(d[1]).padStart(2,"0")}-${String(d[0]).padStart(2,"0")}` };
+    function lunarToSolar(year) {
+      return LUNAR_HOLIDAYS.map(e => {
+        const d = convertLunar2Solar(e.day, e.month, year, 0, 7); 
+        return { ...e, absolute: `${d[2]}-${String(d[1]).padStart(2, "0")}-${String(d[0]).padStart(2, "0")}` };
       });
     }
 
-    function getAllEvents(year){
-      const customs=JSON.parse(localStorage.getItem("customEvents")||"[]");
-      const holidays=HOLIDAYS.map(e=>({ ...e, absolute:`${year}-${String(e.month).padStart(2,"0")}-${String(e.day).padStart(2,"0")}` }));
+    function getAllEvents(year) {
+      const customs = JSON.parse(localStorage.getItem("customEvents") || "[]");
+      const holidays = HOLIDAYS.map(e => ({ ...e, absolute: `${year}-${String(e.month).padStart(2, "0")}-${String(e.day).padStart(2, "0")}` }));
       return [...holidays, ...lunarToSolar(year), ...customs];
     }
 
-    // --- HÀM CẬP NHẬT ĐỒNG HỒ TỪNG GIÂY (CHỈ CHO PHẦN FEATURED) ---
+    // --- CẬP NHẬT ĐỒNG HỒ TỪNG GIÂY ---
     function startTimer() {
-        if(timerInterval) clearInterval(timerInterval);
-        
-        function updateTick() {
-            if(!activeEventDate) return;
-            const now = new Date();
-            const diff = activeEventDate - now;
+      if (timerInterval) clearInterval(timerInterval);
+      
+      function updateTick() {
+        if (!activeEventDate) return;
+        const now = new Date();
+        const diff = activeEventDate - now;
 
-            if(diff <= 0) {
-                // Đã đến giờ hoặc qua
-                document.getElementById("timerContainer").style.display = "none";
-                document.getElementById("todayMessage").style.display = "block";
-            } else {
-                document.getElementById("timerContainer").style.display = "flex";
-                document.getElementById("todayMessage").style.display = "none";
-                
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        if (diff <= 0) {
+          document.getElementById("timerContainer").style.display = "none";
+          document.getElementById("todayMessage").style.display = "block";
+        } else {
+          document.getElementById("timerContainer").style.display = "flex";
+          document.getElementById("todayMessage").style.display = "none";
+          
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-                document.getElementById("t-days").textContent = days < 10 ? "0"+days : days;
-                document.getElementById("t-hours").textContent = hours < 10 ? "0"+hours : hours;
-                document.getElementById("t-mins").textContent = minutes < 10 ? "0"+minutes : minutes;
-                document.getElementById("t-secs").textContent = seconds < 10 ? "0"+seconds : seconds;
-            }
+          document.getElementById("t-days").textContent = days < 10 ? "0" + days : days;
+          document.getElementById("t-hours").textContent = hours < 10 ? "0" + hours : hours;
+          document.getElementById("t-mins").textContent = minutes < 10 ? "0" + minutes : minutes;
+          document.getElementById("t-secs").textContent = seconds < 10 ? "0" + seconds : seconds;
         }
-        updateTick(); // Chạy ngay lập tức
-        timerInterval = setInterval(updateTick, 1000);
+      }
+      updateTick();
+      timerInterval = setInterval(updateTick, 1000);
     }
 
-    function render(){
+    function render() {
       const list = document.getElementById("eventList");
       const featuredSec = document.getElementById("featuredSection");
-      list.innerHTML="";
+      list.innerHTML = "";
       
       const year = parseInt(document.getElementById("yearInput").value);
       const search = document.getElementById("searchInput").value.toLowerCase();
       const showPast = document.getElementById("togglePast").checked;
       const now = new Date(); 
-      now.setHours(0,0,0,0); // Để so sánh ngày trong danh sách
+      now.setHours(0,0,0,0);
 
       let allEvents = getAllEvents(year).map(e => {
         const d = new Date(e.absolute);
-        // Fix múi giờ để tính ngày chính xác
         d.setMinutes(d.getMinutes() + d.getTimezoneOffset());
         
-        let diff = Math.ceil((d - now)/(1000*60*60*24));
+        let diff = Math.ceil((d - now) / (1000 * 60 * 60 * 24));
         const startYear = new Date(year, 0, 1);
-        const total = Math.ceil((d - startYear)/(1000*60*60*24));
-        const passed = Math.ceil((now - startYear)/(1000*60*60*24));
+        const total = Math.ceil((d - startYear) / (1000 * 60 * 60 * 24));
+        const passed = Math.ceil((now - startYear) / (1000 * 60 * 60 * 24));
         
         let percent = 100;
-        if(diff > 0 && total > 0) percent = Math.min(100, Math.max(0, (passed/total)*100));
+        if (diff > 0 && total > 0) percent = Math.min(100, Math.max(0, (passed / total) * 100));
         
         return { ...e, date: d, diff, percent };
-      }).sort((a,b)=>a.date-b.date);
+      }).sort((a,b) => a.date - b.date);
 
-      // --- TÌM SỰ KIỆN NỔI BẬT (GẦN NHẤT) ---
-      const nearest = allEvents.find(e => e.diff >= 0);
+      let nearest = null;
+      if (isObsMode && obsTargetId) {
+        nearest = allEvents.find(e => String(e.id) === String(obsTargetId));
+      }
+      if (!nearest) {
+        nearest = allEvents.find(e => e.diff >= 0);
+      }
       
-      if(nearest) {
+      if (nearest) {
         featuredSec.style.display = "block";
         document.getElementById("featEmoji").textContent = nearest.emoji;
         document.getElementById("featName").textContent = nearest.name;
         document.getElementById("featDate").textContent = `📅 ${nearest.date.toLocaleDateString("vi-VN", {weekday:'long', day:'2-digit', month:'2-digit'})}`;
         
-        // Cập nhật biến toàn cục để Timer chạy
-        // Set giờ về 00:00:00 của ngày diễn ra để đếm ngược chính xác
         activeEventDate = new Date(nearest.date); 
         activeEventDate.setHours(0,0,0,0);
-        
-        // Khởi động lại timer
         startTimer();
-
       } else {
         featuredSec.style.display = "none";
         activeEventDate = null;
       }
 
-      // --- LIST RENDER ---
+      // Khởi tạo danh sách cho OBS Control Dock
+      if (isObsMode) {
+        const dockSelect = document.getElementById("dockEventSelect");
+        dockSelect.innerHTML = "";
+        allEvents.forEach(e => {
+          const opt = document.createElement("option");
+          opt.value = e.id;
+          opt.textContent = `${e.emoji} ${e.name}`;
+          if (nearest && e.id === nearest.id) opt.selected = true;
+          dockSelect.appendChild(opt);
+        });
+        return;
+      }
+
+      // Render danh sách web bình thường
       let displayEvents = allEvents.filter(e => e.name.toLowerCase().includes(search));
-      if(!showPast) displayEvents = displayEvents.filter(e => e.diff >= 0);
+      if (!showPast) displayEvents = displayEvents.filter(e => e.diff >= 0);
 
       displayEvents.forEach(ev => {
         const card = document.createElement("div");
@@ -474,7 +809,8 @@
         let countText = ev.diff === 0 ? "HÔM NAY" : Math.abs(ev.diff);
         let countLbl = ev.diff === 0 ? "" : "ngày";
         
-        const deleteBtn = ev.id ? `<button class="delete-btn" onclick="deleteEvent(${ev.id})">✖</button>` : "";
+        const isCustom = String(ev.id).startsWith("c_");
+        const deleteBtn = isCustom ? `<button class="delete-btn" onclick="deleteEvent('${ev.id}')">✖</button>` : "";
         const dateStr = ev.date.toLocaleDateString("vi-VN", {day:'2-digit', month:'2-digit'});
 
         card.innerHTML = `
@@ -492,10 +828,219 @@
           <div class="progress-bar">
             <div class="progress-fill" style="width:${ev.percent}%"></div>
           </div>
+
+          <div class="card-actions-bar">
+            <button class="btn-obs-card" onclick="openObsModal('${ev.id}', '${encodeURIComponent(ev.name)}')">
+              🎥 Link OBS
+            </button>
+          </div>
         `;
         list.appendChild(card);
       });
     }
+
+    // --- MỞ VÀ TẠO LINK OBS TRÊN WEB ---
+    window.openObsModal = function(id, encodedName) {
+      currentObsEventId = id;
+      document.getElementById("obsEventName").value = decodeURIComponent(encodedName);
+      updateObsLink();
+      obsModal.classList.add("show");
+    };
+
+    function updateObsLink() {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const pos = document.getElementById("obsPosSelect").value;
+      const chroma = document.getElementById("obsBgSelect").value;
+      const scale = (parseInt(document.getElementById("obsScaleRange").value) / 100).toFixed(2);
+      const alpha = (parseInt(document.getElementById("obsAlphaRange").value) / 100).toFixed(2);
+      const color = encodeURIComponent(document.getElementById("obsColorPicker").value);
+      const font = encodeURIComponent(document.getElementById("obsFontSelect").value);
+      const glow = document.getElementById("chkObsGlow").checked ? "1" : "0";
+      const noEmoji = document.getElementById("chkObsHideEmoji").checked ? "1" : "0";
+      const noDate = document.getElementById("chkObsHideDate").checked ? "1" : "0";
+      const year = document.getElementById("yearInput").value;
+
+      document.getElementById("lblObsScale").textContent = `${document.getElementById("obsScaleRange").value}%`;
+      document.getElementById("lblObsAlpha").textContent = `${document.getElementById("obsAlphaRange").value}%`;
+
+      const generated = `${baseUrl}?overlay=1&id=${currentObsEventId}&pos=${pos}&chroma=${chroma}&scale=${scale}&alpha=${alpha}&color=${color}&font=${font}&glow=${glow}&noemoji=${noEmoji}&nodate=${noDate}&year=${year}`;
+      document.getElementById("obsUrlResult").value = generated;
+    }
+
+    document.getElementById("obsPosSelect").addEventListener("change", updateObsLink);
+    document.getElementById("obsBgSelect").addEventListener("change", updateObsLink);
+    document.getElementById("obsScaleRange").addEventListener("input", updateObsLink);
+    document.getElementById("obsAlphaRange").addEventListener("input", updateObsLink);
+    document.getElementById("obsColorPicker").addEventListener("input", updateObsLink);
+    document.getElementById("obsFontSelect").addEventListener("change", updateObsLink);
+    document.getElementById("chkObsGlow").addEventListener("change", updateObsLink);
+    document.getElementById("chkObsHideEmoji").addEventListener("change", updateObsLink);
+    document.getElementById("chkObsHideDate").addEventListener("change", updateObsLink);
+
+    document.getElementById("copyObsBtn").addEventListener("click", () => {
+      const input = document.getElementById("obsUrlResult");
+      input.select();
+      navigator.clipboard.writeText(input.value).then(() => {
+        const btn = document.getElementById("copyObsBtn");
+        btn.textContent = "✓ Đã copy!";
+        setTimeout(() => btn.textContent = "Copy Link", 2000);
+      });
+    });
+
+    // --- TÍNH NĂNG TƯƠNG TÁC TÙY BIẾN TRỰC TIẾP TRONG OBS (INTERACT DOCK) ---
+    const dock = document.getElementById("obsControlDock");
+    const openDockBtn = document.getElementById("openDockBtn");
+    const closeDockBtn = document.getElementById("closeDockBtn");
+
+    openDockBtn.addEventListener("click", () => dock.classList.toggle("active"));
+    closeDockBtn.addEventListener("click", () => dock.classList.remove("active"));
+
+    // Phím tắt 'C' để bật/tắt bảng điều khiển khi Interact trong OBS
+    window.addEventListener("keydown", (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+      if (e.key.toUpperCase() === "C") {
+        dock.classList.toggle("active");
+      }
+    });
+
+    document.getElementById("dockEventSelect").addEventListener("change", (e) => {
+      obsTargetId = e.target.value;
+      render();
+    });
+
+    document.getElementById("dockPosSelect").addEventListener("change", (e) => {
+      const val = e.target.value;
+      const feat = document.getElementById("featuredSection");
+      if (val === "free") {
+        feat.style.left = "30px";
+        feat.style.top = "30px";
+        feat.style.right = "auto";
+        feat.style.bottom = "auto";
+        obsPos = "";
+      } else {
+        feat.style.left = ""; feat.style.top = ""; feat.style.right = ""; feat.style.bottom = "";
+        obsPos = val;
+      }
+      applyObsStyles();
+    });
+
+    document.getElementById("dockFontSelect").addEventListener("change", (e) => {
+      obsFont = e.target.value;
+      applyObsStyles();
+    });
+
+    document.getElementById("dockColorPicker").addEventListener("input", (e) => {
+      obsColor = e.target.value;
+      applyObsStyles();
+    });
+
+    document.getElementById("dockScaleRange").addEventListener("input", (e) => {
+      obsScale = (parseInt(e.target.value) / 100).toFixed(2);
+      document.getElementById("dockScaleVal").textContent = `${e.target.value}%`;
+      applyObsStyles();
+    });
+
+    document.getElementById("dockAlphaRange").addEventListener("input", (e) => {
+      obsAlpha = (parseInt(e.target.value) / 100).toFixed(2);
+      document.getElementById("dockAlphaVal").textContent = `${e.target.value}%`;
+      applyObsStyles();
+    });
+
+    document.getElementById("dockChkGlow").addEventListener("change", (e) => {
+      obsGlow = e.target.checked;
+      applyObsStyles();
+    });
+    document.getElementById("dockChkHideEmoji").addEventListener("change", (e) => {
+      obsHideEmoji = e.target.checked;
+      applyObsStyles();
+    });
+    document.getElementById("dockChkHideDate").addEventListener("change", (e) => {
+      obsHideDate = e.target.checked;
+      applyObsStyles();
+    });
+    document.getElementById("dockChkHideBadge").addEventListener("change", (e) => {
+      obsHideBadge = e.target.checked;
+      applyObsStyles();
+    });
+
+    document.getElementById("dockCustomAlertMsg").addEventListener("input", (e) => {
+      document.getElementById("todayMessage").textContent = e.target.value;
+    });
+
+    document.getElementById("dockBtnResetPos").addEventListener("click", () => {
+      const feat = document.getElementById("featuredSection");
+      feat.style.left = ""; feat.style.top = ""; feat.style.right = ""; feat.style.bottom = "";
+      obsPos = "pos-top-left";
+      document.getElementById("dockPosSelect").value = "pos-top-left";
+      applyObsStyles();
+    });
+
+    // KÉO THẢ TỰ DO BẰNG CHUỘT (DRAG & DROP)
+    const dragTarget = document.getElementById("featuredSection");
+    let isDragging = false, startX, startY, initLeft, initTop;
+
+    dragTarget.addEventListener("mousedown", (e) => {
+      if (!isObsMode || document.getElementById("dockPosSelect").value !== "free") return;
+      isDragging = true;
+      startX = e.clientX; startY = e.clientY;
+      const rect = dragTarget.getBoundingClientRect();
+      initLeft = rect.left; initTop = rect.top;
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      dragTarget.style.left = `${initLeft + dx}px`;
+      dragTarget.style.top = `${initTop + dy}px`;
+      dragTarget.style.right = "auto";
+      dragTarget.style.bottom = "auto";
+    });
+
+    window.addEventListener("mouseup", () => { isDragging = false; });
+
+    // HIỆU ỨNG PHÁO HOA ĂN MỪNG
+    function fireCelebration() {
+      const canvas = document.getElementById("confettiCanvas");
+      const ctx = canvas.getContext("2d");
+      let width = canvas.width = window.innerWidth;
+      let height = canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ["#6366f1", "#06b6d4", "#f59e0b", "#10b981", "#ef4444", "#ec4899", "#ffffff"];
+
+      for (let i = 0; i < 120; i++) {
+        particles.push({
+          x: width / 2, y: height / 2,
+          vx: (Math.random() - 0.5) * 16,
+          vy: (Math.random() - 0.5) * 16 - 3,
+          size: Math.random() * 6 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          alpha: 1,
+          decay: Math.random() * 0.015 + 0.008
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+        let count = 0;
+        particles.forEach(p => {
+          if (p.alpha > 0) {
+            count++;
+            p.x += p.vx; p.y += p.vy; p.vy += 0.2; p.alpha -= p.decay;
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, p.alpha);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+            ctx.restore();
+          }
+        });
+        if (count > 0) requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+    document.getElementById("dockBtnFireworks").addEventListener("click", fireCelebration);
 
     document.getElementById("yearInput").addEventListener("input", render);
     document.getElementById("searchInput").addEventListener("input", render);

@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Stream Countdown & Event Overlay Pro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      --accent: #06b6d4;
+      --danger: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --hud-bg: rgba(15, 23, 42, 0.85);
+      --hud-border: rgba(255, 255, 255, 0.15);
+      --hud-text: #ffffff;
+      --hud-sub: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #fff;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      background: transparent;
+      user-select: none;
+    }
+
+    /* CHROMA KEY NẾU CẦN LỌC OBS */
+    body.chroma-green { background: #00FF00 !important; }
+    body.chroma-blue { background: #0000FF !important; }
+
+    /* CANVAS PHÁO HOA ĂN MỪNG */
+    #fxCanvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ---- BẢNG ĐIỀU KHIỂN STREAMER (DOCK CONTROL) ---- */
+    #streamerPanel {
+      position: fixed;
+      top: 15px; left: 15px;
+      z-index: 10000;
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 14px 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 420px;
+      font-size: 0.82rem;
+      backdrop-filter: blur(10px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    #streamerPanel.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-20px);
+    }
+    .panel-title {
+      font-weight: 800;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #38bdf8;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 6px;
+    }
+    .panel-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .panel-row label { font-size: 0.75rem; color: #94a3b8; font-weight: 700; width: 100%; }
+    .panel-select, .panel-input {
+      background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.8rem;
+      flex: 1;
+    }
+    .panel-btn {
+      background: #4f46e5;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.78rem;
+      transition: background 0.2s;
+    }
+    .panel-btn:hover { background: #4338ca; }
+    .panel-btn.btn-danger { background: #ef4444; }
+    .panel-btn.btn-danger:hover { background: #dc2626; }
+
+    /* ---- CÁC VỊ TRÍ OVERLAY WIDGET TRÊN STREAM ---- */
+    .overlay-container {
+      position: absolute;
+      z-index: 500;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Các Layout Vị Trí */
+    .pos-top-left { top: 25px; left: 25px; }
+    .pos-top-right { top: 25px; right: 25px; }
+    .pos-bottom-right { bottom: 65px; right: 25px; }
+    .pos-bottom-left { bottom: 65px; left: 25px; }
+    .pos-center-banner {
+      top: 40px; left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* ---- HUD ĐẾM NGƯỢC (CARD HUD) ---- */
+    .stream-hud {
+      background: var(--hud-bg);
+      border: 1px solid var(--hud-border);
+      border-radius: 16px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
+      min-width: 320px;
+    }
+    .stream-hud::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 4px; height: 100%;
+      background: var(--primary-gradient);
+    }
+    .hud-emoji {
+      font-size: 2.8rem;
+      line-height: 1;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+    }
+    .hud-meta { display: flex; flex-direction: column; gap: 3px; min-width: 140px; }
+    .hud-tag {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .hud-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      white-space: nowrap;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .hud-date {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--hud-sub);
+    }
+
+    /* BỘ HỘP SỐ FLIP ĐẾM NGƯỢC */
+    .hud-timer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+    .hud-box {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 6px 8px;
+      min-width: 48px;
+      text-align: center;
+    }
+    .hud-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1;
+      text-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
+    }
+    .hud-lbl {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      margin-top: 3px;
+    }
+
+    /* BADGE HÔM NAY ĐANG DIỄN RA */
+    .hud-today-badge {
+      display: none;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid #10b981;
+      color: #34d399;
+      font-size: 1rem;
+      font-weight: 800;
+      padding: 8px 16px;
+      border-radius: 30px;
+      animation: pulseAlert 1.5s infinite;
+      text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+
+    /* ---- TICKER BAR CHẠY DƯỚI STREAM (BREAKING NEWS) ---- */
+    #streamTicker {
+      position: fixed;
+      bottom: 0; left: 0; width: 100vw;
+      height: 38px;
+      background: rgba(10, 15, 30, 0.9);
+      border-top: 2px solid var(--primary);
+      display: flex;
+      align-items: center;
+      z-index: 600;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+    }
+    .ticker-badge {
+      background: var(--primary-gradient);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 0 16px;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      z-index: 2;
+    }
+    .ticker-content-track {
+      flex: 1;
+      overflow: hidden;
+      white-space: nowrap;
+      position: relative;
+    }
+    .ticker-text {
+      display: inline-block;
+      white-space: nowrap;
+      padding-left: 100%;
+      animation: marqueeText 35s linear infinite;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+    .ticker-text span {
+      margin-right: 45px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ticker-text strong { color: #38bdf8; }
+
+    @keyframes marqueeText {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-100%); }
+    }
+    @keyframes pulseAlert {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.04); opacity: 0.85; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HIỆU ỨNG PHÁO HOA KHI ĐẾN MỐC / KÍCH HOẠT THỦ CÔNG -->
+  <canvas id="fxCanvas"></canvas>
+
+  <!-- BẢNG ĐIỀU KHIỂN DÀNH CHO STREAMER (NHẤN 'H' ĐỂ ẨN/HIỆN TRÊN OBS) -->
+  <div id="streamerPanel">
+    <div class="panel-title">
+      <span>⚙️ STREAMER CONTROL DOCK</span>
+      <span style="font-size: 0.7rem; color: #94a3b8;">Phím [H]: Ẩn/Hiện</span>
+    </div>
+    
+    <div class="panel-row">
+      <label>Sự kiện muốn đếm ngược trên Stream:</label>
+      <select id="selectEvent" class="panel-select"></select>
+    </div>
+
+    <div class="panel-row">
+      <label>Vị trí hiển thị HUD:</label>
+      <select id="selectPosition" class="panel-select">
+        <option value="pos-top-left">Góc trên Trái (Top-Left)</option>
+        <option value="pos-top-right">Góc trên Phải (Top-Right)</option>
+        <option value="pos-bottom-left">Góc dưới Trái (Bottom-Left)</option>
+        <option value="pos-bottom-right">Góc dưới Phải (Bottom-Right)</option>
+        <option value="pos-center-banner">Chính giữa Trên (Top-Center)</option>
+      </select>
+    </div>
+
+    <div class="panel-row">
+      <label>Chroma Key Background (Lọc OBS):</label>
+      <button class="panel-btn" id="btnChromaNone">Trong suốt</button>
+      <button class="panel-btn" id="btnChromaGreen" style="background:#00bb00">Green</button>
+      <button class="panel-btn" id="btnChromaBlue" style="background:#0000dd">Blue</button>
+    </div>
+
+    <div class="panel-row">
+      <label>Thông báo tuỳ chỉnh của Streamer trên Ticker:</label>
+      <input id="streamerCustomMsg" class="panel-input" type="text" placeholder="Nhập lời chào / donate / thông báo...">
+    </div>
+
+    <div class="panel-row" style="margin-top: 4px;">
+      <button class="panel-btn" id="btnFireworkNow">🎆 Nổ Pháo Hoa & Nhạc</button>
+      <button class="panel-btn btn-danger" id="btnToggleSound">🔊 Âm thanh: BẬT</button>
+      <button class="panel-btn" id="btnToggleTicker">Ẩn/Hiện Ticker</button>
+    </div>
+  </div>
+
+  <!-- HUD ĐẾM NGƯỢC LIVESTREAM -->
+  <div class="overlay-container pos-top-left" id="hudContainer">
+    <div class="stream-hud">
+      <div class="hud-emoji" id="hEmoji">🎉</div>
+      <div class="hud-meta">
+        <div class="hud-tag">
+          <span style="display:inline-block; width:6px; height:6px; background:#ef4444; border-radius:50%;"></span>
+          <span id="hTag">SẮP DIỄN RA</span>
+        </div>
+        <div class="hud-title" id="hTitle">Tết Nguyên Đán</div>
+        <div class="hud-date" id="hDate">Đang tính toán...</div>
+      </div>
+      
+      <!-- HỘP ĐẾM NGƯỢC -->
+      <div class="hud-timer" id="hTimerGroup">
+        <div class="hud-box">
+          <div class="hud-val" id="hDays">00</div>
+          <div class="hud-lbl">Ngày</div>
+        </div>
+        <div class="hud-box">
+          <div class="hud-val" id="hHours">00</div>
+          <div class="hud-lbl">Giờ</div>
+        </div>
+        <div class="hud-box">
+          <div class="hud-val" id="hMins">00</div>
+          <div class="hud-lbl">Phút</div>
+        </div>
+        <div class="hud-box">
+          <div class="hud-val" id="hSecs" style="color: #38bdf8;">00</div>
+          <div class="hud-lbl">Giây</div>
+        </div>
+      </div>
+
+      <!-- BADGE HÔM NAY -->
+      <div class="hud-today-badge" id="hTodayBadge">
+        ✨ ĐANG DIỄN RA! ✨
+      </div>
+    </div>
+  </div>
+
+  <!-- TICKER DÒNG TIN DƯỚI ĐÁY STREAM -->
+  <div id="streamTicker">
+    <div class="ticker-badge">🔴 LIVE INFO</div>
+    <div class="ticker-content-track">
+      <div class="ticker-text" id="tickerText">
+        <span>Đang kết nối dữ liệu lịch vạn niên...</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  /* ==========================================================================
+     1. THUẬT TOÁN THIÊN VĂN ÂM/DƯƠNG LỊCH & CAN CHI (HỒ NGỌC ĐỨC)
+     ========================================================================== */
+  function INT(d){ return Math.floor(d); }
+  function jdFromDate(dd, mm, yy) {
+    var a = INT((14 - mm) / 12); var y = yy + 4800 - a; var m = mm + 12 * a - 3;
+    var jd = dd + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - INT(y / 100) + INT(y / 400) - 32045;
+    if (jd < 2299161) jd = dd + INT((153 * m + 2) / 5) + 365 * y + INT(y / 4) - 32083;
+    return jd;
+  }
+  function jdToDate(jd) {
+    var a, b, c, d, e, m;
+    if (jd > 2299160) { a = jd + 32044; b = INT((4 * a + 3) / 146097); c = a - INT((b * 146097) / 4); } 
+    else { b = 0; c = jd + 32082; }
+    d = INT((4 * c + 3) / 1461); e = c - INT((1461 * d) / 4); m = INT((5 * e + 2) / 153);
+    var day = e - INT((153 * m + 2) / 5) + 1; var month = m + 3 - 12 * INT(m / 10); var year = b * 100 + d - 4800 + INT(m / 10);
+    return [day, month, year];
+  }
+  function getNewMoonDay(k, tZ) {
+    var T = k / 1236.85, T2 = T * T, T3 = T2 * T, dr = Math.PI / 180;
+    var Jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T2 - 0.000000155 * T3;
+    Jd1 += 0.00033 * Math.sin((166.56 + 132.87 * T - 0.009173 * T2) * dr);
+    var M = 359.2242 + 29.10535608 * k - 0.0000333 * T2 - 0.00000347 * T3;
+    var Mpr = 306.0253 + 385.81691806 * k + 0.0107306 * T2 + 0.00001236 * T3;
+    var F = 21.2964 + 390.67050646 * k - 0.0016528 * T2 - 0.00000239 * T3;
+    var C1 = (0.1734 - 0.000393 * T) * Math.sin(M * dr) + 0.0021 * Math.sin(2 * dr * M);
+    C1 -= 0.4068 * Math.sin(Mpr * dr) + 0.0161 * Math.sin(dr * 2 * Mpr);
+    C1 -= 0.0004 * Math.sin(dr * 3 * Mpr) + 0.0104 * Math.sin(dr * 2 * F) - 0.0051 * Math.sin(dr * (M + Mpr));
+    C1 -= 0.0074 * Math.sin(dr * (M - Mpr)) + 0.0004 * Math.sin(dr * (2 * F + M));
+    C1 -= 0.0004 * Math.sin(dr * (2 * F - M)) - 0.0006 * Math.sin(dr * (2 * F + Mpr)) + 0.0010 * Math.sin(dr * (2 * F - Mpr));
+    return INT(Jd1 + C1 + 0.5 + tZ / 24);
+  }
+  function getSunLongitude(jdn, tZ) {
+    var T = (jdn - 2451545.5 - tZ / 24) / 36525, T2 = T * T, dr = Math.PI / 180;
+    var M = 357.52910 + 35999.05030 * T - 0.0001559 * T2 - 0.00000048 * T * T2;
+    var L0 = 280.46645 + 36000.76983 * T + 0.0003032 * T2;
+    var DL = (1.914600 - 0.004817 * T - 0.000014 * T2) * Math.sin(dr * M);
+    DL += (0.019993 - 0.000101 * T) * Math.sin(dr * 2 * M) + 0.000290 * Math.sin(dr * 3 * M);
+    var L = L0 + DL, omega = 125.04 - 1934.136 * T;
+    L -= 0.00569 + 0.00478 * Math.sin(omega * dr);
+    L = L * dr; L = L - 2 * Math.PI * INT(L / (2 * Math.PI));
+    return INT(L / (Math.PI * 6));
+  }
+  function getLunarMonth11(yy, tZ) {
+    var off = jdFromDate(31, 12, yy) - 2415021; var k = INT(off / 29.530588853); var nm = getNewMoonDay(k, tZ);
+    if (getSunLongitude(nm, tZ) >= 9) nm = getNewMoonDay(k - 1, tZ); return nm;
+  }
+  function convertLunar2Solar(dd, mm, yy, leap, tZ) {
+    var a11 = (mm < 11) ? getLunarMonth11(yy - 1, tZ) : getLunarMonth11(yy, tZ);
+    var k = INT(0.5 + (a11 - 2415021.076998695) / 29.530588853);
+    var monthStart = getNewMoonDay(k + mm, tZ);
+    return jdToDate(monthStart + dd - 1);
+  }
+  function convertSolar2Lunar(dd, mm, yy, tZ) {
+    var dayNumber = jdFromDate(dd, mm, yy);
+    var k = INT((dayNumber - 2415021.076998695) / 29.530588853);
+    var monthStart = getNewMoonDay(k + 1, tZ);
+    if (monthStart > dayNumber) monthStart = getNewMoonDay(k, tZ);
+    var a11 = getLunarMonth11(yy, tZ);
+    var b11 = a11;
+    if (a11 >= monthStart) b11 = getLunarMonth11(yy - 1, tZ);
+    var lMonth = INT(0.5 + (monthStart - b11) / 29.530588853) + 11;
+    var lYear = yy;
+    if (lMonth > 12) lMonth -= 12; else lYear--;
+    var lDay = dayNumber - monthStart + 1;
+    return [lDay, lMonth, lYear];
+  }
+
+  const CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
+  const CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
+  function getCanChiYear(year) { return `${CAN[(year + 6) % 10]} ${CHI[(year + 8) % 12]}`; }
+  function getCanChiDay(dd, mm, yy) {
+    var jd = jdFromDate(dd, mm, yy);
+    return `${CAN[(jd + 9) % 10]} ${CHI[(jd + 1) % 12]}`;
+  }
+  const HOANG_DAO_MAP = {
+    0: ["Tý (23-1)", "Sửu (1-3)", "Mão (5-7)", "Ngọ (11-13)", "Thân (15-17)", "Dậu (17-19)"],
+    1: ["Dần (3-5)", "Mão (5-7)", "Tỵ (9-11)", "Thân (15-17)", "Tuất (19-21)", "Hợi (21-23)"],
+    2: ["Tý (23-1)", "Sửu (1-3)", "Thìn (7-9)", "Tỵ (9-11)", "Mùi (13-15)", "Tuất (19-21)"],
+    3: ["Tý (23-1)", "Dần (3-5)", "Mão (5-7)", "Ngọ (11-13)", "Mùi (13-15)", "Dậu (17-19)"],
+    4: ["Dần (3-5)", "Thìn (7-9)", "Tỵ (9-11)", "Thân (15-17)", "Dậu (17-19)", "Hợi (21-23)"],
+    5: ["Sửu (1-3)", "Thìn (7-9)", "Ngọ (11-13)", "Mùi (13-15)", "Tuất (19-21)", "Hợi (21-23)"]
+  };
+  function getHoangDaoHours(dd, mm, yy) {
+    var jd = jdFromDate(dd, mm, yy);
+    return HOANG_DAO_MAP[(jd + 1) % 12 % 6];
+  }
+
+  /* ==========================================================================
+     2. TẬP DỮ LIỆU SỰ KIỆN NỔI BẬT DÀNH CHO LIVESTREAM
+     ========================================================================== */
+  const HOLIDAYS_SOLAR = [
+    { name: "Tết Dương Lịch", emoji: "🎉", month: 1, day: 1 },
+    { name: "Thành lập Đảng", emoji: "🚩", month: 2, day: 3 },
+    { name: "Valentine", emoji: "❤️", month: 2, day: 14 },
+    { name: "Quốc tế Phụ nữ", emoji: "🌸", month: 3, day: 8 },
+    { name: "Thành lập Đoàn", emoji: "🌟", month: 3, day: 26 },
+    { name: "Cá Tháng Tư", emoji: "🤡", month: 4, day: 1 },
+    { name: "Giải phóng miền Nam", emoji: "🇻🇳", month: 4, day: 30 },
+    { name: "Quốc tế Lao động", emoji: "⚒️", month: 5, day: 1 },
+    { name: "Sinh nhật Bác Hồ", emoji: "🌟", month: 5, day: 19 },
+    { name: "Quốc tế Thiếu nhi", emoji: "🎈", month: 6, day: 1 },
+    { name: "Gia đình Việt Nam", emoji: "👨‍👩‍👧‍👦", month: 6, day: 28 },
+    { name: "Thương binh Liệt sĩ", emoji: "🕯️", month: 7, day: 27 },
+    { name: "Cách mạng Tháng Tám", emoji: "🔥", month: 8, day: 19 },
+    { name: "Quốc khánh Việt Nam", emoji: "🎆", month: 9, day: 2 },
+    { name: "Giải phóng Thủ đô", emoji: "🏛️", month: 10, day: 10 },
+    { name: "Phụ nữ Việt Nam", emoji: "💐", month: 10, day: 20 },
+    { name: "Halloween", emoji: "🎃", month: 10, day: 31 },
+    { name: "Nhà giáo Việt Nam", emoji: "📚", month: 11, day: 20 },
+    { name: "Thành lập QĐND", emoji: "🪖", month: 12, day: 22 },
+    { name: "Giáng sinh (Noel)", emoji: "🎄", month: 12, day: 25 }
+  ];
+
+  const HOLIDAYS_LUNAR = [
+    { name: "Tết Nguyên Đán (Mùng 1)", emoji: "🧧", month: 1, day: 1, lunarTxt: "01/01 AL" },
+    { name: "Tết Nguyên Đán (Mùng 2)", emoji: "🧧", month: 1, day: 2, lunarTxt: "02/01 AL" },
+    { name: "Tết Nguyên Đán (Mùng 3)", emoji: "🧧", month: 1, day: 3, lunarTxt: "03/01 AL" },
+    { name: "Rằm tháng Giêng", emoji: "🌕", month: 1, day: 15, lunarTxt: "15/01 AL" },
+    { name: "Tết Hàn Thực", emoji: "🥣", month: 3, day: 3, lunarTxt: "03/03 AL" },
+    { name: "Giỗ Tổ Hùng Vương", emoji: "👑", month: 3, day: 10, lunarTxt: "10/03 AL" },
+    { name: "Đại lễ Phật Đản", emoji: "🪷", month: 4, day: 15, lunarTxt: "15/04 AL" },
+    { name: "Tết Đoan Ngọ", emoji: "🍑", month: 5, day: 5, lunarTxt: "05/05 AL" },
+    { name: "Lễ Thất Tịch", emoji: "🎋", month: 7, day: 7, lunarTxt: "07/07 AL" },
+    { name: "Lễ Vu Lan", emoji: "🙏", month: 7, day: 15, lunarTxt: "15/07 AL" },
+    { name: "Tết Trung Thu", emoji: "🥮", month: 8, day: 15, lunarTxt: "15/08 AL" },
+    { name: "Tiễn Ông Táo", emoji: "🐟", month: 12, day: 23, lunarTxt: "23/12 AL" },
+    { name: "Đêm Giao Thừa (30 Tết)", emoji: "🎆", month: 12, day: 30, lunarTxt: "30/12 AL" }
+  ];
+
+  /* ==========================================================================
+     3. TỔNG HỢP & QUẢN LÝ DỮ LIỆU
+     ========================================================================== */
+  const curYear = new Date().getFullYear();
+  let allEvents = [];
+  let selectedEvent = null;
+  let timerInterval = null;
+
+  function parseLocalDate(str) {
+    const [y, m, d] = str.split('-').map(Number);
+    return new Date(y, m - 1, d, 0, 0, 0, 0);
+  }
+
+  function loadAllEvents(year) {
+    const solars = HOLIDAYS_SOLAR.map(e => ({
+      ...e,
+      id: `s_${e.month}_${e.day}`,
+      absolute: `${year}-${String(e.month).padStart(2,'0')}-${String(e.day).padStart(2,'0')}`
+    }));
+
+    const lunars = HOLIDAYS_LUNAR.map(e => {
+      const d = convertLunar2Solar(e.day, e.month, year, 0, 7);
+      return {
+        ...e,
+        id: `l_${e.month}_${e.day}`,
+        absolute: `${d[2]}-${String(d[1]).padStart(2,'0')}-${String(d[0]).padStart(2,'0')}`
+      };
+    });
+
+    const customs = JSON.parse(localStorage.getItem("vn_custom_events") || "[]").map(c => {
+      let abs = c.absolute;
+      if (c.isLunar) {
+        const sol = convertLunar2Solar(c.lunarDay, c.lunarMonth, year, 0, 7);
+        abs = `${sol[2]}-${String(sol[1]).padStart(2,'0')}-${String(sol[0]).padStart(2,'0')}`;
+      }
+      return { ...c, absolute: abs };
+    });
+
+    const todayZero = new Date();
+    todayZero.setHours(0,0,0,0);
+
+    allEvents = [...solars, ...lunars, ...customs].map(e => {
+      const dateObj = parseLocalDate(e.absolute);
+      const diffDays = Math.round((dateObj - todayZero) / (1000 * 60 * 60 * 24));
+      return { ...e, dateObj, diffDays };
+    }).sort((a,b) => a.dateObj - b.dateObj);
+  }
+
+  /* ==========================================================================
+     4. ÂM THANH SYNTHESIZER VÀ PHÁO HOA ĂN MỪNG
+     ========================================================================== */
+  let audioCtx = null;
+  let isSoundEnabled = true;
+
+  function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  function playTickSound() {
+    if (!isSoundEnabled) return;
+    try {
+      initAudio();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.08);
+    } catch(e){}
+  }
+
+  function triggerCelebrationFanfare() {
+    if (!isSoundEnabled) return;
+    try {
+      initAudio();
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.12);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime + idx * 0.12);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.12 + 0.45);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + idx * 0.12);
+        osc.stop(audioCtx.currentTime + idx * 0.12 + 0.5);
+      });
+    } catch(e){}
+  }
+
+  function launchFireworks() {
+    triggerCelebrationFanfare();
+    const canvas = document.getElementById("fxCanvas");
+    const ctx = canvas.getContext("2d");
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    const particles = [];
+    const colors = ["#4f46e5", "#06b6d4", "#f59e0b", "#10b981", "#ef4444", "#ec4899", "#ffffff"];
+
+    for (let i = 0; i < 150; i++) {
+      particles.push({
+        x: width / 2, y: height / 2,
+        vx: (Math.random() - 0.5) * 18,
+        vy: (Math.random() - 0.5) * 18 - 4,
+        size: Math.random() * 6 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        alpha: 1,
+        decay: Math.random() * 0.015 + 0.008
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      let count = 0;
+      particles.forEach(p => {
+        if (p.alpha > 0) {
+          count++;
+          p.x += p.vx; p.y += p.vy; p.vy += 0.22; p.alpha -= p.decay;
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, p.alpha);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(p.x, p.y, p.size, p.size);
+          ctx.restore();
+        }
+      });
+      if (count > 0) requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+  /* ==========================================================================
+     5. CẬP NHẬT HUD & REALTIME TICK
+     ========================================================================== */
+  function updateHUD(ev) {
+    if (!ev) return;
+    document.getElementById("hEmoji").textContent = ev.emoji;
+    document.getElementById("hTitle").textContent = ev.name;
+
+    const dateMeta = ev.dateObj.toLocaleDateString("vi-VN", {
+      weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric'
+    });
+    document.getElementById("hDate").textContent = `${dateMeta} ${ev.lunarTxt ? `(${ev.lunarTxt})` : ''}`;
+  }
+
+  function startLiveTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+
+    let hasAlertFired = false;
+
+    function tick() {
+      if (!selectedEvent) return;
+      const targetTime = selectedEvent.dateObj.getTime();
+      const now = new Date();
+      const diff = targetTime - now.getTime();
+
+      const timerGroup = document.getElementById("hTimerGroup");
+      const todayBadge = document.getElementById("hTodayBadge");
+
+      const isToday = (now.toDateString() === selectedEvent.dateObj.toDateString());
+
+      if (isToday) {
+        timerGroup.style.display = "none";
+        todayBadge.style.display = "block";
+        document.getElementById("hTag").textContent = "HÔM NAY";
+        if (!hasAlertFired) {
+          hasAlertFired = true;
+          launchFireworks();
+        }
+      } else if (diff > 0) {
+        timerGroup.style.display = "flex";
+        todayBadge.style.display = "none";
+        document.getElementById("hTag").textContent = "SẮP DIỄN RA";
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        // Phát tiếng bíp 10 giây cuối cùng
+        if (days === 0 && hours === 0 && minutes === 0 && seconds <= 10) {
+          playTickSound();
+        }
+
+        document.getElementById("hDays").textContent = String(days).padStart(2,'0');
+        document.getElementById("hHours").textContent = String(hours).padStart(2,'0');
+        document.getElementById("hMins").textContent = String(minutes).padStart(2,'0');
+        document.getElementById("hSecs").textContent = String(seconds).padStart(2,'0');
+      } else {
+        timerGroup.style.display = "flex";
+        todayBadge.style.display = "none";
+        document.getElementById("hTag").textContent = "ĐÃ QUA";
+        document.getElementById("hDays").textContent = "00";
+        document.getElementById("hHours").textContent = "00";
+        document.getElementById("hMins").textContent = "00";
+        document.getElementById("hSecs").textContent = "00";
+      }
+    }
+
+    tick();
+    timerInterval = setInterval(tick, 1000);
+  }
+
+  /* ==========================================================================
+     6. CHẠY CHỮ THÔNG TIN TICKER DƯỚI ĐÁY STREAM
+     ========================================================================== */
+  function updateTickerTrack() {
+    const d = new Date();
+    const dd = d.getDate(), mm = d.getMonth() + 1, yy = d.getFullYear();
+    const lunar = convertSolar2Lunar(dd, mm, yy, 7);
+    const hdHours = getHoangDaoHours(dd, mm, yy).join(", ");
+    const customMsg = document.getElementById("streamerCustomMsg").value.trim();
+
+    // Lấy 3 sự kiện sắp tới
+    const upcomingList = allEvents.filter(e => e.diffDays >= 0).slice(0, 3)
+      .map(e => `${e.emoji} <strong>${e.name}</strong> (còn ${e.diffDays} ngày)`).join(" • ");
+
+    let tickerHtml = `
+      <span>📅 Dương lịch: <strong>${dd}/${mm}/${yy}</strong></span>
+      <span>🌕 Âm lịch: <strong>${lunar[0]}/${lunar[1]} (${getCanChiYear(lunar[2])})</strong></span>
+      <span>⏰ Giờ Hoàng đạo: <strong>${hdHours}</strong></span>
+      <span>🔥 Sự kiện kế tiếp: ${upcomingList}</span>
+    `;
+
+    if (customMsg) {
+      tickerHtml = `<span>📢 <strong>THÔNG BÁO:</strong> ${customMsg}</span>` + tickerHtml;
+    }
+
+    document.getElementById("tickerText").innerHTML = tickerHtml;
+  }
+
+  /* ==========================================================================
+     7. ĐIỀU KHIỂN STREAMER PANEL & PHÍM TẮT OBS
+     ========================================================================== */
+  function initStreamerPanel() {
+    const select = document.getElementById("selectEvent");
+    select.innerHTML = "";
+    allEvents.forEach(e => {
+      const opt = document.createElement("option");
+      opt.value = e.id;
+      const statusTxt = e.diffDays === 0 ? "[Hôm nay]" : (e.diffDays > 0 ? `[còn ${e.diffDays} ngày]` : `[đã qua]`);
+      opt.textContent = `${e.emoji} ${e.name} ${statusTxt}`;
+      select.appendChild(opt);
+    });
+
+    // Mặc định chọn sự kiện gần nhất chưa qua
+    const nearest = allEvents.find(e => e.diffDays >= 0) || allEvents[0];
+    if (nearest) {
+      selectedEvent = nearest;
+      select.value = nearest.id;
+      updateHUD(nearest);
+      startLiveTimer();
+    }
+
+    select.addEventListener("change", (e) => {
+      selectedEvent = allEvents.find(ev => ev.id === e.target.value);
+      updateHUD(selectedEvent);
+      startLiveTimer();
+    });
+
+    // Vị trí HUD
+    const posSelect = document.getElementById("selectPosition");
+    posSelect.addEventListener("change", (e) => {
+      const hud = document.getElementById("hudContainer");
+      hud.className = `overlay-container ${e.target.value}`;
+    });
+
+    // Chroma Key
+    document.getElementById("btnChromaNone").addEventListener("click", () => {
+      document.body.className = "";
+    });
+    document.getElementById("btnChromaGreen").addEventListener("click", () => {
+      document.body.className = "chroma-green";
+    });
+    document.getElementById("btnChromaBlue").addEventListener("click", () => {
+      document.body.className = "chroma-blue";
+    });
+
+    // Nổ pháo hoa thủ công
+    document.getElementById("btnFireworkNow").addEventListener("click", launchFireworks);
+
+    // Bật tắt âm thanh
+    const sndBtn = document.getElementById("btnToggleSound");
+    sndBtn.addEventListener("click", () => {
+      isSoundEnabled = !isSoundEnabled;
+      sndBtn.textContent = isSoundEnabled ? "🔊 Âm thanh: BẬT" : "🔇 Âm thanh: TẮT";
+      sndBtn.className = isSoundEnabled ? "panel-btn btn-danger" : "panel-btn";
+    });
+
+    // Bật tắt Ticker
+    document.getElementById("btnToggleTicker").addEventListener("click", () => {
+      const t = document.getElementById("streamTicker");
+      t.style.display = (t.style.display === "none") ? "flex" : "none";
+    });
+
+    // Lời nhắn tuỳ chỉnh
+    document.getElementById("streamerCustomMsg").addEventListener("input", updateTickerTrack);
+  }
+
+  // PHÍM TẮT OBS DÀNH CHO STREAMER:
+  // [H]: Ẩn/Hiện Bảng Điều Khiển
+  // [F]: Nổ Pháo Hoa Khen Thưởng
+  // [M]: Bật/Tắt Âm Thanh
+  window.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+    const key = e.key.toUpperCase();
+    if (key === "H") {
+      document.getElementById("streamerPanel").classList.toggle("hidden");
+    } else if (key === "F") {
+      launchFireworks();
+    } else if (key === "M") {
+      document.getElementById("btnToggleSound").click();
+    }
+  });
+
+  // Hỗ trợ URL Param cho OBS: ?overlay=1 (tự động ẩn bảng điều khiển ngay khi add vào OBS)
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("overlay") === "1" || urlParams.get("obs") === "1") {
+    document.getElementById("streamerPanel").classList.add("hidden");
+  }
+  if (urlParams.get("chroma") === "green") document.body.className = "chroma-green";
+  if (urlParams.get("chroma") === "blue") document.body.className = "chroma-blue";
+
+  // Khởi động toàn hệ thống
+  loadAllEvents(curYear);
+  initStreamerPanel();
+  updateTickerTrack();
+  setInterval(updateTickerTrack, 60000);
+  </script>
+</body>
+</html>

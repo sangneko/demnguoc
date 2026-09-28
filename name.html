@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Deep-Engine Studio: Master Data & OBS Stream Overlay</title>
+  <title>Đại Niên Biểu & Studio Overlay Đếm Ngược Lễ Hội VN</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +12,7 @@
       --primary: #6366f1;
       --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
       --accent: #06b6d4;
-      --hud-bg: rgba(15, 23, 42, 0.9);
+      --hud-bg: rgba(15, 23, 42, 0.92);
       --hud-border-color: rgba(255, 255, 255, 0.18);
       --hud-border-width: 1px;
       --hud-radius: 18px;
@@ -34,7 +34,7 @@
       background: #080c16;
     }
 
-    /* OBS MODE */
+    /* OBS STANDBY / OVERLAY MODE */
     body.is-obs-mode { background: transparent !important; }
     body.is-obs-mode.chroma-green { background: #00FF00 !important; }
     body.is-obs-mode.chroma-blue { background: #0000FF !important; }
@@ -51,7 +51,7 @@
     }
 
     .studio-sidebar {
-      width: 490px;
+      width: 500px;
       height: 100vh;
       background: #0f172a;
       border-right: 1px solid rgba(255, 255, 255, 0.12);
@@ -59,7 +59,7 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 11px;
       box-shadow: 12px 0 35px rgba(0, 0, 0, 0.7);
     }
     .studio-sidebar::-webkit-scrollbar { width: 5px; }
@@ -83,7 +83,7 @@
       color: #38bdf8;
       text-transform: uppercase;
       letter-spacing: 0.8px;
-      margin-top: 6px;
+      margin-top: 4px;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -110,11 +110,11 @@
       padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 7px;
       margin-top: 2px;
     }
 
-    .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .btn-group { display: flex; gap: 5px; flex-wrap: wrap; }
     .btn-opt {
       flex: 1;
       min-width: 55px;
@@ -163,7 +163,7 @@
     }
     .btn-copy-url:hover { filter: brightness(1.2); }
 
-    /* STAGE PREVIEW */
+    /* MÀN HÌNH PREVIEW */
     .studio-stage {
       flex: 1;
       height: 100vh;
@@ -242,7 +242,7 @@
       position: relative;
       overflow: hidden;
       min-width: 400px;
-      max-width: 640px;
+      max-width: 650px;
       transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -401,22 +401,22 @@
   <div id="studioApp">
     <div class="studio-sidebar">
       <div class="studio-header">
-        <div class="studio-title">⚙️ DEEP-ENGINE STUDIO MASTER</div>
-        <div class="studio-sub">Tùy Biến Ngày Riêng & Telemetry Chuyên Sâu</div>
+        <div class="studio-title">⚙️ ĐẠI NIÊN BIỂU v11.0 MASTER</div>
+        <div class="studio-sub">80+ Ngày Lễ, Tiết Khí, Ngành Nghề & Telemetry OBS</div>
       </div>
 
       <!-- TẠO SỰ KIỆN RIÊNG -->
-      <div class="section-label">✨ 1. Tạo Sự Kiện Riêng (Custom Event)</div>
+      <div class="section-label">✨ 1. Thêm Ngày Riêng (Custom Event)</div>
       <div class="custom-box">
         <div style="display:flex; gap:8px;">
           <input type="text" id="custEmoji" class="studio-input" value="⭐" style="width:50px; text-align:center; font-size:1.1rem;">
-          <input type="text" id="custName" class="studio-input" placeholder="Tên sự kiện (VD: Sinh nhật, Khai trương...)">
+          <input type="text" id="custName" class="studio-input" placeholder="Tên sự kiện (VD: Sinh nhật, Ra mắt...)">
         </div>
         
         <div style="display:flex; gap:8px;">
           <select id="custCalType" class="studio-select" style="flex:1;">
-            <option value="solar">Dương Lịch</option>
-            <option value="lunar">Âm Lịch</option>
+            <option value="solar">Hệ Dương Lịch</option>
+            <option value="lunar">Hệ Âm Lịch (Quy đổi)</option>
           </select>
           <input type="datetime-local" id="custDateTime" class="studio-input" style="flex:2;">
         </div>
@@ -443,10 +443,20 @@
         </div>
       </div>
 
-      <!-- DANH SÁCH CHỌN SỰ KIỆN -->
-      <div class="section-label">📌 3. Chọn Sự Kiện Chiếu</div>
+      <!-- LỌC & DANH SÁCH CHỌN SỰ KIỆN -->
+      <div class="section-label">📌 3. Chọn Sự Kiện Chiếu (80+ Ngày Lễ)</div>
       <div class="form-group">
-        <select id="cfgEvent" class="studio-select"></select>
+        <select id="cfgCategory" class="studio-select">
+          <option value="all">-- Xem tất cả danh mục --</option>
+          <option value="off">🎌 Nghỉ Lễ Chính Thức (Nhà Nước)</option>
+          <option value="lunar">🧧 Lễ Hội Âm Lịch Truyền Thống</option>
+          <option value="solar">🇻🇳 Ngày Lễ Kỷ Niệm Dương Lịch</option>
+          <option value="industry">💼 Ngày Truyền Thống Ngành Nghề</option>
+          <option value="tietkhi">🌿 24 Tiết Khí Thiên Văn</option>
+          <option value="intl">🌍 Ngày Quốc Tế</option>
+          <option value="custom">⭐ Sự Kiện Cá Nhân Của Bạn</option>
+        </select>
+        <select id="cfgEvent" class="studio-select" style="margin-top:4px;"></select>
       </div>
 
       <!-- BỐ CỤC VỊ TRÍ -->
@@ -761,7 +771,105 @@
   }
 
   /* ==========================================================================
-     2. QUẢN LÝ DỮ LIỆU SỰ KIỆN
+     2. ĐẠI KHO DỮ LIỆU: 80+ NGÀY LỄ, TIẾT KHÍ, NGÀNH NGHỀ & ÂM LỊCH
+     ========================================================================== */
+  const HOLIDAYS_SOLAR = [
+    { name: "Tết Dương Lịch", emoji: "🎉", month: 1, day: 1, cat: "off", trivia: "Khởi đầu năm mới theo lịch Gregory quốc tế (Nghỉ lễ)." },
+    { name: "Học sinh - Sinh viên VN", emoji: "🎓", month: 1, day: 9, cat: "industry", trivia: "Tưởng nhớ anh hùng Trần Văn Ơn và tinh thần học sinh - sinh viên." },
+    { name: "Thành lập Đảng CSVN", emoji: "🚩", month: 2, day: 3, cat: "solar", trivia: "Thành lập Đảng Cộng sản Việt Nam (03/02/1930)." },
+    { name: "Lễ Tình Nhân (Valentine)", emoji: "❤️", month: 2, day: 14, cat: "intl", trivia: "Tôn vinh tình yêu lứa đôi trên toàn thế giới." },
+    { name: "Thầy thuốc Việt Nam", emoji: "⚕️", month: 2, day: 27, cat: "industry", trivia: "Tri ân y bác sĩ theo lời dạy 'Lương y như từ mẫu' của Bác Hồ." },
+    { name: "Bộ đội Biên phòng VN", emoji: "🛡️", month: 3, day: 3, cat: "industry", trivia: "Ngày truyền thống lực lượng Bộ đội Biên phòng bảo vệ bờ cõi." },
+    { name: "Quốc tế Phụ nữ", emoji: "🌸", month: 3, day: 8, cat: "intl", trivia: "Kỷ niệm cuộc đấu tranh vì quyền bình đẳng và hạnh phúc phụ nữ." },
+    { name: "Valentine Trắng", emoji: "🤍", month: 3, day: 14, cat: "intl", trivia: "Ngày đáp lại tình cảm sau ngày Lễ Tình nhân 14/2." },
+    { name: "Quốc tế Hạnh phúc", emoji: "😊", month: 3, day: 20, cat: "intl", trivia: "Khẳng định hạnh phúc là quyền cơ bản và mục tiêu của con người." },
+    { name: "Thành lập Đoàn TNCS HCM", emoji: "🌟", month: 3, day: 26, cat: "solar", trivia: "Kỷ niệm thành lập Đoàn Thanh niên Cộng sản Hồ Chí Minh (1931)." },
+    { name: "Thể thao Việt Nam", emoji: "🏃", month: 3, day: 27, cat: "industry", trivia: "Kêu gọi toàn dân rèn luyện thân thể theo gương Bác Hồ." },
+    { name: "Dân quân tự vệ", emoji: "🪖", month: 3, day: 28, cat: "industry", trivia: "Tôn vinh lực lượng vũ trang quần chúng không thoát ly sản xuất." },
+    { name: "Cá Tháng Tư", emoji: "🤡", month: 4, day: 1, cat: "intl", trivia: "Ngày nói dối mang lại niềm vui và tiếng cười giải tỏa căng thẳng." },
+    { name: "Sách & Văn hóa đọc VN", emoji: "📖", month: 4, day: 21, cat: "industry", trivia: "Tôn vinh giá trị của sách và khuyến khích phong trào đọc sách." },
+    { name: "Giải phóng miền Nam", emoji: "🇻🇳", month: 4, day: 30, cat: "off", trivia: "Đại thắng mùa xuân 1975, giang sơn thu về một mối (Nghỉ lễ)." },
+    { name: "Quốc tế Lao động", emoji: "⚒️", month: 5, day: 1, cat: "off", trivia: "Ngày hội của giai cấp công nhân và người lao động toàn cầu (Nghỉ lễ)." },
+    { name: "Chiến thắng Điện Biên Phủ", emoji: "🎖️", month: 5, day: 7, cat: "solar", trivia: "Chiến thắng Điện Biên Phủ 'lừng lẫy năm châu, chấn động địa cầu' (1954)." },
+    { name: "Thành lập Đội TNTP HCM", emoji: "🎺", month: 5, day: 15, cat: "solar", trivia: "Thành lập Đội Thiếu niên Tiền phong Hồ Chí Minh (1941)." },
+    { name: "Khoa học & Công nghệ VN", emoji: "🔬", month: 5, day: 18, cat: "industry", trivia: "Biểu dương đội ngũ làm công tác nghiên cứu khoa học và sáng tạo." },
+    { name: "Sinh nhật Bác Hồ", emoji: "🌟", month: 5, day: 19, cat: "solar", trivia: "Kỷ niệm ngày sinh Chủ tịch Hồ Chí Minh vĩ đại (19/05/1890)." },
+    { name: "Quốc tế Thiếu nhi", emoji: "🎈", month: 6, day: 1, cat: "intl", trivia: "Ngày hội nâng niu, chăm sóc và bảo vệ trẻ em toàn thế giới." },
+    { name: "Môi trường Thế giới", emoji: "🌱", month: 6, day: 5, cat: "intl", trivia: "Kêu gọi hành động bảo vệ môi trường và hệ sinh thái Trái Đất." },
+    { name: "Bác Hồ ra đi tìm đường cứu nước", emoji: "🚢", month: 6, day: 5, cat: "solar", trivia: "Bác rời bến cảng Nhà Rồng trên con tàu Amiral Latouche-Tréville (1911)." },
+    { name: "Báo chí Cách mạng VN", emoji: "📰", month: 6, day: 21, cat: "industry", trivia: "Kỷ niệm ngày báo Thanh Niên xuất bản số đầu tiên (1925)." },
+    { name: "Gia đình Việt Nam", emoji: "👨‍👩‍👧‍👦", month: 6, day: 28, cat: "solar", trivia: "Tôn vinh giá trị ấm áp, yêu thương của mái ấm gia đình Việt." },
+    { name: "Bảo hiểm Y tế Việt Nam", emoji: "🏥", month: 7, day: 1, cat: "industry", trivia: "Nâng cao nhận thức về chính sách an sinh bảo hiểm y tế toàn dân." },
+    { name: "Thương binh Liệt sĩ", emoji: "🕯️", month: 7, day: 27, cat: "solar", trivia: "Tri ân các anh hùng, thương binh, liệt sĩ đã hy sinh vì Tổ quốc." },
+    { name: "Thành lập Công đoàn VN", emoji: "🤝", month: 7, day: 28, cat: "solar", trivia: "Kỷ niệm thành lập Tổng Liên đoàn Lao động Việt Nam (1929)." },
+    { name: "Vì nạn nhân chất độc da cam", emoji: "🎗️", month: 8, day: 10, cat: "solar", trivia: "Chia sẻ nỗi đau và ủng hộ nạn nhân chất độc da cam/dioxin." },
+    { name: "Cách mạng Tháng Tám", emoji: "🔥", month: 8, day: 19, cat: "solar", trivia: "Kỷ niệm thắng lợi vĩ đại của cuộc Tổng khởi nghĩa mùa thu năm 1945." },
+    { name: "Truyền thống CAND", emoji: "👮", month: 8, day: 19, cat: "industry", trivia: "Tôn vinh lực lượng Công an Nhân dân vì nước quên thân, vì dân phục vụ." },
+    { name: "Quốc khánh Việt Nam", emoji: "🎆", month: 9, day: 2, cat: "off", trivia: "Bác Hồ đọc Tuyên ngôn Độc lập tại Ba Đình lịch sử (Nghỉ lễ)." },
+    { name: "Toàn dân đưa trẻ đến trường", emoji: "🏫", month: 9, day: 5, cat: "solar", trivia: "Ngày khai giảng năm học mới tưng bừng khắp cả nước." },
+    { name: "Quốc tế Người cao tuổi", emoji: "👴", month: 10, day: 1, cat: "intl", trivia: "Kính trọng, phụng dưỡng và chăm sóc người cao tuổi trong xã hội." },
+    { name: "Giải phóng Thủ đô Hà Nội", emoji: "🏛️", month: 10, day: 10, cat: "solar", trivia: "Đoàn quân chiến thắng tiến về tiếp quản Thủ đô rợp bóng cờ hoa (1954)." },
+    { name: "Chuyển đổi số Quốc gia", emoji: "💻", month: 10, day: 10, cat: "industry", trivia: "Thúc đẩy công nghệ số và xây dựng quốc gia thông minh." },
+    { name: "Doanh nhân Việt Nam", emoji: "💼", month: 10, day: 13, cat: "industry", trivia: "Tôn vinh đội ngũ doanh nhân đóng góp xây dựng nền kinh tế vững mạnh." },
+    { name: "Nông dân Việt Nam", emoji: "🌾", month: 10, day: 14, cat: "industry", trivia: "Tri ân giai cấp nông dân cần cù làm nên hạt ngọc cho đời." },
+    { name: "Phụ nữ Việt Nam", emoji: "💐", month: 10, day: 20, cat: "solar", trivia: "Tôn vinh người phụ nữ Việt Nam anh hùng, bất khuất, trung hậu, đảm đang." },
+    { name: "Halloween", emoji: "🎃", month: 10, day: 31, cat: "intl", trivia: "Lễ hội hóa trang phương Tây xua đuổi tà ma và đón đông ấm áp." },
+    { name: "Pháp luật Việt Nam", emoji: "⚖️", month: 11, day: 9, cat: "industry", trivia: "Khẳng định vị thế tối thượng của Hiến pháp và Pháp luật." },
+    { name: "Nhà giáo Việt Nam", emoji: "📚", month: 11, day: 20, cat: "solar", trivia: "Tôn sư trọng đạo, tri ân những người lái đò thầm lặng chở tri thức." },
+    { name: "Xóa bỏ Bạo lực Phụ nữ", emoji: "🧡", month: 11, day: 25, cat: "intl", trivia: "Chung tay hành động chấm dứt mọi hình thức bạo lực giới." },
+    { name: "Toàn quốc Kháng chiến", emoji: "⚔️", month: 12, day: 19, cat: "solar", trivia: "Lời kêu gọi Toàn quốc kháng chiến bất hủ của Bác Hồ (1946)." },
+    { name: "Thành lập QĐND Việt Nam", emoji: "🪖", month: 12, day: 22, cat: "solar", trivia: "Thành lập Đội VN Tuyên truyền Giải phóng quân (22/12/1944)." },
+    { name: "Giáng sinh (Noel)", emoji: "🎄", month: 12, day: 25, cat: "intl", trivia: "Mừng ngày Chúa Giê-su giáng sinh, mùa của an lành và yêu thương." }
+  ];
+
+  const HOLIDAYS_LUNAR = [
+    { name: "Tết Nguyên Đán (Mùng 1)", emoji: "🧧", month: 1, day: 1, lunarTxt: "01/01 AL", cat: "off", trivia: "Thời khắc khai xuân sum vầy, chúc thọ ông bà cha mẹ (Nghỉ lễ)." },
+    { name: "Tết Nguyên Đán (Mùng 2)", emoji: "🧧", month: 1, day: 2, lunarTxt: "02/01 AL", cat: "off", trivia: "Mùng hai tết mẹ - thăm hỏi chúc tết họ hàng bên ngoại (Nghỉ lễ)." },
+    { name: "Tết Nguyên Đán (Mùng 3)", emoji: "🧧", month: 1, day: 3, lunarTxt: "03/01 AL", cat: "off", trivia: "Mùng ba tết thầy - tri ân công ơn dạy dỗ của thầy cô (Nghỉ lễ)." },
+    { name: "Vía Thần Tài", emoji: "💰", month: 1, day: 10, lunarTxt: "10/01 AL", cat: "lunar", trivia: "Cúng Thần Tài, mua vàng cầu may mắn tài lộc cả năm hanh thông." },
+    { name: "Rằm tháng Giêng (Thượng Nguyên)", emoji: "🌕", month: 1, day: 15, lunarTxt: "15/01 AL", cat: "lunar", trivia: "Lễ Phật quanh năm không bằng ngày rằm tháng Giêng." },
+    { name: "Tết Hàn Thực", emoji: "🥣", month: 3, day: 3, lunarTxt: "03/03 AL", cat: "lunar", trivia: "Tết bánh trôi, bánh chay thành kính tưởng nhớ tổ tiên nguồn cội." },
+    { name: "Giỗ Tổ Hùng Vương", emoji: "👑", month: 3, day: 10, lunarTxt: "10/03 AL", cat: "off", trivia: "Dù ai đi ngược về xuôi, nhớ ngày Giỗ Tổ mùng mười tháng ba (Nghỉ lễ)." },
+    { name: "Đại lễ Phật Đản", emoji: "🪷", month: 4, day: 15, lunarTxt: "15/04 AL", cat: "lunar", trivia: "Kỷ niệm ngày Đức Phật Thích Ca Mâu Ni đản sinh và truyền ánh sáng đạo pháp." },
+    { name: "Tết Đoan Ngọ (Giết sâu bọ)", emoji: "🍑", month: 5, day: 5, lunarTxt: "05/05 AL", cat: "lunar", trivia: "Ăn cơm rượu nếp, mận vải diệt trừ sâu bệnh thanh lọc cơ thể." },
+    { name: "Lễ Thất Tịch", emoji: "🎋", month: 7, day: 7, lunarTxt: "07/07 AL", cat: "lunar", trivia: "Ngưu Lang Chức Nữ trùng phùng cầu duyên, ăn chè đậu đỏ cầu may." },
+    { name: "Lễ Vu Lan (Báo hiếu)", emoji: "🙏", month: 7, day: 15, lunarTxt: "15/07 AL", cat: "lunar", trivia: "Bông hồng cài áo nhớ ơn đấng sinh thành và xá tội vong nhân." },
+    { name: "Tết Trung Thu (Rằm tháng 8)", emoji: "🥮", month: 8, day: 15, lunarTxt: "15/08 AL", cat: "lunar", trivia: "Đêm hội trăng rằm, rước đèn phá cỗ, thưởng thức bánh dẻo bánh nướng." },
+    { name: "Tết Trùng Cửu (9/9 AL)", emoji: "🌼", month: 9, day: 9, lunarTxt: "09/09 AL", cat: "lunar", trivia: "Ngày hội ngắm hoa cúc vàng, uống rượu cúc cầu trường thọ." },
+    { name: "Tết Hạ Nguyên (Cơm mới)", emoji: "🌾", month: 10, day: 15, lunarTxt: "15/10 AL", cat: "lunar", trivia: "Lễ tạ ơn trời đất ban mùa màng tươi tốt, thưởng thức mâm cơm gạo mới." },
+    { name: "Tiễn Ông Công Ông Táo", emoji: "🐟", month: 12, day: 23, lunarTxt: "23/12 AL", cat: "lunar", trivia: "Thả cá chép vàng tiễn Táo Quân cưỡi mây chầu trời báo cáo việc trần gian." },
+    { name: "Đêm Giao Thừa (30 Tết)", emoji: "🎆", month: 12, day: 30, lunarTxt: "30/12 AL", cat: "off", trivia: "Thời khắc thiêng liêng tống cựu nghinh tân chào đón xuân mới (Nghỉ lễ)." }
+  ];
+
+  const TIET_KHI_LIST = [
+    { name: "Tiết Lập Xuân", emoji: "🌱", month: 2, day: 4, cat: "tietkhi", trivia: "Bắt đầu mùa xuân, vạn vật đâm chồi nảy lộc đón dương khí." },
+    { name: "Tiết Vũ Thủy", emoji: "🌧️", month: 2, day: 19, cat: "tietkhi", trivia: "Mưa phùn xuân ẩm ướt nuôi dưỡng mầm non tươi tốt." },
+    { name: "Tiết Kinh Trập", emoji: "⚡", month: 3, day: 5, cat: "tietkhi", trivia: "Sấm đầu mùa thức tỉnh sâu bọ côn trùng sau kỳ ngủ đông." },
+    { name: "Tiết Xuân Phân", emoji: "🌸", month: 3, day: 20, cat: "tietkhi", trivia: "Điểm giữa mùa xuân, ngày và đêm dài bằng nhau trên khắp địa cầu." },
+    { name: "Tiết Thanh Minh", emoji: "🌿", month: 4, day: 5, cat: "tietkhi", trivia: "Khí trời trong sáng, tảo mộ tổ tiên tưởng nhớ cội nguồn." },
+    { name: "Tiết Cốc Vũ", emoji: "🌾", month: 4, day: 20, cat: "tietkhi", trivia: "Mưa rào ấm áp nuôi dưỡng hoa màu chuẩn bị đón hạ." },
+    { name: "Tiết Lập Hạ", emoji: "☀️", month: 5, day: 5, cat: "tietkhi", trivia: "Khởi đầu mùa hè, ánh nắng rực rỡ và tiếng ve ngân râm ran." },
+    { name: "Tiết Tiểu Mãn", emoji: "🌻", month: 5, day: 21, cat: "tietkhi", trivia: "Hạt lúa bắt đầu chắc mẩy, sông ngòi dâng nước mùa hè." },
+    { name: "Tiết Mang Chủng", emoji: "🌾", month: 6, day: 6, cat: "tietkhi", trivia: "Mùa gieo cấy lúa có râu, nông dân tất bật trên đồng ruộng." },
+    { name: "Tiết Hạ Chí", emoji: "🌞", month: 6, day: 21, cat: "tietkhi", trivia: "Ngày dài nhất và đêm ngắn nhất trong năm ở Bắc bán cầu." },
+    { name: "Tiết Tiểu Thử", emoji: "🌡️", month: 7, day: 7, cat: "tietkhi", trivia: "Nắng nóng oi ả bắt đầu vào cao điểm của mùa hè." },
+    { name: "Tiết Đại Thử", emoji: "🔥", month: 7, day: 23, cat: "tietkhi", trivia: "Giai đoạn nắng nóng gắt nhất, oi nồng nhất trong năm." },
+    { name: "Tiết Lập Thu", emoji: "🍂", month: 8, day: 7, cat: "tietkhi", trivia: "Gió heo may chớm lạnh báo hiệu mùa thu dịu dàng đã sang." },
+    { name: "Tiết Xử Thử", emoji: "⛅", month: 8, day: 23, cat: "tietkhi", trivia: "Cái nóng oi ả của mùa hè chấm dứt, trời mát lành dễ chịu." },
+    { name: "Tiết Bạch Lộ", emoji: "💧", month: 9, day: 7, cat: "tietkhi", trivia: "Hạt sương trắng ngưng tụ trên lá cỏ mỗi sớm mai se lạnh." },
+    { name: "Tiết Thu Phân", emoji: "🍁", month: 9, day: 23, cat: "tietkhi", trivia: "Điểm giữa mùa thu mát mẻ, ngày và đêm dài bằng nhau." },
+    { name: "Tiết Hàn Lộ", emoji: "❄️", month: 10, day: 8, cat: "tietkhi", trivia: "Sương lạnh bắt đầu buốt giá, trời chuẩn bị vào mùa đông." },
+    { name: "Tiết Sương Giáng", emoji: "🌫️", month: 10, day: 23, cat: "tietkhi", trivia: "Sương mù giá lạnh giăng đầy thung lũng và đồng bãi." },
+    { name: "Tiết Lập Đông", emoji: "🧣", month: 11, day: 7, cat: "tietkhi", trivia: "Khởi đầu mùa đông lạnh giá, chuẩn bị áo ấm đón gió bấc." },
+    { name: "Tiết Tiểu Tuyết", emoji: "🌨️", month: 11, day: 22, cat: "tietkhi", trivia: "Không khí lạnh tăng cường, xứ lạnh bắt đầu có tuyết rơi." },
+    { name: "Tiết Đại Tuyết", emoji: "☃️", month: 12, day: 7, cat: "tietkhi", trivia: "Mùa đông buốt giá nhất, tuyết phủ trắng xóa các vùng cao." },
+    { name: "Tiết Đông Chí", emoji: "🕯️", month: 12, day: 21, cat: "tietkhi", trivia: "Đêm dài nhất và ngày ngắn nhất trong năm ở Bắc bán cầu." },
+    { name: "Tiết Tiểu Hàn", emoji: "🥶", month: 1, day: 5, cat: "tietkhi", trivia: "Đợt rét đậm đầu tiên của mùa đông trước Tết Nguyên Đán." },
+    { name: "Tiết Đại Hàn", emoji: "🧊", month: 1, day: 20, cat: "tietkhi", trivia: "Rét đậm buốt giá tột cùng khép lại chu kỳ 24 tiết khí một năm." }
+  ];
+
+  /* ==========================================================================
+     3. QUẢN LÝ DỮ LIỆU & ENGINE ĐẾM NGƯỢC MASTER
      ========================================================================== */
   const curYear = new Date().getFullYear();
   let allEvents = [];
@@ -796,18 +904,24 @@
       };
     });
 
+    const tietkhi = TIET_KHI_LIST.map(e => ({
+      ...e,
+      id: `tk_${e.month}_${e.day}`,
+      absolute: `${year}-${String(e.month).padStart(2,'0')}-${String(e.day).padStart(2,'0')}`
+    }));
+
     const customs = JSON.parse(localStorage.getItem("vn_custom_events_v10") || "[]").map(c => {
       let abs = c.absolute;
       if (c.isLunar) {
         const sol = convertLunar2Solar(c.lunarD, c.lunarM, year, 0, 7);
         abs = `${sol[2]}-${String(sol[1]).padStart(2,'0')}-${String(sol[0]).padStart(2,'0')}`;
       }
-      return { ...c, absolute: abs };
+      return { ...c, cat: "custom", absolute: abs };
     });
 
     const nowTime = new Date().getTime();
 
-    allEvents = [...solars, ...lunars, ...customs].map(e => {
+    allEvents = [...solars, ...lunars, ...tietkhi, ...customs].map(e => {
       const dateObj = parseDateTime(e.absolute);
       const diffMs = dateObj.getTime() - nowTime;
       const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
@@ -942,7 +1056,7 @@
   const urlParams = new URLSearchParams(window.location.search);
   const isObs = urlParams.get("overlay") === "1";
 
-  // Biến cấu hình
+  // Biến tham số thiết kế
   let selEventId = urlParams.get("id") || "";
   let selLayout = urlParams.get("pos") || "pos-top-left";
   let selFont = urlParams.get("font") ? decodeURIComponent(urlParams.get("font")) : "'Plus Jakarta Sans', sans-serif";
@@ -960,7 +1074,7 @@
   let selShowHoangDao = urlParams.get("astronomy") !== "0";
   let selShowTrivia = urlParams.get("trivia") !== "0";
 
-  // SỬA LỖI OBS KHÔNG NHẬN SỰ KIỆN TỰ TẠO: Đọc trực tiếp từ URL Param 'cust'
+  // Đọc dữ liệu sự kiện cá nhân từ URL Param 'cust' (khắc phục lỗi LocalStorage trên OBS)
   const rawCustData = urlParams.get("cust");
   let obsCustomEvent = null;
   if (rawCustData) {
@@ -1020,7 +1134,6 @@
       else stage.style.backgroundColor = "#060913";
     }
 
-    // ĐÓNG GÓI LINK OBS (NẾU LÀ SỰ KIỆN CÁ NHÂN SẼ TỰ MÃ HÓA NỘI DUNG VÀO URL)
     if (!isObs) {
       const baseUrl = window.location.origin + window.location.pathname;
       let custParam = "";
@@ -1043,10 +1156,16 @@
     }
   }
 
-  function initStudioControls() {
+  function populateEventSelect(filterCat = "all") {
     const select = document.getElementById("cfgEvent");
     select.innerHTML = "";
-    allEvents.forEach(e => {
+    
+    let filtered = allEvents;
+    if (filterCat !== "all") {
+      filtered = allEvents.filter(e => e.cat === filterCat);
+    }
+
+    filtered.forEach(e => {
       const opt = document.createElement("option");
       opt.value = e.id;
       const statusTxt = e.diffDays === 0 ? "[Hôm nay]" : (e.diffDays > 0 ? `[còn ${e.diffDays} ngày]` : `[đã qua]`);
@@ -1054,16 +1173,34 @@
       select.appendChild(opt);
     });
 
+    if (currentEvent && filtered.some(e => e.id === currentEvent.id)) {
+      select.value = currentEvent.id;
+    } else if (filtered.length > 0) {
+      currentEvent = filtered[0];
+      selEventId = currentEvent.id;
+      select.value = currentEvent.id;
+      updateHUD(currentEvent);
+    }
+  }
+
+  function initStudioControls() {
+    populateEventSelect("all");
+
     const nearest = (selEventId ? allEvents.find(e => e.id === selEventId) : null) || allEvents.find(e => e.diffDays >= 0) || allEvents[0];
     if (nearest) {
       currentEvent = nearest;
       selEventId = nearest.id;
-      select.value = nearest.id;
+      document.getElementById("cfgEvent").value = nearest.id;
       updateHUD(nearest);
       startMasterLiveTimer();
     }
 
-    select.addEventListener("change", (e) => {
+    document.getElementById("cfgCategory").addEventListener("change", (e) => {
+      populateEventSelect(e.target.value);
+      applyStyles();
+    });
+
+    document.getElementById("cfgEvent").addEventListener("change", (e) => {
       currentEvent = allEvents.find(ev => ev.id === e.target.value);
       selEventId = currentEvent.id;
       updateHUD(currentEvent);
@@ -1115,7 +1252,8 @@
       localStorage.setItem("vn_custom_events_v10", JSON.stringify(currentList));
 
       loadAllEvents(curYear);
-      initStudioControls();
+      document.getElementById("cfgCategory").value = "all";
+      populateEventSelect("all");
 
       selEventId = customObj.id;
       document.getElementById("cfgEvent").value = customObj.id;
@@ -1367,7 +1505,6 @@
   loadAllEvents(curYear);
 
   if (isObs) {
-    // NẾU CÓ DỮ LIỆU CÁ NHÂN ĐƯỢC MÃ HÓA TRÊN URL -> NẠP TRỰC TIẾP
     if (obsCustomEvent) {
       if (obsCustomEvent.isLunar) {
         const sol = convertLunar2Solar(obsCustomEvent.lunarD, obsCustomEvent.lunarM, curYear, 0, 7);

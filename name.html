@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Deep-Engine Studio: OBS Stream Overlay v8.0</title>
+  <title>Deep-Engine Studio v9.0: Master Data & OBS Stream Overlay</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +17,7 @@
       --hud-border-width: 1px;
       --hud-radius: 18px;
       --hud-scale: 1;
-      --hud-alpha: 0.9;
+      --hud-alpha: 0.92;
       --hud-font: 'Plus Jakarta Sans', sans-serif;
       --glow-shadow: none;
       --tilt-x: 0deg;
@@ -35,7 +35,7 @@
       background: #080c16;
     }
 
-    /* CHẾ ĐỘ OBS */
+    /* OBS MODE */
     body.is-obs-mode { background: transparent !important; }
     body.is-obs-mode.chroma-green { background: #00FF00 !important; }
     body.is-obs-mode.chroma-blue { background: #0000FF !important; }
@@ -52,11 +52,11 @@
     }
 
     .studio-sidebar {
-      width: 460px;
+      width: 480px;
       height: 100vh;
       background: #0f172a;
       border-right: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 18px 20px;
+      padding: 16px 20px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -67,7 +67,7 @@
     .studio-sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
 
     .studio-title {
-      font-size: 1.18rem;
+      font-size: 1.15rem;
       font-weight: 800;
       background: linear-gradient(135deg, #38bdf8, #818cf8);
       -webkit-background-clip: text;
@@ -76,10 +76,10 @@
       align-items: center;
       gap: 8px;
     }
-    .studio-sub { font-size: 0.73rem; color: #94a3b8; margin-top: 2px; }
+    .studio-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 2px; }
 
     .section-label {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       font-weight: 800;
       color: #38bdf8;
       text-transform: uppercase;
@@ -90,12 +90,12 @@
       gap: 6px;
     }
     .form-group { display: flex; flex-direction: column; gap: 4px; }
-    .form-group label { font-size: 0.7rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+    .form-group label { font-size: 0.68rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
     .studio-input, .studio-select {
       background: #1e293b;
       border: 1px solid rgba(255, 255, 255, 0.18);
       color: #fff;
-      padding: 8px 10px;
+      padding: 7px 10px;
       border-radius: 7px;
       font-family: inherit;
       font-size: 0.82rem;
@@ -107,8 +107,8 @@
     .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
     .btn-opt {
       flex: 1;
-      min-width: 60px;
-      padding: 6px 10px;
+      min-width: 55px;
+      padding: 6px 8px;
       background: #1e293b;
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 6px;
@@ -186,11 +186,11 @@
       transform-origin: top left;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .pos-top-left { top: 30px; left: 30px; transform-origin: top left; }
-    .pos-top-right { top: 30px; right: 30px; transform-origin: top right; }
-    .pos-bottom-left { bottom: 65px; left: 30px; transform-origin: bottom left; }
-    .pos-bottom-right { bottom: 65px; right: 30px; transform-origin: bottom right; }
-    .pos-top-center { top: 30px; left: 50%; transform: translateX(-50%); transform-origin: top center; }
+    .pos-top-left { top: 25px; left: 25px; transform-origin: top left; }
+    .pos-top-right { top: 25px; right: 25px; transform-origin: top right; }
+    .pos-bottom-left { bottom: 65px; left: 25px; transform-origin: bottom left; }
+    .pos-bottom-right { bottom: 65px; right: 25px; transform-origin: bottom right; }
+    .pos-top-center { top: 25px; left: 50%; transform: translateX(-50%); transform-origin: top center; }
 
     /* FULLSCREEN CINEMA */
     .pos-fullscreen {
@@ -202,8 +202,8 @@
       backdrop-filter: blur(14px);
     }
     .pos-fullscreen .stream-hud {
-      max-width: 980px;
-      width: 88%;
+      max-width: 1100px;
+      width: 90%;
       flex-direction: column !important;
       padding: 40px 30px !important;
       border: calc(var(--hud-border-width) + 2px) solid var(--primary) !important;
@@ -212,10 +212,10 @@
     }
     .pos-fullscreen .hud-emoji { font-size: 6.5rem !important; }
     .pos-fullscreen .hud-title { font-size: 3rem !important; text-align: center; margin: 10px 0 !important; }
-    .pos-fullscreen .hud-date { font-size: 1.25rem !important; text-align: center; margin-bottom: 20px; }
-    .pos-fullscreen .hud-timer { margin: 0 auto !important; gap: 16px !important; }
-    .pos-fullscreen .hud-box { min-width: 120px !important; padding: 18px !important; border-radius: 16px !important; }
-    .pos-fullscreen .hud-val { font-size: 3.4rem !important; }
+    .pos-fullscreen .hud-date { font-size: 1.25rem !important; text-align: center; margin-bottom: 8px; }
+    .pos-fullscreen .hud-timer { margin: 16px auto !important; gap: 16px !important; }
+    .pos-fullscreen .hud-box { min-width: 115px !important; padding: 18px !important; border-radius: 16px !important; }
+    .pos-fullscreen .hud-val { font-size: 3.2rem !important; }
     .pos-fullscreen .hud-lbl { font-size: 0.95rem !important; }
 
     /* WIDGET HUD */
@@ -225,13 +225,14 @@
       border-radius: var(--hud-radius);
       padding: 14px 22px;
       display: flex;
-      align-items: center;
-      gap: 16px;
+      flex-direction: column;
+      gap: 10px;
       box-shadow: var(--glow-shadow), 0 10px 30px rgba(0, 0, 0, 0.45);
       backdrop-filter: blur(12px);
       position: relative;
       overflow: hidden;
-      min-width: 340px;
+      min-width: 380px;
+      max-width: 600px;
       transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) rotateZ(var(--rot-z));
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -241,8 +242,15 @@
       top: 0; left: 0; width: 5px; height: 100%;
       background: var(--primary-gradient);
     }
+
+    .hud-main-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
     .hud-emoji { font-size: 3.2rem; line-height: 1; }
-    .hud-meta { display: flex; flex-direction: column; gap: 4px; }
+    .hud-meta { display: flex; flex-direction: column; gap: 3px; }
     .hud-tag {
       font-size: 0.65rem;
       font-weight: 800;
@@ -253,27 +261,66 @@
       align-items: center;
       gap: 5px;
     }
-    .hud-title { font-size: 1.22rem; font-weight: 800; white-space: nowrap; }
+    .hud-title { font-size: 1.25rem; font-weight: 800; white-space: nowrap; }
     .hud-date { font-size: 0.78rem; font-weight: 600; color: #94a3b8; }
     .hud-lunar { font-size: 0.74rem; font-weight: 700; color: #38bdf8; }
 
-    .hud-timer { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .hud-timer { display: flex; align-items: center; gap: 6px; margin-left: auto; }
     .hud-box {
       background: rgba(0, 0, 0, 0.45);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 8px;
-      padding: 6px 10px;
-      min-width: 52px;
+      padding: 6px 8px;
+      min-width: 48px;
       text-align: center;
     }
     .hud-val {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 1.55rem;
+      font-size: 1.45rem;
       font-weight: 800;
       color: #ffffff;
       line-height: 1;
     }
-    .hud-lbl { font-size: 0.6rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-top: 3px; }
+    .hud-lbl { font-size: 0.58rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-top: 2px; }
+
+    /* BẢNG DỮ LIỆU TELEMETRY & THIÊN VĂN MỞ RỘNG */
+    .hud-telemetry-panel {
+      border-top: 1px dashed rgba(255, 255, 255, 0.15);
+      padding-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.72rem;
+    }
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      color: #cbd5e1;
+    }
+    .telemetry-pill {
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: #38bdf8;
+    }
+    .progress-bar-container {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--primary-gradient);
+      width: 0%;
+      transition: width 0.3s;
+    }
 
     .hud-today-badge {
       display: none;
@@ -344,12 +391,12 @@
   <div id="studioApp">
     <div class="studio-sidebar">
       <div class="studio-header">
-        <div class="studio-title">⚙️ DEEP-ENGINE STUDIO v8.0</div>
-        <div class="studio-sub">Tùy biến đa tầng & Sinh URL thông minh cho OBS</div>
+        <div class="studio-title">⚙️ DEEP-ENGINE v9.0 MASTER</div>
+        <div class="studio-sub">Bộ Đo Lường Dữ Liệu Thời Gian Thực & Telemetry Lễ Hội</div>
       </div>
 
-      <!-- KỊCH BẢN STREAM ONE-CLICK -->
-      <div class="section-label">⚡ 1. Kịch Bản Nhanh (Preset Scenarios)</div>
+      <!-- KỊCH BẢN ONE-CLICK -->
+      <div class="section-label">⚡ 1. Kịch Bản Preset Nhanh</div>
       <div class="form-group">
         <div class="btn-group">
           <div class="btn-opt" data-preset="esports">Esports</div>
@@ -360,13 +407,13 @@
       </div>
 
       <!-- CHỌN SỰ KIỆN -->
-      <div class="section-label">📌 2. Sự Kiện Đếm Ngược</div>
+      <div class="section-label">📌 2. Sự Kiện & Lễ Hội</div>
       <div class="form-group">
         <select id="cfgEvent" class="studio-select"></select>
       </div>
 
-      <!-- VỊ TRÍ & BỐ CỤC -->
-      <div class="section-label">📐 3. Bố Cục Màn Hình</div>
+      <!-- BỐ CỤC VỊ TRÍ -->
+      <div class="section-label">📐 3. Bố Cục Hiển Thị</div>
       <div class="form-group">
         <select id="cfgLayout" class="studio-select">
           <option value="pos-top-left">Góc trên Trái (Top-Left)</option>
@@ -378,7 +425,7 @@
         </select>
       </div>
 
-      <!-- TYPOGRAPHY & KHUNG -->
+      <!-- PHÔNG CHỮ & STYLE -->
       <div class="section-label">🔤 4. Phông Chữ & Khung Viền</div>
       <div class="form-group">
         <select id="cfgFont" class="studio-select">
@@ -398,8 +445,28 @@
         </div>
       </div>
 
-      <!-- GPU 3D TRANSFORM TILT SLIDERS -->
-      <div class="section-label">🎮 5. Phối Cảnh Góc Nghiêng 3D (GPU Matrix)</div>
+      <!-- TÙY CHỌN DỮ LIỆU HIỂN THỊ MỞ RỘNG (MỚI) -->
+      <div class="section-label">📊 5. Tùy Chọn Dữ Liệu & Telemetry</div>
+      <div class="form-group" style="gap:6px; font-size:0.75rem;">
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" id="cfgShowMs" checked> Hiện Mili-giây (Mượt mà 60fps)
+        </label>
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" id="cfgShowTotalHours" checked> Hiện Tổng số Giờ & Phút còn lại
+        </label>
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" id="cfgShowYearProgress" checked> Hiện Thanh Tiến Độ Năm (% Year Progress)
+        </label>
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" id="cfgShowHoangDao" checked> Hiện Giờ Hoàng Đạo & Tiết Khí Hôm Nay
+        </label>
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" id="cfgShowTrivia" checked> Hiện Tóm tắt Ý nghĩa Ngày lễ
+        </label>
+      </div>
+
+      <!-- PHỐI CẢNH 3D -->
+      <div class="section-label">🎮 6. Góc Nghiêng 3D Phối Cảnh</div>
       <div class="form-group">
         <label>Nghiêng X (Pitch: <span id="lblTiltX">0°</span>)</label>
         <input type="range" id="cfgTiltX" min="-30" max="30" value="0" style="cursor:pointer;">
@@ -408,13 +475,9 @@
         <label>Nghiêng Y (Yaw: <span id="lblTiltY">0°</span>)</label>
         <input type="range" id="cfgTiltY" min="-30" max="30" value="0" style="cursor:pointer;">
       </div>
-      <div class="form-group">
-        <label>Xoay Z (Roll: <span id="lblRotZ">0°</span>)</label>
-        <input type="range" id="cfgRotZ" min="-20" max="20" value="0" style="cursor:pointer;">
-      </div>
 
-      <!-- MÀU SẮC -->
-      <div class="section-label">🎨 6. Màu Sắc & Phông Nền</div>
+      <!-- MÀU SẮC & PHÔNG NỀN -->
+      <div class="section-label">🎨 7. Màu Sắc & Phông Nền</div>
       <div class="form-group">
         <div class="btn-group">
           <div class="btn-opt active" data-color="#6366f1" style="background:#6366f1;">Indigo</div>
@@ -425,7 +488,7 @@
         </div>
       </div>
       <div class="form-group" style="flex-direction:row; align-items:center; gap:8px;">
-        <label style="flex:1;">Màu Tự Chọn (Hex):</label>
+        <label style="flex:1;">Màu Tự Chọn:</label>
         <input type="color" id="cfgColorPicker" value="#6366f1" style="height:32px; width:65px; border:none; border-radius:6px; cursor:pointer;">
       </div>
       <div class="form-group">
@@ -437,47 +500,18 @@
         </div>
       </div>
 
-      <!-- KÍCH THƯỚC & BO GÓC -->
-      <div class="section-label">🎚️ 7. Kích Thước & Bo Góc</div>
+      <!-- KÍCH THƯỚC -->
+      <div class="section-label">🎚️ 8. Kích Thước & Bo Góc</div>
       <div class="form-group">
         <label>Thu Phóng (Scale: <span id="lblScale">100%</span>)</label>
         <input type="range" id="cfgScale" min="50" max="170" value="100" style="cursor:pointer;">
       </div>
       <div class="form-group">
-        <label>Độ Mờ Nền (Opacity: <span id="lblAlpha">90%</span>)</label>
-        <input type="range" id="cfgAlpha" min="0" max="100" value="90" style="cursor:pointer;">
-      </div>
-      <div class="form-group">
-        <label>Độ Bo Góc (Radius: <span id="lblRadius">18px</span>)</label>
-        <input type="range" id="cfgRadius" min="0" max="30" value="18" style="cursor:pointer;">
+        <label>Độ Mờ Nền (Opacity: <span id="lblAlpha">92%</span>)</label>
+        <input type="range" id="cfgAlpha" min="0" max="100" value="92" style="cursor:pointer;">
       </div>
 
-      <!-- ẨN HIỆN & HIỆU ỨNG ĐỘNG -->
-      <div class="section-label">👁️ 8. Thành Phần & Hạt Hiệu Ứng</div>
-      <div class="form-group" style="gap:6px; font-size:0.8rem;">
-        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
-          <input type="checkbox" id="cfgHideEmoji"> Ẩn Icon Emoji
-        </label>
-        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
-          <input type="checkbox" id="cfgHideDate"> Ẩn Ngày Dương Lịch
-        </label>
-        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
-          <input type="checkbox" id="cfgShowLunar" checked> Hiện Âm Lịch & Can Chi
-        </label>
-        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
-          <input type="checkbox" id="cfgShowTicker" checked> Bật Chữ Chạy Dưới Đáy
-        </label>
-      </div>
-      <div class="form-group">
-        <label>Hiệu Ứng Hạt Nền Bay (Particle Physics):</label>
-        <select id="cfgParticles" class="studio-select">
-          <option value="none">Không hạt</option>
-          <option value="stars">Bụi Sao Bay Lơ Lửng (Starfield)</option>
-          <option value="sakura">Cánh Hoa Đào Rơi (Tết / Sakura)</option>
-        </select>
-      </div>
-
-      <!-- LỜI NHẮN & TEST ÂM THANH -->
+      <!-- LỜI NHẮN & TEST -->
       <div class="section-label">💬 9. Lời Nhắn Ticker & Test</div>
       <div class="form-group">
         <input type="text" id="cfgCustomMsg" class="studio-input" placeholder="Nhập lời chào, thông báo của streamer...">
@@ -507,33 +541,66 @@
        ========================================================= -->
   <div id="overlayMount" class="pos-top-left">
     <div class="stream-hud" id="hudWidget">
-      <div class="hud-emoji" id="hEmoji">🎉</div>
-      <div class="hud-meta">
-        <div class="hud-tag">
-          <span style="display:inline-block; width:6px; height:6px; background:#ef4444; border-radius:50%;"></span>
-          <span id="hTag">SẮP DIỄN RA</span>
-        </div>
-        <div class="hud-title" id="hTitle">Tết Nguyên Đán</div>
-        <div class="hud-date" id="hDate">Đang tính toán...</div>
-        <div class="hud-lunar" id="hLunar">Âm lịch: Đang cập nhật</div>
-      </div>
       
-      <div class="hud-timer" id="hTimerGroup">
-        <div class="hud-box">
-          <div class="hud-val" id="hDays">00</div>
-          <div class="hud-lbl">Ngày</div>
+      <!-- HÀNG TIÊU ĐỀ & ĐỒNG HỒ CHÍNH -->
+      <div class="hud-main-row">
+        <div class="hud-emoji" id="hEmoji">🎉</div>
+        <div class="hud-meta">
+          <div class="hud-tag">
+            <span style="display:inline-block; width:6px; height:6px; background:#ef4444; border-radius:50%;"></span>
+            <span id="hTag">SẮP DIỄN RA</span>
+          </div>
+          <div class="hud-title" id="hTitle">Tết Nguyên Đán</div>
+          <div class="hud-date" id="hDate">Đang tính toán...</div>
+          <div class="hud-lunar" id="hLunar">Âm lịch: Đang cập nhật</div>
         </div>
-        <div class="hud-box">
-          <div class="hud-val" id="hHours">00</div>
-          <div class="hud-lbl">Giờ</div>
+        
+        <div class="hud-timer" id="hTimerGroup">
+          <div class="hud-box">
+            <div class="hud-val" id="hDays">00</div>
+            <div class="hud-lbl">Ngày</div>
+          </div>
+          <div class="hud-box">
+            <div class="hud-val" id="hHours">00</div>
+            <div class="hud-lbl">Giờ</div>
+          </div>
+          <div class="hud-box">
+            <div class="hud-val" id="hMins">00</div>
+            <div class="hud-lbl">Phút</div>
+          </div>
+          <div class="hud-box">
+            <div class="hud-val" id="hSecs" style="color: #38bdf8;">00</div>
+            <div class="hud-lbl">Giây</div>
+          </div>
+          <div class="hud-box" id="boxMs" style="min-width:38px;">
+            <div class="hud-val" id="hMs" style="color: #f59e0b; font-size:1.15rem;">00</div>
+            <div class="hud-lbl">Ms</div>
+          </div>
         </div>
-        <div class="hud-box">
-          <div class="hud-val" id="hMins">00</div>
-          <div class="hud-lbl">Phút</div>
+      </div>
+
+      <!-- BẢNG TELEMETRY & MASTER DATA MỞ RỘNG (MỚI) -->
+      <div class="hud-telemetry-panel" id="telemetryPanel">
+        <div class="telemetry-row" id="rowTotals">
+          <span>Tổng thời gian:</span>
+          <span><span class="telemetry-pill" id="telTotalHours">0h</span> hoặc <span class="telemetry-pill" id="telTotalMins">0m</span></span>
         </div>
-        <div class="hud-box">
-          <div class="hud-val" id="hSecs" style="color: #38bdf8;">00</div>
-          <div class="hud-lbl">Giây</div>
+        
+        <div class="telemetry-row" id="rowYear">
+          <span id="telYearLbl">Tiến độ năm 2026:</span>
+          <span class="telemetry-pill" id="telYearPercent">0%</span>
+        </div>
+        <div class="progress-bar-container" id="barYear">
+          <div class="progress-bar-fill" id="telYearFill"></div>
+        </div>
+
+        <div class="telemetry-row" id="rowAstronomy" style="font-size:0.68rem; color:#94a3b8; margin-top:2px;">
+          <span id="telCanChiToday">Can Chi: ...</span>
+          <span id="telTietKhi">Tiết khí: ...</span>
+        </div>
+
+        <div class="telemetry-row" id="rowTrivia" style="font-style:italic; font-size:0.68rem; color:#cbd5e1; border-top:1px dashed rgba(255,255,255,0.08); padding-top:4px;">
+          <span id="telTriviaText">...</span>
         </div>
       </div>
 
@@ -629,6 +696,10 @@
     var jd = jdFromDate(dd, mm, yy);
     return `${CAN[(jd + 9) % 10]} ${CHI[(jd + 1) % 12]}`;
   }
+  function getCanChiMonth(mm, yy) {
+    return `${CAN[(yy * 12 + mm + 3) % 10]} ${CHI[(mm + 1) % 12]}`;
+  }
+
   const HOANG_DAO_MAP = {
     0: ["Tý (23-1)", "Sửu (1-3)", "Mão (5-7)", "Ngọ (11-13)", "Thân (15-17)", "Dậu (17-19)"],
     1: ["Dần (3-5)", "Mão (5-7)", "Tỵ (9-11)", "Thân (15-17)", "Tuất (19-21)", "Hợi (21-23)"],
@@ -642,56 +713,68 @@
     return HOANG_DAO_MAP[(jd + 1) % 12 % 6];
   }
 
+  const TIET_KHI_NAMES = [
+    "Xuân Phân", "Thanh Minh", "Cốc Vũ", "Lập Hạ", "Tiểu Mãn", "Mang Chủng",
+    "Hạ Chí", "Tiểu Thử", "Đại Thử", "Lập Thu", "Xử Thử", "Bạch Lộ",
+    "Thu Phân", "Hàn Lộ", "Sương Giáng", "Lập Đông", "Tiểu Tuyết", "Đại Tuyết",
+    "Đông Chí", "Tiểu Hàn", "Đại Hàn", "Lập Xuân", "Vũ Thủy", "Kinh Trập"
+  ];
+  function getTietKhiToday(dd, mm, yy) {
+    var jd = jdFromDate(dd, mm, yy);
+    var index = getSunLongitude(jd, 7);
+    return TIET_KHI_NAMES[index] || "Đang tính";
+  }
+
   /* ==========================================================================
-     2. DỮ LIỆU SỰ KIỆN VIỆT NAM
+     2. DỮ LIỆU SỰ KIỆN KÈM Ý NGHĨA TRIVIA
      ========================================================================== */
   const HOLIDAYS_SOLAR = [
-    { name: "Tết Dương Lịch", emoji: "🎉", month: 1, day: 1 },
-    { name: "Thành lập Đảng", emoji: "🚩", month: 2, day: 3 },
-    { name: "Valentine", emoji: "❤️", month: 2, day: 14 },
-    { name: "Thầy thuốc Việt Nam", emoji: "⚕️", month: 2, day: 27 },
-    { name: "Quốc tế Phụ nữ", emoji: "🌸", month: 3, day: 8 },
-    { name: "Thành lập Đoàn", emoji: "🌟", month: 3, day: 26 },
-    { name: "Cá Tháng Tư", emoji: "🤡", month: 4, day: 1 },
-    { name: "Giải phóng miền Nam", emoji: "🇻🇳", month: 4, day: 30 },
-    { name: "Quốc tế Lao động", emoji: "⚒️", month: 5, day: 1 },
-    { name: "Sinh nhật Bác Hồ", emoji: "🌟", month: 5, day: 19 },
-    { name: "Quốc tế Thiếu nhi", emoji: "🎈", month: 6, day: 1 },
-    { name: "Gia đình Việt Nam", emoji: "👨‍👩‍👧‍👦", month: 6, day: 28 },
-    { name: "Thương binh Liệt sĩ", emoji: "🕯️", month: 7, day: 27 },
-    { name: "Cách mạng Tháng Tám", emoji: "🔥", month: 8, day: 19 },
-    { name: "Quốc khánh Việt Nam", emoji: "🎆", month: 9, day: 2 },
-    { name: "Giải phóng Thủ đô", emoji: "🏛️", month: 10, day: 10 },
-    { name: "Phụ nữ Việt Nam", emoji: "💐", month: 10, day: 20 },
-    { name: "Halloween", emoji: "🎃", month: 10, day: 31 },
-    { name: "Nhà giáo Việt Nam", emoji: "📚", month: 11, day: 20 },
-    { name: "Thành lập QĐND", emoji: "🪖", month: 12, day: 22 },
-    { name: "Giáng sinh (Noel)", emoji: "🎄", month: 12, day: 25 }
+    { name: "Tết Dương Lịch", emoji: "🎉", month: 1, day: 1, trivia: "Chào đón ngày đầu tiên của năm mới theo lịch Gregory quốc tế." },
+    { name: "Thành lập Đảng", emoji: "🚩", month: 2, day: 3, trivia: "Kỷ niệm ngày thành lập Đảng Cộng sản Việt Nam (03/02/1930)." },
+    { name: "Valentine", emoji: "❤️", month: 2, day: 14, trivia: "Ngày Lễ Tình nhân tôn vinh tình yêu lứa đôi trên toàn thế giới." },
+    { name: "Thầy thuốc Việt Nam", emoji: "⚕️", month: 2, day: 27, trivia: "Tôn vinh các y bác sĩ và cán bộ y tế theo lời dạy Lương y như từ mẫu." },
+    { name: "Quốc tế Phụ nữ", emoji: "🌸", month: 3, day: 8, trivia: "Kỷ niệm cuộc đấu tranh vì quyền bình đẳng và hạnh phúc của phụ nữ toàn cầu." },
+    { name: "Thành lập Đoàn", emoji: "🌟", month: 3, day: 26, trivia: "Kỷ niệm ngày thành lập Đoàn Thanh niên Cộng sản Hồ Chí Minh (1931)." },
+    { name: "Cá Tháng Tư", emoji: "🤡", month: 4, day: 1, trivia: "Ngày nói dối vui vẻ mang lại tiếng cười và sự thoải mái." },
+    { name: "Giải phóng miền Nam", emoji: "🇻🇳", month: 4, day: 30, trivia: "Ngày Thống nhất Đất nước, kết thúc chiến tranh (30/04/1975)." },
+    { name: "Quốc tế Lao động", emoji: "⚒️", month: 5, day: 1, trivia: "Ngày hội của giai cấp công nhân và người lao động trên khắp năm châu." },
+    { name: "Sinh nhật Bác Hồ", emoji: "🌟", month: 5, day: 19, trivia: "Kỷ niệm ngày sinh Chủ tịch Hồ Chí Minh vĩ đại (19/05/1890)." },
+    { name: "Quốc tế Thiếu nhi", emoji: "🎈", month: 6, day: 1, trivia: "Ngày hội bảo vệ, chăm sóc và nâng niu trẻ em toàn thế giới." },
+    { name: "Gia đình Việt Nam", emoji: "👨‍👩‍👧‍👦", month: 6, day: 28, trivia: "Tôn vinh những giá trị văn hóa truyền thống tốt đẹp của gia đình Việt." },
+    { name: "Thương binh Liệt sĩ", emoji: "🕯️", month: 7, day: 27, trivia: "Tưởng nhớ và tri ân các anh hùng liệt sĩ đã hy sinh vì Tổ quốc." },
+    { name: "Cách mạng Tháng Tám", emoji: "🔥", month: 8, day: 19, trivia: "Kỷ niệm thắng lợi vĩ đại của cuộc Tổng khởi nghĩa Cách mạng Tháng Tám (1945)." },
+    { name: "Quốc khánh Việt Nam", emoji: "🎆", month: 9, day: 2, trivia: "Ngày Bác Hồ đọc Tuyên ngôn Độc lập khai sinh nước VNDCCH (02/09/1945)." },
+    { name: "Giải phóng Thủ đô", emoji: "🏛️", month: 10, day: 10, trivia: "Kỷ niệm ngày đoàn quân giải phóng tiến về tiếp quản Thủ đô Hà Nội (1954)." },
+    { name: "Phụ nữ Việt Nam", emoji: "💐", month: 10, day: 20, trivia: "Kỷ niệm thành lập Hội Phụ nữ phản đế VN, tôn vinh người phụ nữ Việt." },
+    { name: "Halloween", emoji: "🎃", month: 10, day: 31, trivia: "Lễ hội hóa trang phương Tây xua đuổi tà ma và đón mùa đông." },
+    { name: "Nhà giáo Việt Nam", emoji: "📚", month: 11, day: 20, trivia: "Ngày hội tri ân các thầy cô giáo - những người lái đò thầm lặng." },
+    { name: "Thành lập QĐND", emoji: "🪖", month: 12, day: 22, trivia: "Ngày thành lập Quân đội Nhân dân Việt Nam anh hùng (22/12/1944)." },
+    { name: "Giáng sinh (Noel)", emoji: "🎄", month: 12, day: 25, trivia: "Mừng ngày Chúa Giê-su giáng sinh, mùa của an lành và yêu thương." }
   ];
 
   const HOLIDAYS_LUNAR = [
-    { name: "Tết Nguyên Đán (Mùng 1)", emoji: "🧧", month: 1, day: 1, lunarTxt: "01/01 AL" },
-    { name: "Tết Nguyên Đán (Mùng 2)", emoji: "🧧", month: 1, day: 2, lunarTxt: "02/01 AL" },
-    { name: "Tết Nguyên Đán (Mùng 3)", emoji: "🧧", month: 1, day: 3, lunarTxt: "03/01 AL" },
-    { name: "Rằm tháng Giêng", emoji: "🌕", month: 1, day: 15, lunarTxt: "15/01 AL" },
-    { name: "Tết Hàn Thực", emoji: "🥣", month: 3, day: 3, lunarTxt: "03/03 AL" },
-    { name: "Giỗ Tổ Hùng Vương", emoji: "👑", month: 3, day: 10, lunarTxt: "10/03 AL" },
-    { name: "Đại lễ Phật Đản", emoji: "🪷", month: 4, day: 15, lunarTxt: "15/04 AL" },
-    { name: "Tết Đoan Ngọ", emoji: "🍑", month: 5, day: 5, lunarTxt: "05/05 AL" },
-    { name: "Lễ Thất Tịch", emoji: "🎋", month: 7, day: 7, lunarTxt: "07/07 AL" },
-    { name: "Lễ Vu Lan", emoji: "🙏", month: 7, day: 15, lunarTxt: "15/07 AL" },
-    { name: "Tết Trung Thu", emoji: "🥮", month: 8, day: 15, lunarTxt: "15/08 AL" },
-    { name: "Tiễn Ông Táo", emoji: "🐟", month: 12, day: 23, lunarTxt: "23/12 AL" },
-    { name: "Đêm Giao Thừa (30 Tết)", emoji: "🎆", month: 12, day: 30, lunarTxt: "30/12 AL" }
+    { name: "Tết Nguyên Đán (Mùng 1)", emoji: "🧧", month: 1, day: 1, lunarTxt: "01/01 AL", trivia: "Khoảnh khắc khởi đầu năm mới âm lịch, sum vầy và chúc tết gia đình." },
+    { name: "Tết Nguyên Đán (Mùng 2)", emoji: "🧧", month: 1, day: 2, lunarTxt: "02/01 AL", trivia: "Mùng một tết cha, mùng hai tết mẹ - thăm hỏi quê ngoại và người thân." },
+    { name: "Tết Nguyên Đán (Mùng 3)", emoji: "🧧", month: 1, day: 3, lunarTxt: "03/01 AL", trivia: "Mùng ba tết thầy - tri ân công ơn dạy dỗ của những bậc tiền bối." },
+    { name: "Rằm tháng Giêng", emoji: "🌕", month: 1, day: 15, lunarTxt: "15/01 AL", trivia: "Tết Thượng Nguyên - Lễ Phật quanh năm không bằng ngày rằm tháng Giêng." },
+    { name: "Tết Hàn Thực", emoji: "🥣", month: 3, day: 3, lunarTxt: "03/03 AL", trivia: "Tết bánh trôi, bánh chay tưởng nhớ tổ tiên và nguồn cội." },
+    { name: "Giỗ Tổ Hùng Vương", emoji: "👑", month: 3, day: 10, lunarTxt: "10/03 AL", trivia: "Dù ai đi ngược về xuôi, nhớ ngày Giỗ Tổ mùng mười tháng ba." },
+    { name: "Đại lễ Phật Đản", emoji: "🪷", month: 4, day: 15, lunarTxt: "15/04 AL", trivia: "Kỷ niệm ngày Đức Phật Thích Ca Mâu Ni đản sinh." },
+    { name: "Tết Đoan Ngọ", emoji: "🍑", month: 5, day: 5, lunarTxt: "05/05 AL", trivia: "Tết giết sâu bọ, ăn cơm rượu nếp và hoa quả cầu sức khỏe mùa hè." },
+    { name: "Lễ Thất Tịch", emoji: "🎋", month: 7, day: 7, lunarTxt: "07/07 AL", trivia: "Ngày Ngưu Lang Chức Nữ gặp nhau trên cầu Ô Thước, ăn chè đậu đỏ." },
+    { name: "Lễ Vu Lan", emoji: "🙏", month: 7, day: 15, lunarTxt: "15/07 AL", trivia: "Mùa báo hiếu công ơn cha mẹ và ngày xá tội vong nhân." },
+    { name: "Tết Trung Thu", emoji: "🥮", month: 8, day: 15, lunarTxt: "15/08 AL", trivia: "Đêm rằm trông trăng, rước đèn ông sao, ăn bánh dẻo bánh nướng sum vầy." },
+    { name: "Tiễn Ông Táo", emoji: "🐟", month: 12, day: 23, lunarTxt: "23/12 AL", trivia: "Thả cá chép tiễn Táo Quân cưỡi mây về trời báo cáo Ngọc Hoàng." },
+    { name: "Đêm Giao Thừa (30 Tết)", emoji: "🎆", month: 12, day: 30, lunarTxt: "30/12 AL", trivia: "Thời khắc thiêng liêng chuyển giao năm cũ sang năm mới." }
   ];
 
   /* ==========================================================================
-     3. QUẢN LÝ DỮ LIỆU & ENGINE ĐẾM NGƯỢC
+     3. QUẢN LÝ DỮ LIỆU & ENGINE ĐẾM NGƯỢC MASTER
      ========================================================================== */
   const curYear = new Date().getFullYear();
   let allEvents = [];
   let currentEvent = null;
-  let timerInterval = null;
+  let timerAnimFrame = null;
 
   function parseLocalDate(str) {
     const [y, m, d] = str.split('-').map(Number);
@@ -720,7 +803,7 @@
         const sol = convertLunar2Solar(c.lunarDay, c.lunarMonth, year, 0, 7);
         abs = `${sol[2]}-${String(sol[1]).padStart(2,'0')}-${String(sol[0]).padStart(2,'0')}`;
       }
-      return { ...c, absolute: abs };
+      return { ...c, absolute: abs, trivia: "Sự kiện được tạo bởi streamer." };
     });
 
     const todayZero = new Date();
@@ -747,12 +830,15 @@
     });
     document.getElementById("hDate").textContent = `📅 ${dateMeta}`;
     document.getElementById("hLunar").textContent = `🌕 ${ev.lunarFull}`;
+    document.getElementById("telTriviaText").textContent = `💡 ${ev.trivia || "Ngày lễ truyền thống ý nghĩa của Việt Nam."}`;
   }
 
-  function startLiveTimer() {
-    if (timerInterval) clearInterval(timerInterval);
+  function startMasterLiveTimer() {
+    if (timerAnimFrame) cancelAnimationFrame(timerAnimFrame);
 
-    function tick() {
+    let lastSec = -1;
+
+    function renderLoop() {
       if (!currentEvent) return;
       const targetTime = currentEvent.dateObj.getTime();
       const now = new Date();
@@ -775,11 +861,26 @@
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        const ms = Math.floor((diff % 1000) / 10);
+
+        // Phát âm thanh khi còn 5 giây cuối
+        if (days === 0 && hours === 0 && minutes === 0 && seconds <= 5 && seconds !== lastSec) {
+          lastSec = seconds;
+          playBeepSound();
+        }
 
         document.getElementById("hDays").textContent = String(days).padStart(2,'0');
         document.getElementById("hHours").textContent = String(hours).padStart(2,'0');
         document.getElementById("hMins").textContent = String(minutes).padStart(2,'0');
         document.getElementById("hSecs").textContent = String(seconds).padStart(2,'0');
+        document.getElementById("hMs").textContent = String(ms).padStart(2,'0');
+
+        // Cập nhật Telemetry
+        const totalHours = Math.floor(diff / (1000 * 60 * 60));
+        const totalMins = Math.floor(diff / (1000 * 60));
+        document.getElementById("telTotalHours").textContent = `${totalHours.toLocaleString()}h`;
+        document.getElementById("telTotalMins").textContent = `${totalMins.toLocaleString()}m`;
+
       } else {
         timerGroup.style.display = "flex";
         todayBadge.style.display = "none";
@@ -788,11 +889,30 @@
         document.getElementById("hHours").textContent = "00";
         document.getElementById("hMins").textContent = "00";
         document.getElementById("hSecs").textContent = "00";
+        document.getElementById("hMs").textContent = "00";
       }
+
+      // Cập nhật tiến độ năm (Year Progress %)
+      const curY = now.getFullYear();
+      const startOfYear = new Date(curY, 0, 1).getTime();
+      const endOfYear = new Date(curY + 1, 0, 1).getTime();
+      const yearPct = Math.min(100, Math.max(0, ((now.getTime() - startOfYear) / (endOfYear - startOfYear)) * 100)).toFixed(1);
+      document.getElementById("telYearLbl").textContent = `Tiến độ năm ${curY}:`;
+      document.getElementById("telYearPercent").textContent = `${yearPct}%`;
+      document.getElementById("telYearFill").style.width = `${yearPct}%`;
+
+      // Cập nhật Thiên văn hôm nay
+      const dNow = now.getDate(), mNow = now.getMonth() + 1;
+      const canChiDay = getCanChiDay(dNow, mNow, curY);
+      const canChiMonth = getCanChiMonth(mNow, curY);
+      const tietKhi = getTietKhiToday(dNow, mNow, curY);
+      document.getElementById("telCanChiToday").textContent = `Ngày ${canChiDay}, Tháng ${canChiMonth}`;
+      document.getElementById("telTietKhi").textContent = `Tiết khí: ${tietKhi}`;
+
+      timerAnimFrame = requestAnimationFrame(renderLoop);
     }
 
-    tick();
-    timerInterval = setInterval(tick, 1000);
+    renderLoop();
   }
 
   function updateTickerTrack() {
@@ -825,7 +945,7 @@
   const urlParams = new URLSearchParams(window.location.search);
   const isObs = urlParams.get("overlay") === "1";
 
-  // Biến cấu hình
+  // Biến tham số thiết kế
   let selEventId = urlParams.get("id") || "";
   let selLayout = urlParams.get("pos") || "pos-top-left";
   let selFont = urlParams.get("font") ? decodeURIComponent(urlParams.get("font")) : "'Plus Jakarta Sans', sans-serif";
@@ -833,16 +953,16 @@
   let selColor = urlParams.get("color") ? decodeURIComponent(urlParams.get("color")) : "#6366f1";
   let selBg = urlParams.get("bg") || "transparent";
   let selScale = parseFloat(urlParams.get("scale") || "1");
-  let selAlpha = parseFloat(urlParams.get("alpha") || "0.9");
-  let selRadius = parseInt(urlParams.get("radius") || "18");
-  let selHideEmoji = urlParams.get("noemoji") === "1";
-  let selHideDate = urlParams.get("nodate") === "1";
-  let selShowLunar = urlParams.get("lunar") !== "0";
-  let selShowTicker = urlParams.get("ticker") !== "0";
+  let selAlpha = parseFloat(urlParams.get("alpha") || "0.92");
   let selTiltX = parseInt(urlParams.get("tiltx") || "0");
   let selTiltY = parseInt(urlParams.get("tilty") || "0");
-  let selRotZ = parseInt(urlParams.get("rotz") || "0");
-  let selParticles = urlParams.get("particles") || "none";
+
+  // Tham số hiển thị Telemetry
+  let selShowMs = urlParams.get("ms") !== "0";
+  let selShowTotalHours = urlParams.get("hours") !== "0";
+  let selShowYearProgress = urlParams.get("yearprog") !== "0";
+  let selShowHoangDao = urlParams.get("astronomy") !== "0";
+  let selShowTrivia = urlParams.get("trivia") !== "0";
 
   function applyStyles() {
     const mount = document.getElementById("overlayMount");
@@ -853,12 +973,10 @@
     document.documentElement.style.setProperty("--primary-gradient", `linear-gradient(135deg, ${selColor} 0%, #a855f7 100%)`);
     document.documentElement.style.setProperty("--hud-alpha", selAlpha);
     document.documentElement.style.setProperty("--hud-bg", `rgba(15, 23, 42, ${selAlpha})`);
-    document.documentElement.style.setProperty("--hud-radius", `${selRadius}px`);
 
     // GPU Matrix 3D Tilt
     document.documentElement.style.setProperty("--tilt-x", `${selTiltX}deg`);
     document.documentElement.style.setProperty("--tilt-y", `${selTiltY}deg`);
-    document.documentElement.style.setProperty("--rot-z", `${selRotZ}deg`);
 
     // Style Khung
     if (selStyle === "neon") {
@@ -881,10 +999,13 @@
       mount.style.transform = "none";
     }
 
-    document.getElementById("hEmoji").style.display = selHideEmoji ? "none" : "block";
-    document.getElementById("hDate").style.display = selHideDate ? "none" : "block";
-    document.getElementById("hLunar").style.display = selShowLunar ? "block" : "none";
-    document.getElementById("streamTicker").style.display = selShowTicker ? "flex" : "none";
+    // Ẩn hiện các telemetry mở rộng
+    document.getElementById("boxMs").style.display = selShowMs ? "flex" : "none";
+    document.getElementById("rowTotals").style.display = selShowTotalHours ? "flex" : "none";
+    document.getElementById("rowYear").style.display = selShowYearProgress ? "flex" : "none";
+    document.getElementById("barYear").style.display = selShowYearProgress ? "block" : "none";
+    document.getElementById("rowAstronomy").style.display = selShowHoangDao ? "flex" : "none";
+    document.getElementById("rowTrivia").style.display = selShowTrivia ? "flex" : "none";
 
     // Phông nền
     const stage = document.getElementById("stageScreen");
@@ -901,7 +1022,7 @@
     // Sinh Link OBS hoàn chỉnh
     if (!isObs) {
       const baseUrl = window.location.origin + window.location.pathname;
-      const finalLink = `${baseUrl}?overlay=1&id=${selEventId}&pos=${selLayout}&font=${encodeURIComponent(selFont)}&style=${selStyle}&color=${encodeURIComponent(selColor)}&bg=${selBg}&scale=${selScale}&alpha=${selAlpha}&radius=${selRadius}&tiltx=${selTiltX}&tilty=${selTiltY}&rotz=${selRotZ}&particles=${selParticles}&noemoji=${selHideEmoji ? '1' : '0'}&nodate=${selHideDate ? '1' : '0'}&lunar=${selShowLunar ? '1' : '0'}&ticker=${selShowTicker ? '1' : '0'}`;
+      const finalLink = `${baseUrl}?overlay=1&id=${selEventId}&pos=${selLayout}&font=${encodeURIComponent(selFont)}&style=${selStyle}&color=${encodeURIComponent(selColor)}&bg=${selBg}&scale=${selScale}&alpha=${selAlpha}&tiltx=${selTiltX}&tilty=${selTiltY}&ms=${selShowMs ? '1' : '0'}&hours=${selShowTotalHours ? '1' : '0'}&yearprog=${selShowYearProgress ? '1' : '0'}&astronomy=${selShowHoangDao ? '1' : '0'}&trivia=${selShowTrivia ? '1' : '0'}`;
       document.getElementById("obsFinalUrl").value = finalLink;
     }
   }
@@ -923,14 +1044,14 @@
       selEventId = nearest.id;
       select.value = nearest.id;
       updateHUD(nearest);
-      startLiveTimer();
+      startMasterLiveTimer();
     }
 
     select.addEventListener("change", (e) => {
       currentEvent = allEvents.find(ev => ev.id === e.target.value);
       selEventId = currentEvent.id;
       updateHUD(currentEvent);
-      startLiveTimer();
+      startMasterLiveTimer();
       applyStyles();
     });
 
@@ -942,42 +1063,31 @@
           selFont = "'Montserrat', sans-serif";
           selColor = "#ef4444";
           selStyle = "neon";
-          selRadius = 6;
           selTiltY = -12;
           selTiltX = 6;
-          selParticles = "none";
         } else if (p === "chill") {
           selFont = "'Quicksand', sans-serif";
           selColor = "#06b6d4";
           selStyle = "glass";
-          selRadius = 24;
-          selTiltX = 0; selTiltY = 0; selRotZ = 0;
-          selParticles = "stars";
+          selTiltX = 0; selTiltY = 0;
         } else if (p === "cyber") {
           selFont = "'VT323', monospace";
           selColor = "#ec4899";
           selStyle = "neon";
-          selRadius = 0;
           selTiltX = 8; selTiltY = 14;
-          selParticles = "none";
         } else if (p === "cinema") {
           selLayout = "pos-fullscreen";
           selFont = "'Playfair Display', serif";
           selColor = "#f59e0b";
           selStyle = "glass";
-          selRadius = 20;
-          selParticles = "sakura";
         }
         document.getElementById("cfgLayout").value = selLayout;
         document.getElementById("cfgFont").value = selFont;
         document.getElementById("cfgColorPicker").value = selColor;
-        document.getElementById("cfgRadius").value = selRadius;
-        document.getElementById("lblRadius").textContent = `${selRadius}px`;
         document.getElementById("cfgTiltX").value = selTiltX;
         document.getElementById("lblTiltX").textContent = `${selTiltX}°`;
         document.getElementById("cfgTiltY").value = selTiltY;
         document.getElementById("lblTiltY").textContent = `${selTiltY}°`;
-        document.getElementById("cfgParticles").value = selParticles;
         applyStyles();
       });
     });
@@ -1048,12 +1158,6 @@
       applyStyles();
     });
 
-    document.getElementById("cfgRadius").addEventListener("input", (e) => {
-      selRadius = parseInt(e.target.value);
-      document.getElementById("lblRadius").textContent = `${e.target.value}px`;
-      applyStyles();
-    });
-
     // GPU Matrix Tilt Sliders
     document.getElementById("cfgTiltX").addEventListener("input", (e) => {
       selTiltX = parseInt(e.target.value);
@@ -1065,32 +1169,26 @@
       document.getElementById("lblTiltY").textContent = `${selTiltY}°`;
       applyStyles();
     });
-    document.getElementById("cfgRotZ").addEventListener("input", (e) => {
-      selRotZ = parseInt(e.target.value);
-      document.getElementById("lblRotZ").textContent = `${selRotZ}°`;
-      applyStyles();
-    });
 
-    // Checkboxes
-    document.getElementById("cfgHideEmoji").addEventListener("change", (e) => {
-      selHideEmoji = e.target.checked;
+    // Checkboxes Telemetry
+    document.getElementById("cfgShowMs").addEventListener("change", (e) => {
+      selShowMs = e.target.checked;
       applyStyles();
     });
-    document.getElementById("cfgHideDate").addEventListener("change", (e) => {
-      selHideDate = e.target.checked;
+    document.getElementById("cfgShowTotalHours").addEventListener("change", (e) => {
+      selShowTotalHours = e.target.checked;
       applyStyles();
     });
-    document.getElementById("cfgShowLunar").addEventListener("change", (e) => {
-      selShowLunar = e.target.checked;
+    document.getElementById("cfgShowYearProgress").addEventListener("change", (e) => {
+      selShowYearProgress = e.target.checked;
       applyStyles();
     });
-    document.getElementById("cfgShowTicker").addEventListener("change", (e) => {
-      selShowTicker = e.target.checked;
+    document.getElementById("cfgShowHoangDao").addEventListener("change", (e) => {
+      selShowHoangDao = e.target.checked;
       applyStyles();
     });
-
-    document.getElementById("cfgParticles").addEventListener("change", (e) => {
-      selParticles = e.target.value;
+    document.getElementById("cfgShowTrivia").addEventListener("change", (e) => {
+      selShowTrivia = e.target.checked;
       applyStyles();
     });
 
@@ -1116,11 +1214,26 @@
   }
 
   /* ==========================================================================
-     5. PARTICLE PHYSICS & SOUND SYNTHESIZER
+     5. DSP AUDIO & PARTICLE ENGINE
      ========================================================================== */
   let audioCtx = null;
   function initAudio() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  function playBeepSound() {
+    try {
+      initAudio();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.08);
+    } catch(e){}
   }
   function playFanfare() {
     try {
@@ -1155,7 +1268,7 @@
   function launchFireworks() {
     playFanfare();
     const colors = ["#6366f1", "#06b6d4", "#f59e0b", "#10b981", "#ef4444", "#ec4899", "#ffffff"];
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < 140; i++) {
       activeParticles.push({
         x: width / 2, y: height / 2,
         vx: (Math.random() - 0.5) * 18,
@@ -1163,60 +1276,13 @@
         size: Math.random() * 6 + 4,
         color: colors[Math.floor(Math.random() * colors.length)],
         alpha: 1,
-        decay: Math.random() * 0.015 + 0.008,
-        type: 'firework'
+        decay: Math.random() * 0.015 + 0.008
       });
     }
   }
-
-  // LOOP RENDER PARTICLE CHO TOÀN BỘ CÁC CHẾ ĐỘ
-  let ambientParticles = [];
-  function initAmbientParticles() {
-    ambientParticles = [];
-    for (let i = 0; i < 40; i++) {
-      ambientParticles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.6,
-        vy: Math.random() * 0.8 + 0.3,
-        size: Math.random() * 4 + 2,
-        rot: Math.random() * 360,
-        rotSpeed: (Math.random() - 0.5) * 2
-      });
-    }
-  }
-  initAmbientParticles();
 
   function renderParticlePhysics() {
     ctx.clearRect(0, 0, width, height);
-
-    // HẠT RƠI AMBIENT (STARS / SAKURA)
-    if (selParticles !== 'none') {
-      ambientParticles.forEach(p => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.rot += p.rotSpeed;
-        if (p.y > height) { p.y = -10; p.x = Math.random() * width; }
-        if (p.x > width) p.x = 0;
-        if (p.x < 0) p.x = width;
-
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate((p.rot * Math.PI) / 180);
-        if (selParticles === 'sakura') {
-          ctx.fillStyle = "rgba(244, 114, 182, 0.75)";
-          ctx.beginPath();
-          ctx.ellipse(0, 0, p.size * 2, p.size, 0, 0, Math.PI * 2);
-          ctx.fill();
-        } else if (selParticles === 'stars') {
-          ctx.fillStyle = "rgba(56, 189, 248, 0.8)";
-          ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
-        }
-        ctx.restore();
-      });
-    }
-
-    // PHÁO HOA ĂN MỪNG
     for (let i = activeParticles.length - 1; i >= 0; i--) {
       const p = activeParticles[i];
       p.x += p.vx;
@@ -1234,7 +1300,6 @@
         ctx.restore();
       }
     }
-
     requestAnimationFrame(renderParticlePhysics);
   }
   renderParticlePhysics();
@@ -1247,7 +1312,7 @@
     if (targetEv) {
       currentEvent = targetEv;
       updateHUD(targetEv);
-      startLiveTimer();
+      startMasterLiveTimer();
     }
     applyStyles();
   } else {

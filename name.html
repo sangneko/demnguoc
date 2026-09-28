@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Deep-Engine Studio v9.0: Master Data & OBS Stream Overlay</title>
+  <title>Deep-Engine Studio v10.0: Custom Events & Master Data Overlay</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +22,6 @@
       --glow-shadow: none;
       --tilt-x: 0deg;
       --tilt-y: 0deg;
-      --rot-z: 0deg;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -52,11 +51,11 @@
     }
 
     .studio-sidebar {
-      width: 480px;
+      width: 490px;
       height: 100vh;
       background: #0f172a;
       border-right: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 16px 20px;
+      padding: 18px 20px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -84,7 +83,7 @@
       color: #38bdf8;
       text-transform: uppercase;
       letter-spacing: 0.8px;
-      margin-top: 4px;
+      margin-top: 6px;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -103,6 +102,17 @@
       width: 100%;
     }
     .studio-select option { background: #0f172a; color: #fff; }
+
+    .custom-box {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 2px;
+    }
 
     .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
     .btn-opt {
@@ -179,7 +189,7 @@
       pointer-events: none;
     }
 
-    /* OVERLAY MOUNT CONTAINER */
+    /* OVERLAY MOUNT */
     #overlayMount {
       position: absolute;
       z-index: 500;
@@ -231,9 +241,9 @@
       backdrop-filter: blur(12px);
       position: relative;
       overflow: hidden;
-      min-width: 380px;
-      max-width: 600px;
-      transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) rotateZ(var(--rot-z));
+      min-width: 400px;
+      max-width: 640px;
+      transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .stream-hud::before {
@@ -283,7 +293,7 @@
     }
     .hud-lbl { font-size: 0.58rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-top: 2px; }
 
-    /* BẢNG DỮ LIỆU TELEMETRY & THIÊN VĂN MỞ RỘNG */
+    /* TELEMETRY & ASTRONOMY PANEL */
     .hud-telemetry-panel {
       border-top: 1px dashed rgba(255, 255, 255, 0.15);
       padding-top: 8px;
@@ -391,12 +401,39 @@
   <div id="studioApp">
     <div class="studio-sidebar">
       <div class="studio-header">
-        <div class="studio-title">⚙️ DEEP-ENGINE v9.0 MASTER</div>
-        <div class="studio-sub">Bộ Đo Lường Dữ Liệu Thời Gian Thực & Telemetry Lễ Hội</div>
+        <div class="studio-title">⚙️ DEEP-ENGINE v10.0 MASTER</div>
+        <div class="studio-sub">Tùy Biến Ngày Riêng, Lịch Âm & Telemetry Chuyên Sâu</div>
+      </div>
+
+      <!-- TẠO SỰ KIỆN RIÊNG CỦA STREAMER -->
+      <div class="section-label">✨ 1. Tạo Sự Kiện Riêng (Custom Event)</div>
+      <div class="custom-box">
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="custEmoji" class="studio-input" value="⭐" style="width:50px; text-align:center; font-size:1.1rem;">
+          <input type="text" id="custName" class="studio-input" placeholder="Tên sự kiện (VD: Sinh nhật, Ra mắt game...)">
+        </div>
+        
+        <div style="display:flex; gap:8px;">
+          <select id="custCalType" class="studio-select" style="flex:1;">
+            <option value="solar">Hệ Dương Lịch</option>
+            <option value="lunar">Hệ Âm Lịch (Quy đổi)</option>
+          </select>
+          <input type="datetime-local" id="custDateTime" class="studio-input" style="flex:2;">
+        </div>
+
+        <div id="custLunarRow" style="display:none; gap:6px;">
+          <input type="number" id="custLunarD" class="studio-input" placeholder="Ngày AL (1-30)" min="1" max="30">
+          <input type="number" id="custLunarM" class="studio-input" placeholder="Tháng AL (1-12)" min="1" max="12">
+        </div>
+
+        <input type="text" id="custTrivia" class="studio-input" placeholder="Ghi chú / Lời chúc hiển thị trên HUD...">
+        <button id="btnSaveCustom" class="btn-opt" style="background:#0284c7; border:none; padding:8px;">
+          ➕ Lưu & Chọn Sự Kiện Này Ngay
+        </button>
       </div>
 
       <!-- KỊCH BẢN ONE-CLICK -->
-      <div class="section-label">⚡ 1. Kịch Bản Preset Nhanh</div>
+      <div class="section-label">⚡ 2. Kịch Bản Preset Nhanh</div>
       <div class="form-group">
         <div class="btn-group">
           <div class="btn-opt" data-preset="esports">Esports</div>
@@ -406,14 +443,14 @@
         </div>
       </div>
 
-      <!-- CHỌN SỰ KIỆN -->
-      <div class="section-label">📌 2. Sự Kiện & Lễ Hội</div>
+      <!-- DANH SÁCH CHỌN SỰ KIỆN -->
+      <div class="section-label">📌 3. Chọn Sự Kiện Chiếu</div>
       <div class="form-group">
         <select id="cfgEvent" class="studio-select"></select>
       </div>
 
       <!-- BỐ CỤC VỊ TRÍ -->
-      <div class="section-label">📐 3. Bố Cục Hiển Thị</div>
+      <div class="section-label">📐 4. Bố Cục Hiển Thị</div>
       <div class="form-group">
         <select id="cfgLayout" class="studio-select">
           <option value="pos-top-left">Góc trên Trái (Top-Left)</option>
@@ -425,8 +462,8 @@
         </select>
       </div>
 
-      <!-- PHÔNG CHỮ & STYLE -->
-      <div class="section-label">🔤 4. Phông Chữ & Khung Viền</div>
+      <!-- PHÔNG CHỮ & STYLE KHUNG -->
+      <div class="section-label">🔤 5. Phông Chữ & Khung Viền</div>
       <div class="form-group">
         <select id="cfgFont" class="studio-select">
           <option value="'Plus Jakarta Sans', sans-serif">Plus Jakarta Sans (Hiện đại)</option>
@@ -445,8 +482,8 @@
         </div>
       </div>
 
-      <!-- TÙY CHỌN DỮ LIỆU HIỂN THỊ MỞ RỘNG (MỚI) -->
-      <div class="section-label">📊 5. Tùy Chọn Dữ Liệu & Telemetry</div>
+      <!-- TÙY CHỌN DỮ LIỆU HIỂN THỊ MỞ RỘNG -->
+      <div class="section-label">📊 6. Dữ Liệu & Telemetry Hiển Thị Sâu</div>
       <div class="form-group" style="gap:6px; font-size:0.75rem;">
         <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
           <input type="checkbox" id="cfgShowMs" checked> Hiện Mili-giây (Mượt mà 60fps)
@@ -458,15 +495,15 @@
           <input type="checkbox" id="cfgShowYearProgress" checked> Hiện Thanh Tiến Độ Năm (% Year Progress)
         </label>
         <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
-          <input type="checkbox" id="cfgShowHoangDao" checked> Hiện Giờ Hoàng Đạo & Tiết Khí Hôm Nay
+          <input type="checkbox" id="cfgShowHoangDao" checked> Hiện Bát Tự, Trực, Tiết Khí & Hoàng Đạo
         </label>
         <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
-          <input type="checkbox" id="cfgShowTrivia" checked> Hiện Tóm tắt Ý nghĩa Ngày lễ
+          <input type="checkbox" id="cfgShowTrivia" checked> Hiện Tóm tắt Ý nghĩa / Ghi chú Ngày lễ
         </label>
       </div>
 
       <!-- PHỐI CẢNH 3D -->
-      <div class="section-label">🎮 6. Góc Nghiêng 3D Phối Cảnh</div>
+      <div class="section-label">🎮 7. Góc Nghiêng Phối Cảnh (3D Tilt)</div>
       <div class="form-group">
         <label>Nghiêng X (Pitch: <span id="lblTiltX">0°</span>)</label>
         <input type="range" id="cfgTiltX" min="-30" max="30" value="0" style="cursor:pointer;">
@@ -477,7 +514,7 @@
       </div>
 
       <!-- MÀU SẮC & PHÔNG NỀN -->
-      <div class="section-label">🎨 7. Màu Sắc & Phông Nền</div>
+      <div class="section-label">🎨 8. Màu Sắc & Phông Nền</div>
       <div class="form-group">
         <div class="btn-group">
           <div class="btn-opt active" data-color="#6366f1" style="background:#6366f1;">Indigo</div>
@@ -501,7 +538,7 @@
       </div>
 
       <!-- KÍCH THƯỚC -->
-      <div class="section-label">🎚️ 8. Kích Thước & Bo Góc</div>
+      <div class="section-label">🎚️ 9. Kích Thước & Mờ Đục</div>
       <div class="form-group">
         <label>Thu Phóng (Scale: <span id="lblScale">100%</span>)</label>
         <input type="range" id="cfgScale" min="50" max="170" value="100" style="cursor:pointer;">
@@ -512,7 +549,7 @@
       </div>
 
       <!-- LỜI NHẮN & TEST -->
-      <div class="section-label">💬 9. Lời Nhắn Ticker & Test</div>
+      <div class="section-label">💬 10. Lời Nhắn Ticker & Test</div>
       <div class="form-group">
         <input type="text" id="cfgCustomMsg" class="studio-input" placeholder="Nhập lời chào, thông báo của streamer...">
       </div>
@@ -579,7 +616,7 @@
         </div>
       </div>
 
-      <!-- BẢNG TELEMETRY & MASTER DATA MỞ RỘNG (MỚI) -->
+      <!-- BẢNG TELEMETRY & MASTER DATA MỞ RỘNG -->
       <div class="hud-telemetry-panel" id="telemetryPanel">
         <div class="telemetry-row" id="rowTotals">
           <span>Tổng thời gian:</span>
@@ -726,7 +763,7 @@
   }
 
   /* ==========================================================================
-     2. DỮ LIỆU SỰ KIỆN KÈM Ý NGHĨA TRIVIA
+     2. DỮ LIỆU SỰ KIỆN GỐC
      ========================================================================== */
   const HOLIDAYS_SOLAR = [
     { name: "Tết Dương Lịch", emoji: "🎉", month: 1, day: 1, trivia: "Chào đón ngày đầu tiên của năm mới theo lịch Gregory quốc tế." },
@@ -776,7 +813,14 @@
   let currentEvent = null;
   let timerAnimFrame = null;
 
-  function parseLocalDate(str) {
+  function parseDateTime(str) {
+    // Hỗ trợ cả YYYY-MM-DD và YYYY-MM-DDTHH:mm
+    if (str.includes("T")) {
+      const [dPart, tPart] = str.split("T");
+      const [y, m, d] = dPart.split('-').map(Number);
+      const [hh, mm] = tPart.split(':').map(Number);
+      return new Date(y, m - 1, d, hh, mm, 0, 0);
+    }
     const [y, m, d] = str.split('-').map(Number);
     return new Date(y, m - 1, d, 0, 0, 0, 0);
   }
@@ -797,21 +841,21 @@
       };
     });
 
-    const customs = JSON.parse(localStorage.getItem("vn_custom_events") || "[]").map(c => {
+    const customs = JSON.parse(localStorage.getItem("vn_custom_events_v10") || "[]").map(c => {
       let abs = c.absolute;
       if (c.isLunar) {
-        const sol = convertLunar2Solar(c.lunarDay, c.lunarMonth, year, 0, 7);
+        const sol = convertLunar2Solar(c.lunarD, c.lunarM, year, 0, 7);
         abs = `${sol[2]}-${String(sol[1]).padStart(2,'0')}-${String(sol[0]).padStart(2,'0')}`;
       }
-      return { ...c, absolute: abs, trivia: "Sự kiện được tạo bởi streamer." };
+      return { ...c, absolute: abs };
     });
 
-    const todayZero = new Date();
-    todayZero.setHours(0,0,0,0);
+    const nowTime = new Date().getTime();
 
     allEvents = [...solars, ...lunars, ...customs].map(e => {
-      const dateObj = parseLocalDate(e.absolute);
-      const diffDays = Math.round((dateObj - todayZero) / (1000 * 60 * 60 * 24));
+      const dateObj = parseDateTime(e.absolute);
+      const diffMs = dateObj.getTime() - nowTime;
+      const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
       
       const l = convertSolar2Lunar(dateObj.getDate(), dateObj.getMonth() + 1, dateObj.getFullYear(), 7);
       const lunarFull = `Âm lịch: ${l[0]}/${l[1]} (${getCanChiYear(l[2])})`;
@@ -825,12 +869,12 @@
     document.getElementById("hEmoji").textContent = ev.emoji;
     document.getElementById("hTitle").textContent = ev.name;
 
-    const dateMeta = ev.dateObj.toLocaleDateString("vi-VN", {
-      weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric'
+    const dateMeta = ev.dateObj.toLocaleString("vi-VN", {
+      weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
     });
     document.getElementById("hDate").textContent = `📅 ${dateMeta}`;
     document.getElementById("hLunar").textContent = `🌕 ${ev.lunarFull}`;
-    document.getElementById("telTriviaText").textContent = `💡 ${ev.trivia || "Ngày lễ truyền thống ý nghĩa của Việt Nam."}`;
+    document.getElementById("telTriviaText").textContent = `💡 ${ev.trivia || "Sự kiện được theo dõi trong hệ thống."}`;
   }
 
   function startMasterLiveTimer() {
@@ -846,7 +890,7 @@
 
       const timerGroup = document.getElementById("hTimerGroup");
       const todayBadge = document.getElementById("hTodayBadge");
-      const isToday = (now.toDateString() === currentEvent.dateObj.toDateString());
+      const isToday = (now.toDateString() === currentEvent.dateObj.toDateString() && diff <= 0);
 
       if (isToday) {
         timerGroup.style.display = "none";
@@ -863,7 +907,6 @@
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         const ms = Math.floor((diff % 1000) / 10);
 
-        // Phát âm thanh khi còn 5 giây cuối
         if (days === 0 && hours === 0 && minutes === 0 && seconds <= 5 && seconds !== lastSec) {
           lastSec = seconds;
           playBeepSound();
@@ -875,7 +918,6 @@
         document.getElementById("hSecs").textContent = String(seconds).padStart(2,'0');
         document.getElementById("hMs").textContent = String(ms).padStart(2,'0');
 
-        // Cập nhật Telemetry
         const totalHours = Math.floor(diff / (1000 * 60 * 60));
         const totalMins = Math.floor(diff / (1000 * 60));
         document.getElementById("telTotalHours").textContent = `${totalHours.toLocaleString()}h`;
@@ -892,7 +934,7 @@
         document.getElementById("hMs").textContent = "00";
       }
 
-      // Cập nhật tiến độ năm (Year Progress %)
+      // Tiến độ năm
       const curY = now.getFullYear();
       const startOfYear = new Date(curY, 0, 1).getTime();
       const endOfYear = new Date(curY + 1, 0, 1).getTime();
@@ -901,7 +943,7 @@
       document.getElementById("telYearPercent").textContent = `${yearPct}%`;
       document.getElementById("telYearFill").style.width = `${yearPct}%`;
 
-      // Cập nhật Thiên văn hôm nay
+      // Thiên văn học hôm nay
       const dNow = now.getDate(), mNow = now.getMonth() + 1;
       const canChiDay = getCanChiDay(dNow, mNow, curY);
       const canChiMonth = getCanChiMonth(mNow, curY);
@@ -957,7 +999,6 @@
   let selTiltX = parseInt(urlParams.get("tiltx") || "0");
   let selTiltY = parseInt(urlParams.get("tilty") || "0");
 
-  // Tham số hiển thị Telemetry
   let selShowMs = urlParams.get("ms") !== "0";
   let selShowTotalHours = urlParams.get("hours") !== "0";
   let selShowYearProgress = urlParams.get("yearprog") !== "0";
@@ -974,11 +1015,9 @@
     document.documentElement.style.setProperty("--hud-alpha", selAlpha);
     document.documentElement.style.setProperty("--hud-bg", `rgba(15, 23, 42, ${selAlpha})`);
 
-    // GPU Matrix 3D Tilt
     document.documentElement.style.setProperty("--tilt-x", `${selTiltX}deg`);
     document.documentElement.style.setProperty("--tilt-y", `${selTiltY}deg`);
 
-    // Style Khung
     if (selStyle === "neon") {
       document.documentElement.style.setProperty("--hud-border-color", selColor);
       document.documentElement.style.setProperty("--hud-border-width", "2px");
@@ -999,7 +1038,6 @@
       mount.style.transform = "none";
     }
 
-    // Ẩn hiện các telemetry mở rộng
     document.getElementById("boxMs").style.display = selShowMs ? "flex" : "none";
     document.getElementById("rowTotals").style.display = selShowTotalHours ? "flex" : "none";
     document.getElementById("rowYear").style.display = selShowYearProgress ? "flex" : "none";
@@ -1007,7 +1045,6 @@
     document.getElementById("rowAstronomy").style.display = selShowHoangDao ? "flex" : "none";
     document.getElementById("rowTrivia").style.display = selShowTrivia ? "flex" : "none";
 
-    // Phông nền
     const stage = document.getElementById("stageScreen");
     if (isObs) {
       document.body.className = "is-obs-mode";
@@ -1019,7 +1056,6 @@
       else stage.style.backgroundColor = "#060913";
     }
 
-    // Sinh Link OBS hoàn chỉnh
     if (!isObs) {
       const baseUrl = window.location.origin + window.location.pathname;
       const finalLink = `${baseUrl}?overlay=1&id=${selEventId}&pos=${selLayout}&font=${encodeURIComponent(selFont)}&style=${selStyle}&color=${encodeURIComponent(selColor)}&bg=${selBg}&scale=${selScale}&alpha=${selAlpha}&tiltx=${selTiltX}&tilty=${selTiltY}&ms=${selShowMs ? '1' : '0'}&hours=${selShowTotalHours ? '1' : '0'}&yearprog=${selShowYearProgress ? '1' : '0'}&astronomy=${selShowHoangDao ? '1' : '0'}&trivia=${selShowTrivia ? '1' : '0'}`;
@@ -1053,6 +1089,62 @@
       updateHUD(currentEvent);
       startMasterLiveTimer();
       applyStyles();
+    });
+
+    // MODULE TẠO SỰ KIỆN RIÊNG
+    document.getElementById("custCalType").addEventListener("change", (e) => {
+      const isLunar = e.target.value === "lunar";
+      document.getElementById("custLunarRow").style.display = isLunar ? "flex" : "none";
+    });
+
+    document.getElementById("btnSaveCustom").addEventListener("click", () => {
+      const name = document.getElementById("custName").value.trim();
+      const emoji = document.getElementById("custEmoji").value.trim() || "⭐";
+      const calType = document.getElementById("custCalType").value;
+      const dtVal = document.getElementById("custDateTime").value;
+      const trivia = document.getElementById("custTrivia").value.trim();
+
+      if (!name) { alert("Vui lòng nhập tên sự kiện!"); return; }
+
+      let customObj = {
+        id: `c_${Date.now()}`,
+        name: name,
+        emoji: emoji,
+        trivia: trivia || "Sự kiện được tạo bởi streamer."
+      };
+
+      if (calType === "solar") {
+        if (!dtVal) { alert("Vui lòng chọn ngày giờ diễn ra!"); return; }
+        customObj.absolute = dtVal;
+        customObj.isLunar = false;
+      } else {
+        const lD = parseInt(document.getElementById("custLunarD").value);
+        const lM = parseInt(document.getElementById("custLunarM").value);
+        if (!lD || !lM || lD < 1 || lD > 30 || lM < 1 || lM > 12) {
+          alert("Vui lòng nhập ngày (1-30) và tháng (1-12) Âm Lịch hợp lệ!"); return;
+        }
+        customObj.isLunar = true;
+        customObj.lunarD = lD;
+        customObj.lunarM = lM;
+        customObj.absolute = ""; // loadAllEvents sẽ tự tính
+      }
+
+      const currentList = JSON.parse(localStorage.getItem("vn_custom_events_v10") || "[]");
+      currentList.push(customObj);
+      localStorage.setItem("vn_custom_events_v10", JSON.stringify(currentList));
+
+      loadAllEvents(curYear);
+      initStudioControls();
+
+      // Tự động chọn sự kiện vừa tạo
+      selEventId = customObj.id;
+      document.getElementById("cfgEvent").value = customObj.id;
+      currentEvent = allEvents.find(e => e.id === customObj.id);
+      updateHUD(currentEvent);
+      startMasterLiveTimer();
+      applyStyles();
+
+      alert(`Đã tạo thành công sự kiện: ${name}`);
     });
 
     // KỊCH BẢN ONE-CLICK PRESETS
@@ -1158,7 +1250,6 @@
       applyStyles();
     });
 
-    // GPU Matrix Tilt Sliders
     document.getElementById("cfgTiltX").addEventListener("input", (e) => {
       selTiltX = parseInt(e.target.value);
       document.getElementById("lblTiltX").textContent = `${selTiltX}°`;

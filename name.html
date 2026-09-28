@@ -206,7 +206,7 @@
       pointer-events: none;
     }
 
-    /* OVERLAY MOUNT */
+    /* OVERLAY MOUNT CONTAINER */
     #overlayMount {
       position: absolute;
       z-index: 500;
@@ -219,47 +219,78 @@
     .pos-bottom-right { bottom: 65px; right: 25px; transform-origin: bottom right; }
     .pos-top-center { top: 25px; left: 50%; transform: translateX(-50%); transform-origin: top center; }
 
-    /* FULLSCREEN CINEMA */
-    .pos-fullscreen {
+    /* =========================================================
+       FIX LỖI FULL MÀN HÌNH BỊ MẤT NỘI DUNG (CÂN ĐỐI 100%)
+       ========================================================= */
+    #overlayMount.pos-fullscreen {
       top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
       width: 100vw !important; height: 100vh !important;
       display: flex !important; align-items: center; justify-content: center;
       transform: none !important;
       background: rgba(8, 12, 24, var(--hud-alpha)) !important;
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px);
+      padding: 30px;
     }
-    .pos-fullscreen .stream-hud {
-      max-width: 1150px;
-      width: 90%;
-      flex-direction: column !important;
-      padding: 40px 30px !important;
+    #overlayMount.pos-fullscreen .stream-hud {
+      max-width: 1050px !important;
+      width: 100% !important;
+      padding: 35px 40px !important;
       border: calc(var(--hud-border-width) + 2px) solid var(--primary) !important;
       box-shadow: 0 0 60px rgba(99, 102, 241, 0.45) !important;
       transform: none !important;
     }
-    .pos-fullscreen .hud-emoji { font-size: 6.5rem !important; }
-    .pos-fullscreen .hud-title { font-size: 3rem !important; text-align: center; margin: 10px 0 !important; }
-    .pos-fullscreen .hud-date { font-size: 1.25rem !important; text-align: center; margin-bottom: 8px; }
-    .pos-fullscreen .hud-timer { margin: 16px auto !important; gap: 16px !important; }
-    .pos-fullscreen .hud-box { min-width: 115px !important; padding: 18px !important; border-radius: 16px !important; }
-    .pos-fullscreen .hud-val { font-size: 3.2rem !important; }
-    .pos-fullscreen .hud-lbl { font-size: 0.95rem !important; }
+    #overlayMount.pos-fullscreen .hud-main-row {
+      flex-direction: column !important;
+      text-align: center !important;
+      gap: 16px !important;
+    }
+    #overlayMount.pos-fullscreen .hud-meta {
+      align-items: center !important;
+      gap: 6px !important;
+    }
+    #overlayMount.pos-fullscreen .hud-emoji { font-size: 5rem !important; }
+    #overlayMount.pos-fullscreen .hud-title {
+      font-size: 2.8rem !important;
+      white-space: normal !important;
+      text-align: center !important;
+      line-height: 1.2;
+    }
+    #overlayMount.pos-fullscreen .hud-date { font-size: 1.15rem !important; }
+    #overlayMount.pos-fullscreen .hud-lunar { font-size: 1.05rem !important; }
+    #overlayMount.pos-fullscreen .hud-timer {
+      margin: 10px auto 0 !important;
+      gap: 12px !important;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    #overlayMount.pos-fullscreen .hud-box {
+      min-width: 95px !important;
+      padding: 14px !important;
+      border-radius: 14px !important;
+    }
+    #overlayMount.pos-fullscreen .hud-val { font-size: 2.6rem !important; }
+    #overlayMount.pos-fullscreen .hud-lbl { font-size: 0.85rem !important; }
+    #overlayMount.pos-fullscreen .hud-telemetry-panel {
+      font-size: 0.88rem !important;
+      padding-top: 16px !important;
+      margin-top: 8px !important;
+    }
 
     /* WIDGET HUD */
     .stream-hud {
       background: var(--hud-bg);
       border: var(--hud-border-width) solid var(--hud-border-color);
       border-radius: var(--hud-radius);
-      padding: 16px 24px;
+      padding: 18px 24px;
       display: flex;
       flex-direction: column;
       gap: 12px;
       box-shadow: var(--glow-shadow), 0 10px 30px rgba(0, 0, 0, 0.45);
       backdrop-filter: blur(12px);
       position: relative;
-      overflow: hidden;
       min-width: 440px;
-      max-width: 700px;
+      max-width: 820px;
+      width: fit-content;
       transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -274,10 +305,11 @@
       display: flex;
       align-items: center;
       gap: 16px;
+      flex-wrap: wrap;
     }
 
-    .hud-emoji { font-size: 3.4rem; line-height: 1; }
-    .hud-meta { display: flex; flex-direction: column; gap: 3px; }
+    .hud-emoji { font-size: 3.4rem; line-height: 1; flex-shrink: 0; }
+    .hud-meta { display: flex; flex-direction: column; gap: 3px; min-width: 220px; }
     .hud-tag {
       font-size: 0.65rem;
       font-weight: 800;
@@ -288,17 +320,30 @@
       align-items: center;
       gap: 5px;
     }
-    .hud-title { font-size: 1.3rem; font-weight: 800; white-space: nowrap; }
+    .hud-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.25;
+    }
     .hud-date { font-size: 0.8rem; font-weight: 600; color: #94a3b8; }
     .hud-lunar { font-size: 0.76rem; font-weight: 700; color: #38bdf8; }
 
-    .hud-timer { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+    .hud-timer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
     .hud-box {
       background: rgba(0, 0, 0, 0.45);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 8px;
-      padding: 6px 8px;
-      min-width: 48px;
+      padding: 6px 10px;
+      min-width: 52px;
       text-align: center;
     }
     .hud-val {
@@ -427,7 +472,7 @@
       <div class="custom-box">
         <div style="display:flex; gap:8px;">
           <input type="text" id="custEmoji" class="studio-input" value="⭐" style="width:50px; text-align:center; font-size:1.1rem;">
-          <input type="text" id="custName" class="studio-input" placeholder="Tên sự kiện (VD: Sinh nhật, Ra mắt...)">
+          <input type="text" id="custName" class="studio-input" placeholder="Tên sự kiện (VD: Sinh Nhật Nguyễn Thái Sang...)">
         </div>
         
         <div style="display:flex; gap:8px;">
@@ -789,50 +834,7 @@
   }
 
   /* ==========================================================================
-     2. DỮ LIỆU SỰ KIỆN GỐC
-     ========================================================================== */
-  const HOLIDAYS_SOLAR = [
-    { name: "Tết Dương Lịch", emoji: "🎉", month: 1, day: 1, trivia: "Chào đón ngày đầu tiên của năm mới theo lịch Gregory quốc tế." },
-    { name: "Thành lập Đảng", emoji: "🚩", month: 2, day: 3, trivia: "Kỷ niệm ngày thành lập Đảng Cộng sản Việt Nam (03/02/1930)." },
-    { name: "Valentine", emoji: "❤️", month: 2, day: 14, trivia: "Ngày Lễ Tình nhân tôn vinh tình yêu lứa đôi trên toàn thế giới." },
-    { name: "Thầy thuốc Việt Nam", emoji: "⚕️", month: 2, day: 27, trivia: "Tôn vinh các y bác sĩ và cán bộ y tế theo lời dạy Lương y như từ mẫu." },
-    { name: "Quốc tế Phụ nữ", emoji: "🌸", month: 3, day: 8, trivia: "Kỷ niệm cuộc đấu tranh vì quyền bình đẳng và hạnh phúc của phụ nữ toàn cầu." },
-    { name: "Thành lập Đoàn", emoji: "🌟", month: 3, day: 26, trivia: "Kỷ niệm ngày thành lập Đoàn Thanh niên Cộng sản Hồ Chí Minh (1931)." },
-    { name: "Cá Tháng Tư", emoji: "🤡", month: 4, day: 1, trivia: "Ngày nói dối vui vẻ mang lại tiếng cười và sự thoải mái." },
-    { name: "Giải phóng miền Nam", emoji: "🇻🇳", month: 4, day: 30, trivia: "Ngày Thống nhất Đất nước, kết thúc chiến tranh (30/04/1975)." },
-    { name: "Quốc tế Lao động", emoji: "⚒️", month: 5, day: 1, trivia: "Ngày hội của giai cấp công nhân và người lao động trên khắp năm châu." },
-    { name: "Sinh nhật Bác Hồ", emoji: "🌟", month: 5, day: 19, trivia: "Kỷ niệm ngày sinh Chủ tịch Hồ Chí Minh vĩ đại (19/05/1890)." },
-    { name: "Quốc tế Thiếu nhi", emoji: "🎈", month: 6, day: 1, trivia: "Ngày hội bảo vệ, chăm sóc và nâng niu trẻ em toàn thế giới." },
-    { name: "Gia đình Việt Nam", emoji: "👨‍👩‍👧‍👦", month: 6, day: 28, trivia: "Tôn vinh những giá trị văn hóa truyền thống tốt đẹp của gia đình Việt." },
-    { name: "Thương binh Liệt sĩ", emoji: "🕯️", month: 7, day: 27, trivia: "Tưởng nhớ và tri ân các anh hùng liệt sĩ đã hy sinh vì Tổ quốc." },
-    { name: "Cách mạng Tháng Tám", emoji: "🔥", month: 8, day: 19, trivia: "Kỷ niệm thắng lợi vĩ đại của cuộc Tổng khởi nghĩa Cách mạng Tháng Tám (1945)." },
-    { name: "Quốc khánh Việt Nam", emoji: "🎆", month: 9, day: 2, trivia: "Ngày Bác Hồ đọc Tuyên ngôn Độc lập khai sinh nước VNDCCH (02/09/1945)." },
-    { name: "Giải phóng Thủ đô", emoji: "🏛️", month: 10, day: 10, trivia: "Kỷ niệm ngày đoàn quân giải phóng tiến về tiếp quản Thủ đô Hà Nội (1954)." },
-    { name: "Phụ nữ Việt Nam", emoji: "💐", month: 10, day: 20, trivia: "Kỷ niệm thành lập Hội Phụ nữ phản đế VN, tôn vinh người phụ nữ Việt." },
-    { name: "Halloween", emoji: "🎃", month: 10, day: 31, trivia: "Lễ hội hóa trang phương Tây xua đuổi tà ma và đón mùa đông." },
-    { name: "Nhà giáo Việt Nam", emoji: "📚", month: 11, day: 20, trivia: "Ngày hội tri ân các thầy cô giáo - những người lái đò thầm lặng." },
-    { name: "Thành lập QĐND", emoji: "🪖", month: 12, day: 22, trivia: "Ngày thành lập Quân đội Nhân dân Việt Nam anh hùng (22/12/1944)." },
-    { name: "Giáng sinh (Noel)", emoji: "🎄", month: 12, day: 25, trivia: "Mừng ngày Chúa Giê-su giáng sinh, mùa của an lành và yêu thương." }
-  ];
-
-  const HOLIDAYS_LUNAR = [
-    { name: "Tết Nguyên Đán (Mùng 1)", emoji: "🧧", month: 1, day: 1, lunarTxt: "01/01 AL", trivia: "Khoảnh khắc khởi đầu năm mới âm lịch, sum vầy và chúc tết gia đình." },
-    { name: "Tết Nguyên Đán (Mùng 2)", emoji: "🧧", month: 1, day: 2, lunarTxt: "02/01 AL", trivia: "Mùng một tết cha, mùng hai tết mẹ - thăm hỏi quê ngoại và người thân." },
-    { name: "Tết Nguyên Đán (Mùng 3)", emoji: "🧧", month: 1, day: 3, lunarTxt: "03/01 AL", trivia: "Mùng ba tết thầy - tri ân công ơn dạy dỗ của những bậc tiền bối." },
-    { name: "Rằm tháng Giêng", emoji: "🌕", month: 1, day: 15, lunarTxt: "15/01 AL", trivia: "Tết Thượng Nguyên - Lễ Phật quanh năm không bằng ngày rằm tháng Giêng." },
-    { name: "Tết Hàn Thực", emoji: "🥣", month: 3, day: 3, lunarTxt: "03/03 AL", trivia: "Tết bánh trôi, bánh chay tưởng nhớ tổ tiên và nguồn cội." },
-    { name: "Giỗ Tổ Hùng Vương", emoji: "👑", month: 3, day: 10, lunarTxt: "10/03 AL", trivia: "Dù ai đi ngược về xuôi, nhớ ngày Giỗ Tổ mùng mười tháng ba." },
-    { name: "Đại lễ Phật Đản", emoji: "🪷", month: 4, day: 15, lunarTxt: "15/04 AL", trivia: "Kỷ niệm ngày Đức Phật Thích Ca Mâu Ni đản sinh." },
-    { name: "Tết Đoan Ngọ", emoji: "🍑", month: 5, day: 5, lunarTxt: "05/05 AL", trivia: "Tết giết sâu bọ, ăn cơm rượu nếp và hoa quả cầu sức khỏe mùa hè." },
-    { name: "Lễ Thất Tịch", emoji: "🎋", month: 7, day: 7, lunarTxt: "07/07 AL", trivia: "Ngày Ngưu Lang Chức Nữ gặp nhau trên cầu Ô Thước, ăn chè đậu đỏ." },
-    { name: "Lễ Vu Lan", emoji: "🙏", month: 7, day: 15, lunarTxt: "15/07 AL", trivia: "Mùa báo hiếu công ơn cha mẹ và ngày xá tội vong nhân." },
-    { name: "Tết Trung Thu", emoji: "🥮", month: 8, day: 15, lunarTxt: "15/08 AL", trivia: "Đêm rằm trông trăng, rước đèn ông sao, ăn bánh dẻo bánh nướng sum vầy." },
-    { name: "Tiễn Ông Táo", emoji: "🐟", month: 12, day: 23, lunarTxt: "23/12 AL", trivia: "Thả cá chép tiễn Táo Quân cưỡi mây về trời báo cáo Ngọc Hoàng." },
-    { name: "Đêm Giao Thừa (30 Tết)", emoji: "🎆", month: 12, day: 30, lunarTxt: "30/12 AL", trivia: "Thời khắc thiêng liêng chuyển giao năm cũ sang năm mới." }
-  ];
-
-  /* ==========================================================================
-     3. QUẢN LÝ DỮ LIỆU SỰ KIỆN
+     2. QUẢN LÝ DỮ LIỆU SỰ KIỆN
      ========================================================================== */
   const curYear = new Date().getFullYear();
   let allEvents = [];
@@ -965,7 +967,7 @@
       const startOfYear = new Date(curY, 0, 1).getTime();
       const endOfYear = new Date(curY + 1, 0, 1).getTime();
       const yearPct = Math.min(100, Math.max(0, ((now.getTime() - startOfYear) / (endOfYear - startOfYear)) * 100)).toFixed(1);
-      document.getElementById("telYearLbl").textContent = `Tiến độ năm ${curY}:`;
+      document.getElementById("telYearLbl").textContent = `Tiến độ năm:`;
       document.getElementById("telYearPercent").textContent = `${yearPct}%`;
       document.getElementById("telYearFill").style.width = `${yearPct}%`;
 
@@ -1031,7 +1033,7 @@
   let selShowHoangDao = urlParams.get("astronomy") !== "0";
   let selShowTrivia = urlParams.get("trivia") !== "0";
 
-  // FIX LỖI TRIỆT ĐỂ: Đọc dữ liệu sự kiện riêng trực tiếp qua từng tham số URL độc lập
+  // GIẢI MÃ THAM SỐ SỰ KIỆN RIÊNG TỪ URL (AN TOÀN TUYỆT ĐỐI KHÔNG DÙNG BASE64)
   let obsDirectCustomEvent = null;
   if (urlParams.get("c_name")) {
     const cName = decodeURIComponent(urlParams.get("c_name"));
@@ -1114,12 +1116,12 @@
     }
   }
 
-  // TẠO LINK OBS CHÍNH XÁC VÀ KHÔNG BAO GIỜ BỊ SAI LỆCH SỰ KIỆN
+  // TẠO LINK OBS RIÊNG (KHÔNG TRÙNG LẶP SỰ KIỆN CŨ)
   function generateNewObsLink() {
     const baseUrl = window.location.origin + window.location.pathname;
     let customEventParams = "";
 
-    // NẾU LÀ SỰ KIỆN CÁ NHÂN -> TRUYỀN THẲNG TRỰC TIẾP CÁC THUỘC TÍNH VÀO URL
+    // NẾU LÀ SỰ KIỆN CÁ NHÂN -> TRUYỀN TOÀN BỘ THUỘC TÍNH VÀO LINK
     if (currentEvent && String(currentEvent.id).startsWith("c_")) {
       customEventParams += `&c_name=${encodeURIComponent(currentEvent.name)}`;
       customEventParams += `&c_emoji=${encodeURIComponent(currentEvent.emoji)}`;
@@ -1249,7 +1251,7 @@
       startMasterLiveTimer();
       applyStyles();
 
-      alert(`Đã lưu sự kiện: "${name}". Hãy bấm nút "⚡ TẠO LINK OBS RIÊNG" ở góc dưới để lấy liên kết ghim chuẩn vào OBS!`);
+      alert(`Đã lưu thành công sự kiện: "${name}". Hãy bấm nút '⚡ TẠO LINK OBS RIÊNG' ở góc dưới để lấy liên kết!`);
     });
 
     // KỊCH BẢN ONE-CLICK
@@ -1384,10 +1386,10 @@
 
     document.getElementById("btnTestFx").addEventListener("click", launchFireworks);
 
-    // NÚT BẤM TẠO LINK OBS RIÊNG BIỆT
+    // BẤM NÚT MỚI TẠO LINK
     document.getElementById("btnGenerateUrl").addEventListener("click", generateNewObsLink);
 
-    // NÚT COPY LINK OBS
+    // BẤM NÚT COPY LINK
     document.getElementById("btnCopyObs").addEventListener("click", () => {
       const input = document.getElementById("obsFinalUrl");
       if (!input.value) return;
@@ -1404,7 +1406,7 @@
 
   /* ==========================================================================
      5. DSP AUDIO & PARTICLE ENGINE
-     ========================================================================== */
+     ========================================================================= */
   let audioCtx = null;
   function initAudio() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1497,7 +1499,7 @@
   loadAllEvents(curYear);
 
   if (isObs) {
-    // NẾU LÀ SỰ KIỆN TRUYỀN TRỰC TIẾP QUA URL -> DÙNG NGAY KHÔNG CẦN QUA LOCALSTORAGE
+    // GIẢI MÃ SỰ KIỆN TRỰC TIẾP TỪ THAM SỐ URL (KHÔNG BỊ LỖI CHUYỂN NGÀY)
     if (obsDirectCustomEvent) {
       currentEvent = obsDirectCustomEvent;
     } else {

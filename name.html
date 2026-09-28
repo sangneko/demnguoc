@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Stream Countdown & Event Overlay Pro</title>
+  <title>Trình Tạo OBS Overlay Đếm Ngược Lễ Tết</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,10 +15,10 @@
       --danger: #ef4444;
       --success: #10b981;
       --warning: #f59e0b;
-      --hud-bg: rgba(15, 23, 42, 0.88);
+      --hud-bg: rgba(15, 23, 42, 0.9);
       --hud-border: rgba(255, 255, 255, 0.18);
-      --hud-text: #ffffff;
-      --hud-sub: #94a3b8;
+      --hud-scale: 1;
+      --hud-alpha: 0.9;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,216 +28,223 @@
       overflow: hidden;
       width: 100vw;
       height: 100vh;
-      background: #0b0f19; /* Nền tối nhẹ để dễ nhìn trên trình duyệt */
-      position: relative;
-    }
-
-    /* KHI ADD VÀO OBS HOẶC BẬT TRONG SUỐT */
-    body.is-transparent { background: transparent !important; }
-    body.chroma-green { background: #00FF00 !important; }
-    body.chroma-blue { background: #0000FF !important; }
-
-    /* CANVAS PHÁO HOA */
-    #fxCanvas {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      pointer-events: none;
-      z-index: 9998;
-    }
-
-    /* ---- BẢNG ĐIỀU KHIỂN STREAMER (SỬA LỖI CLICK CHUỘT) ---- */
-    #streamerPanel {
-      position: fixed;
-      top: 20px; left: 20px;
-      z-index: 99999 !important; /* Luôn nổi trên cùng */
-      pointer-events: auto !important; /* Đảm bảo luôn bấm được */
       background: #0f172a;
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      border-radius: 14px;
-      padding: 16px 18px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+    }
+
+    /* =========================================================
+       CHẾ ĐỘ OBS (CHỈ KÍCH HOẠT KHI DÁN LINK VÀO OBS: ?overlay=1)
+       ========================================================= */
+    body.is-obs-mode {
+      background: transparent !important;
+    }
+    body.is-obs-mode.chroma-green { background: #00FF00 !important; }
+    body.is-obs-mode.chroma-blue { background: #0000FF !important; }
+    body.is-obs-mode #appStudio { display: none !important; }
+
+    /* =========================================================
+       GIAO DIỆN TRÊN TRÌNH DUYỆT (STUDIO THIẾT KẾ & PREVIEW)
+       ========================================================= */
+    #appStudio {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 360px;
-      max-height: 90vh;
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      z-index: 10000;
+      background: #090d16;
+    }
+
+    /* BẢNG CÀI ĐẶT BÊN TRÁI TRÌNH DUYỆT */
+    .studio-sidebar {
+      width: 420px;
+      height: 100vh;
+      background: #0f172a;
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 20px;
       overflow-y: auto;
-      font-size: 0.82rem;
-      backdrop-filter: blur(12px);
-      transition: transform 0.2s ease, opacity 0.2s ease;
-    }
-    #streamerPanel.panel-hidden {
-      transform: translateX(-400px);
-      opacity: 0;
-      pointer-events: none !important;
-    }
-
-    /* NÚT THU GỌN / MỞ BẢNG ĐIỀU KHIỂN */
-    #toggleDockBtn {
-      position: fixed;
-      top: 20px; left: 20px;
-      z-index: 99998;
-      background: #1e293b;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: #38bdf8;
-      border-radius: 8px;
-      padding: 8px 14px;
-      font-size: 0.8rem;
-      font-weight: 800;
-      cursor: pointer;
-      display: none;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-    #toggleDockBtn:hover { background: #334155; }
-    #streamerPanel.panel-hidden + #toggleDockBtn { display: flex; }
-
-    .panel-title {
-      font-weight: 800;
-      font-size: 0.95rem;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #38bdf8;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      padding-bottom: 6px;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
     }
-    .panel-close-btn {
-      background: transparent;
-      border: none;
-      color: #94a3b8;
-      cursor: pointer;
-      font-size: 1rem;
+    .studio-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 10px;
+    }
+    .studio-title {
+      font-size: 1.15rem;
       font-weight: 800;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .panel-close-btn:hover { color: #fff; }
+    .studio-sub {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 3px;
+    }
 
-    .panel-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .panel-row label {
-      font-size: 0.72rem; color: #94a3b8; font-weight: 700; width: 100%; text-transform: uppercase;
-    }
-    .panel-select, .panel-input {
-      background: #1e293b;
-      border: 1px solid rgba(255,255,255,0.25);
-      color: #fff;
-      padding: 7px 10px;
-      border-radius: 6px;
-      outline: none;
-      font-family: inherit;
-      font-size: 0.82rem;
-      width: 100%;
-      cursor: pointer;
-    }
-    .panel-input { cursor: text; }
-    .panel-select option { background: #0f172a; color: #fff; }
-
-    .panel-btn {
-      background: #4f46e5;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 7px 12px;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 0.78rem;
-      transition: background 0.2s;
-    }
-    .panel-btn:hover { background: #4338ca; }
-    .panel-btn.btn-danger { background: #ef4444; }
-    .panel-btn.btn-danger:hover { background: #dc2626; }
-    .panel-btn.btn-alt { background: #334155; }
-    .panel-btn.btn-alt:hover { background: #475569; }
-
-    .obs-url-box {
-      background: #020617;
-      border: 1px dashed #38bdf8;
-      border-radius: 8px;
-      padding: 8px;
+    .form-group {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      width: 100%;
     }
-    .obs-url-input {
-      background: transparent;
-      border: none;
-      color: #38bdf8;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
+    .form-group label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .studio-input, .studio-select {
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.85rem;
       outline: none;
       width: 100%;
-      word-break: break-all;
+    }
+    .studio-select option { background: #0f172a; }
+
+    .btn-group { display: flex; gap: 8px; }
+    .btn-opt {
+      flex: 1;
+      padding: 8px 10px;
+      background: #1e293b;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.2s;
+    }
+    .btn-opt:hover { background: #334155; }
+    .btn-opt.active {
+      background: var(--primary);
+      border-color: var(--primary);
     }
 
-    /* ---- OVERLAY CONTAINER & CÁC VỊ TRÍ ---- */
-    .overlay-container {
+    .export-box {
+      background: #020617;
+      border: 2px dashed #0284c7;
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+    }
+    .btn-copy-url {
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-copy-url:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+    /* MÀN HÌNH PREVIEW MÔ PHỎNG LIVE TRÊN TRÌNH DUYỆT */
+    .studio-stage {
+      flex: 1;
+      height: 100vh;
+      position: relative;
+      background: radial-gradient(#1e293b 1px, transparent 1px);
+      background-size: 20px 20px;
+      background-color: #060913;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .stage-notice {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      pointer-events: none;
+    }
+
+    /* =========================================================
+       THÀNH PHẦN HUD ĐẾM NGƯỢC (HIỂN THỊ CHÍNH)
+       ========================================================= */
+    #overlayMount {
       position: absolute;
       z-index: 500;
-      pointer-events: auto;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: top left;
+      transition: all 0.3s ease;
     }
-    .pos-top-left { top: 25px; left: 400px; } /* Đẩy ra để không che bảng điều khiển khi mở */
-    .pos-top-right { top: 25px; right: 25px; }
-    .pos-bottom-right { bottom: 65px; right: 25px; }
-    .pos-bottom-left { bottom: 65px; left: 25px; }
-    .pos-center-banner { top: 40px; left: 50%; transform: translateX(-50%); }
+    /* Các layout vị trí */
+    .pos-top-left { top: 30px; left: 30px; transform-origin: top left; }
+    .pos-top-right { top: 30px; right: 30px; transform-origin: top right; }
+    .pos-bottom-left { bottom: 60px; left: 30px; transform-origin: bottom left; }
+    .pos-bottom-right { bottom: 60px; right: 30px; transform-origin: bottom right; }
+    .pos-top-center { top: 30px; left: 50%; transform: translateX(-50%); transform-origin: top center; }
 
-    /* CHẾ ĐỘ FULL MÀN HÌNH */
+    /* BỐ CỤC FULL MÀN HÌNH */
     .pos-fullscreen {
       top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
       width: 100vw !important; height: 100vh !important;
       display: flex !important; align-items: center; justify-content: center;
       transform: none !important;
-      background: rgba(10, 15, 30, 0.95);
-      backdrop-filter: blur(10px);
+      background: rgba(8, 12, 24, var(--hud-alpha)) !important;
     }
     .pos-fullscreen .stream-hud {
-      max-width: 900px;
+      max-width: 960px;
       width: 85%;
       flex-direction: column !important;
       padding: 40px !important;
       border: 3px solid var(--primary) !important;
-      box-shadow: 0 0 50px rgba(99, 102, 241, 0.4) !important;
+      box-shadow: 0 0 50px rgba(99, 102, 241, 0.5) !important;
     }
-    .pos-fullscreen .hud-emoji { font-size: 5.5rem !important; }
-    .pos-fullscreen .hud-title { font-size: 2.6rem !important; margin: 8px 0 !important; text-align: center; }
-    .pos-fullscreen .hud-date { font-size: 1.2rem !important; text-align: center; margin-bottom: 20px; }
-    .pos-fullscreen .hud-timer { margin: 0 auto !important; gap: 14px !important; }
-    .pos-fullscreen .hud-box { min-width: 110px !important; padding: 16px !important; border-radius: 14px !important; }
-    .pos-fullscreen .hud-val { font-size: 3rem !important; }
-    .pos-fullscreen .hud-lbl { font-size: 0.9rem !important; }
+    .pos-fullscreen .hud-emoji { font-size: 6rem !important; }
+    .pos-fullscreen .hud-title { font-size: 2.8rem !important; text-align: center; margin: 10px 0 !important; }
+    .pos-fullscreen .hud-date { font-size: 1.25rem !important; text-align: center; margin-bottom: 24px; }
+    .pos-fullscreen .hud-timer { margin: 0 auto !important; gap: 16px !important; }
+    .pos-fullscreen .hud-box { min-width: 120px !important; padding: 18px !important; border-radius: 14px !important; }
+    .pos-fullscreen .hud-val { font-size: 3.4rem !important; }
+    .pos-fullscreen .hud-lbl { font-size: 0.95rem !important; }
 
-    /* ---- HUD ĐẾM NGƯỢC (CARD HUD) ---- */
+    /* WIDGET HUD */
     .stream-hud {
       background: var(--hud-bg);
       border: 1px solid var(--hud-border);
-      border-radius: 16px;
-      padding: 12px 18px;
+      border-radius: 18px;
+      padding: 14px 20px;
       display: flex;
       align-items: center;
-      gap: 14px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      gap: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
       backdrop-filter: blur(12px);
       position: relative;
       overflow: hidden;
-      min-width: 320px;
-      cursor: grab;
+      min-width: 330px;
     }
-    .stream-hud:active { cursor: grabbing; }
     .stream-hud::before {
       content: "";
       position: absolute;
-      top: 0; left: 0; width: 4px; height: 100%;
+      top: 0; left: 0; width: 5px; height: 100%;
       background: var(--primary-gradient);
     }
-    .hud-emoji {
-      font-size: 2.8rem;
-      line-height: 1;
-      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
-    }
-    .hud-meta { display: flex; flex-direction: column; gap: 3px; min-width: 140px; }
+    .hud-emoji { font-size: 3rem; line-height: 1; }
+    .hud-meta { display: flex; flex-direction: column; gap: 3px; }
     .hud-tag {
       font-size: 0.65rem;
       font-weight: 800;
@@ -248,73 +255,51 @@
       align-items: center;
       gap: 5px;
     }
-    .hud-title {
-      font-size: 1.15rem;
-      font-weight: 800;
-      white-space: nowrap;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-    .hud-date {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--hud-sub);
-    }
+    .hud-title { font-size: 1.2rem; font-weight: 800; white-space: nowrap; }
+    .hud-date { font-size: 0.78rem; font-weight: 600; color: var(--hud-sub); }
 
-    .hud-timer {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-left: auto;
-    }
+    .hud-timer { display: flex; align-items: center; gap: 8px; margin-left: auto; }
     .hud-box {
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.45);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 8px;
-      padding: 6px 8px;
-      min-width: 48px;
+      padding: 6px 10px;
+      min-width: 52px;
       text-align: center;
     }
     .hud-val {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 1.45rem;
+      font-size: 1.55rem;
       font-weight: 800;
       color: #ffffff;
       line-height: 1;
-      text-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
     }
-    .hud-lbl {
-      font-size: 0.6rem;
-      font-weight: 700;
-      color: #94a3b8;
-      text-transform: uppercase;
-      margin-top: 3px;
-    }
+    .hud-lbl { font-size: 0.6rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-top: 3px; }
 
     .hud-today-badge {
       display: none;
-      background: rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.25);
       border: 1px solid #10b981;
       color: #34d399;
-      font-size: 1rem;
+      font-size: 1.1rem;
       font-weight: 800;
-      padding: 8px 16px;
+      padding: 10px 20px;
       border-radius: 30px;
       animation: pulseAlert 1.5s infinite;
       text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
     }
 
-    /* ---- TICKER BAR CHẠY DƯỚI STREAM ---- */
+    /* TICKER DƯỚI ĐÁY */
     #streamTicker {
       position: fixed;
       bottom: 0; left: 0; width: 100vw;
       height: 38px;
-      background: rgba(10, 15, 30, 0.9);
+      background: rgba(10, 15, 30, 0.95);
       border-top: 2px solid var(--primary);
       display: flex;
       align-items: center;
       z-index: 600;
       box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(8px);
     }
     .ticker-badge {
       background: var(--primary-gradient);
@@ -327,15 +312,12 @@
       align-items: center;
       gap: 6px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
       white-space: nowrap;
-      z-index: 2;
     }
     .ticker-content-track {
       flex: 1;
       overflow: hidden;
       white-space: nowrap;
-      position: relative;
     }
     .ticker-text {
       display: inline-block;
@@ -346,91 +328,118 @@
       font-weight: 600;
       color: #f1f5f9;
     }
-    .ticker-text span {
-      margin-right: 45px;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .ticker-text span { margin-right: 45px; display: inline-flex; align-items: center; gap: 6px; }
     .ticker-text strong { color: #38bdf8; }
 
-    @keyframes marqueeText {
-      0% { transform: translateX(0%); }
-      100% { transform: translateX(-100%); }
+    #fxCanvas {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999;
     }
-    @keyframes pulseAlert {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.04); opacity: 0.85; }
-    }
+
+    @keyframes marqueeText { 0% { transform: translateX(0%); } 100% { transform: translateX(-100%); } }
+    @keyframes pulseAlert { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
   </style>
 </head>
 <body>
 
   <canvas id="fxCanvas"></canvas>
 
-  <!-- NÚT MỞ LẠI MENU KHI BỊ ẨN -->
-  <button id="toggleDockBtn">⚙️ MỞ MENU CÀI ĐẶT</button>
+  <!-- =========================================================
+       GIAO DIỆN BẢNG ĐIỀU KHIỂN STUDIO TRÊN TRÌNH DUYỆT
+       ========================================================= -->
+  <div id="appStudio">
+    <div class="studio-sidebar">
+      <div class="studio-header">
+        <div class="studio-title">⚙️ STUDIO OVERLAY OBS</div>
+        <div class="studio-sub">Tùy biến trực quan & copy link dán vào OBS</div>
+      </div>
 
-  <!-- BẢNG ĐIỀU KHIỂN DÀNH CHO STREAMER (HOẠT ĐỘNG HOÀN TOÀN TRÊN TRÌNH DUYỆT) -->
-  <div id="streamerPanel">
-    <div class="panel-title">
-      <span>⚙️ STREAMER CONTROL PANEL</span>
-      <button class="panel-close-btn" id="closePanelBtn" title="Thu gọn menu">✕</button>
-    </div>
-    
-    <div class="panel-row">
-      <label>1. Chọn sự kiện đếm ngược:</label>
-      <select id="selectEvent" class="panel-select"></select>
-    </div>
+      <div class="form-group">
+        <label>1. Chọn sự kiện đếm ngược:</label>
+        <select id="cfgEvent" class="studio-select"></select>
+      </div>
 
-    <div class="panel-row">
-      <label>2. Bố cục & Vị trí hiển thị:</label>
-      <select id="selectPosition" class="panel-select">
-        <option value="pos-top-left">Góc trên Trái (Top-Left)</option>
-        <option value="pos-top-right">Góc trên Phải (Top-Right)</option>
-        <option value="pos-bottom-left">Góc dưới Trái (Bottom-Left)</option>
-        <option value="pos-bottom-right">Góc dưới Phải (Bottom-Right)</option>
-        <option value="pos-center-banner">Chính giữa Trên (Top-Center)</option>
-        <option value="pos-fullscreen">🖥️ Full Màn Hình (Standby / Cinema)</option>
-        <option value="pos-free">🖐️ Kéo thả tự do bằng chuột</option>
-      </select>
-    </div>
+      <div class="form-group">
+        <label>2. Bố cục hiển thị:</label>
+        <select id="cfgLayout" class="studio-select">
+          <option value="pos-top-left">Góc trên Trái (Top-Left)</option>
+          <option value="pos-top-right">Góc trên Phải (Top-Right)</option>
+          <option value="pos-bottom-left">Góc dưới Trái (Bottom-Left)</option>
+          <option value="pos-bottom-right">Góc dưới Phải (Bottom-Right)</option>
+          <option value="pos-top-center">Chính giữa Trên (Top-Center)</option>
+          <option value="pos-fullscreen">🖥️ Full Màn Hình (Standby / Cinema)</option>
+        </select>
+      </div>
 
-    <div class="panel-row">
-      <label>3. Phông nền hiển thị:</label>
-      <div style="display:flex; gap:6px; width:100%;">
-        <button class="panel-btn btn-alt" id="btnChromaTrans" style="flex:1;">Trong suốt</button>
-        <button class="panel-btn" id="btnChromaGreen" style="background:#00bb00; flex:1;">Xanh Lá</button>
-        <button class="panel-btn" id="btnChromaBlue" style="background:#0000dd; flex:1;">Xanh Dương</button>
+      <div class="form-group">
+        <label>3. Phông nền hiển thị trên OBS:</label>
+        <div class="btn-group">
+          <div class="btn-opt active" data-bg="transparent">Trong suốt</div>
+          <div class="btn-opt" data-bg="green" style="color:#4ade80;">Xanh Lá</div>
+          <div class="btn-opt" data-bg="blue" style="color:#60a5fa;">Xanh Dương</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>4. Màu sắc chủ đạo:</label>
+        <div class="btn-group">
+          <div class="btn-opt active" data-color="#6366f1" style="background:#6366f1;">Indigo</div>
+          <div class="btn-opt" data-color="#06b6d4" style="background:#06b6d4;">Cyan</div>
+          <div class="btn-opt" data-color="#10b981" style="background:#10b981;">Green</div>
+          <div class="btn-opt" data-color="#f59e0b" style="background:#f59e0b;">Amber</div>
+          <div class="btn-opt" data-color="#ef4444" style="background:#ef4444;">Red</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>5. Kích thước tỷ lệ: <span id="lblScale" style="color:#38bdf8;">100%</span></label>
+        <input type="range" id="cfgScale" min="60" max="160" value="100" style="width:100%; cursor:pointer;">
+      </div>
+
+      <div class="form-group">
+        <label>6. Độ mờ đục nền: <span id="lblAlpha" style="color:#38bdf8;">90%</span></label>
+        <input type="range" id="cfgAlpha" min="0" max="100" value="90" style="width:100%; cursor:pointer;">
+      </div>
+
+      <div class="form-group">
+        <label>7. Tùy chọn hiển thị:</label>
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:0.8rem;">
+          <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="cfgHideEmoji"> Ẩn Icon Emoji
+          </label>
+          <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="cfgHideDate"> Ẩn Ngày tháng
+          </label>
+          <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+            <input type="checkbox" id="cfgShowTicker" checked> Bật dòng chữ chạy dưới đáy
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>8. Lời nhắn tuỳ chỉnh trên Ticker:</label>
+        <input type="text" id="cfgCustomMsg" class="studio-input" placeholder="Ví dụ: Chào mừng tới livestream của mình...">
+      </div>
+
+      <div class="export-box">
+        <label style="font-size:0.75rem; font-weight:800; color:#38bdf8;">LINK DÁN VÀO OBS BROWSER SOURCE:</label>
+        <input type="text" id="obsFinalUrl" readonly class="studio-input" style="font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:#38bdf8;">
+        <button id="btnCopyObs" class="btn-copy-url">
+          📋 SAO CHÉP LINK DÁN VÀO OBS
+        </button>
       </div>
     </div>
 
-    <div class="panel-row">
-      <label>4. Lời nhắn của bạn trên Ticker dưới đáy:</label>
-      <input id="streamerCustomMsg" class="panel-input" type="text" placeholder="Nhập lời chào / donate / thông báo...">
-    </div>
-
-    <div class="panel-row" style="margin-top: 4px; display:flex; gap:6px;">
-      <button class="panel-btn" id="btnFireworkNow" style="flex:1;">🎆 Bắn Pháo Hoa</button>
-      <button class="panel-btn btn-danger" id="btnToggleSound" style="flex:1;">🔊 Âm thanh: BẬT</button>
-    </div>
-
-    <div class="panel-row">
-      <button class="panel-btn btn-alt" id="btnToggleTicker" style="width:100%;">Ẩn / Hiện Dòng Ticker Dưới Đáy</button>
-    </div>
-
-    <div class="panel-row" style="margin-top:4px;">
-      <label>5. Link dán vào OBS Browser Source:</label>
-      <div class="obs-url-box">
-        <input id="obsLinkInput" class="obs-url-input" readonly>
-        <button class="panel-btn" id="btnCopyObsLink" style="padding:4px 8px; font-size:0.75rem;">📋 Copy Link OBS</button>
-      </div>
+    <!-- MÀN HÌNH XEM TRƯỚC THỜI GIAN THỰC -->
+    <div class="studio-stage" id="stageScreen">
+      <div class="stage-notice">🔴 MÀN HÌNH XEM TRƯỚC TRÊN STREAM (LIVE PREVIEW)</div>
     </div>
   </div>
 
-  <!-- HUD ĐẾM NGƯỢC LIVESTREAM -->
-  <div class="overlay-container pos-top-left" id="hudContainer">
-    <div class="stream-hud" id="dragTarget">
+  <!-- =========================================================
+       WIDGET HUD ĐẾM NGƯỢC (HIỂN THỊ TRÊN OBS & PREVIEW)
+       ========================================================= -->
+  <div id="overlayMount" class="pos-top-left">
+    <div class="stream-hud" id="hudWidget">
       <div class="hud-emoji" id="hEmoji">🎉</div>
       <div class="hud-meta">
         <div class="hud-tag">
@@ -461,12 +470,12 @@
       </div>
 
       <div class="hud-today-badge" id="hTodayBadge">
-        ✨ ĐANG DIỄN RA! ✨
+        ✨ ĐANG DIỄN RA HÔM NAY! ✨
       </div>
     </div>
   </div>
 
-  <!-- TICKER DÒNG TIN DƯỚI ĐÁY STREAM -->
+  <!-- DÒNG TICKER CHẠY TIN DƯỚI ĐÁY -->
   <div id="streamTicker">
     <div class="ticker-badge">🔴 LIVE INFO</div>
     <div class="ticker-content-track">
@@ -478,7 +487,7 @@
 
   <script>
   /* ==========================================================================
-     1. THUẬT TOÁN THIÊN VĂN ÂM/DƯƠNG LỊCH & CAN CHI (HỒ NGỌC ĐỨC)
+     1. THUẬT TOÁN THIÊN VĂN HỒ NGỌC ĐỨC (BẢO LƯU CHÍNH XÁC 100%)
      ========================================================================== */
   function INT(d){ return Math.floor(d); }
   function jdFromDate(dd, mm, yy) {
@@ -566,12 +575,13 @@
   }
 
   /* ==========================================================================
-     2. DỮ LIỆU SỰ KIỆN NỔI BẬT
+     2. DỮ LIỆU SỰ KIỆN VIỆT NAM
      ========================================================================== */
   const HOLIDAYS_SOLAR = [
     { name: "Tết Dương Lịch", emoji: "🎉", month: 1, day: 1 },
     { name: "Thành lập Đảng", emoji: "🚩", month: 2, day: 3 },
     { name: "Valentine", emoji: "❤️", month: 2, day: 14 },
+    { name: "Thầy thuốc Việt Nam", emoji: "⚕️", month: 2, day: 27 },
     { name: "Quốc tế Phụ nữ", emoji: "🌸", month: 3, day: 8 },
     { name: "Thành lập Đoàn", emoji: "🌟", month: 3, day: 26 },
     { name: "Cá Tháng Tư", emoji: "🤡", month: 4, day: 1 },
@@ -608,11 +618,11 @@
   ];
 
   /* ==========================================================================
-     3. TỔNG HỢP VÀ TẢI DỮ LIỆU
+     3. QUẢN LÝ DỮ LIỆU & ENGINE ĐẾM NGƯỢC
      ========================================================================== */
   const curYear = new Date().getFullYear();
   let allEvents = [];
-  let selectedEvent = null;
+  let currentEvent = null;
   let timerInterval = null;
 
   function parseLocalDate(str) {
@@ -655,97 +665,6 @@
     }).sort((a,b) => a.dateObj - b.dateObj);
   }
 
-  /* ==========================================================================
-     4. ÂM THANH SYNTHESIZER VÀ PHÁO HOA
-     ========================================================================== */
-  let audioCtx = null;
-  let isSoundEnabled = true;
-
-  function initAudio() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-
-  function playTickSound() {
-    if (!isSoundEnabled) return;
-    try {
-      initAudio();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + 0.08);
-    } catch(e){}
-  }
-
-  function triggerCelebrationFanfare() {
-    if (!isSoundEnabled) return;
-    try {
-      initAudio();
-      const notes = [523.25, 659.25, 783.99, 1046.50];
-      notes.forEach((freq, idx) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "triangle";
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.12);
-        gain.gain.setValueAtTime(0.15, audioCtx.currentTime + idx * 0.12);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.12 + 0.45);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(audioCtx.currentTime + idx * 0.12);
-        osc.stop(audioCtx.currentTime + idx * 0.12 + 0.5);
-      });
-    } catch(e){}
-  }
-
-  function launchFireworks() {
-    triggerCelebrationFanfare();
-    const canvas = document.getElementById("fxCanvas");
-    const ctx = canvas.getContext("2d");
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
-
-    const particles = [];
-    const colors = ["#4f46e5", "#06b6d4", "#f59e0b", "#10b981", "#ef4444", "#ec4899", "#ffffff"];
-
-    for (let i = 0; i < 150; i++) {
-      particles.push({
-        x: width / 2, y: height / 2,
-        vx: (Math.random() - 0.5) * 18,
-        vy: (Math.random() - 0.5) * 18 - 4,
-        size: Math.random() * 6 + 4,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        alpha: 1,
-        decay: Math.random() * 0.015 + 0.008
-      });
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, width, height);
-      let count = 0;
-      particles.forEach(p => {
-        if (p.alpha > 0) {
-          count++;
-          p.x += p.vx; p.y += p.vy; p.vy += 0.22; p.alpha -= p.decay;
-          ctx.save();
-          ctx.globalAlpha = Math.max(0, p.alpha);
-          ctx.fillStyle = p.color;
-          ctx.fillRect(p.x, p.y, p.size, p.size);
-          ctx.restore();
-        }
-      });
-      if (count > 0) requestAnimationFrame(animate);
-    }
-    animate();
-  }
-
-  /* ==========================================================================
-     5. CẬP NHẬT HUD & TIMER THỜI GIAN THỰC
-     ========================================================================== */
   function updateHUD(ev) {
     if (!ev) return;
     document.getElementById("hEmoji").textContent = ev.emoji;
@@ -759,26 +678,21 @@
 
   function startLiveTimer() {
     if (timerInterval) clearInterval(timerInterval);
-    let hasAlertFired = false;
 
     function tick() {
-      if (!selectedEvent) return;
-      const targetTime = selectedEvent.dateObj.getTime();
+      if (!currentEvent) return;
+      const targetTime = currentEvent.dateObj.getTime();
       const now = new Date();
       const diff = targetTime - now.getTime();
 
       const timerGroup = document.getElementById("hTimerGroup");
       const todayBadge = document.getElementById("hTodayBadge");
-      const isToday = (now.toDateString() === selectedEvent.dateObj.toDateString());
+      const isToday = (now.toDateString() === currentEvent.dateObj.toDateString());
 
       if (isToday) {
         timerGroup.style.display = "none";
         todayBadge.style.display = "block";
         document.getElementById("hTag").textContent = "HÔM NAY";
-        if (!hasAlertFired) {
-          hasAlertFired = true;
-          launchFireworks();
-        }
       } else if (diff > 0) {
         timerGroup.style.display = "flex";
         todayBadge.style.display = "none";
@@ -788,10 +702,6 @@
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-        if (days === 0 && hours === 0 && minutes === 0 && seconds <= 10) {
-          playTickSound();
-        }
 
         document.getElementById("hDays").textContent = String(days).padStart(2,'0');
         document.getElementById("hHours").textContent = String(hours).padStart(2,'0');
@@ -812,15 +722,12 @@
     timerInterval = setInterval(tick, 1000);
   }
 
-  /* ==========================================================================
-     6. CHẠY CHỮ THÔNG TIN TICKER
-     ========================================================================== */
   function updateTickerTrack() {
     const d = new Date();
     const dd = d.getDate(), mm = d.getMonth() + 1, yy = d.getFullYear();
     const lunar = convertSolar2Lunar(dd, mm, yy, 7);
     const hdHours = getHoangDaoHours(dd, mm, yy).join(", ");
-    const customMsg = document.getElementById("streamerCustomMsg").value.trim();
+    const customMsg = document.getElementById("cfgCustomMsg") ? document.getElementById("cfgCustomMsg").value.trim() : "";
 
     const upcomingList = allEvents.filter(e => e.diffDays >= 0).slice(0, 3)
       .map(e => `${e.emoji} <strong>${e.name}</strong> (còn ${e.diffDays} ngày)`).join(" • ");
@@ -840,22 +747,66 @@
   }
 
   /* ==========================================================================
-     7. KHỞI TẠO BẢNG ĐIỀU KHIỂN & CÁC SỰ KIỆN TƯƠNG TÁC
+     4. ĐIỀU KHIỂN STUDIO TRÊN TRÌNH DUYỆT & TỰ ĐỘNG SINH LINK CHO OBS
      ========================================================================== */
-  function updateGeneratedObsUrl() {
-    const baseUrl = window.location.origin + window.location.pathname;
-    const eventId = selectedEvent ? selectedEvent.id : "";
-    const pos = document.getElementById("selectPosition").value;
-    let chroma = "transparent";
-    if (document.body.classList.contains("chroma-green")) chroma = "green";
-    if (document.body.classList.contains("chroma-blue")) chroma = "blue";
+  const urlParams = new URLSearchParams(window.location.search);
+  const isObs = urlParams.get("overlay") === "1";
 
-    const link = `${baseUrl}?overlay=1&id=${eventId}&pos=${pos}&chroma=${chroma}`;
-    document.getElementById("obsLinkInput").value = link;
+  // Biến cấu hình
+  let selEventId = urlParams.get("id") || "";
+  let selLayout = urlParams.get("pos") || "pos-top-left";
+  let selBg = urlParams.get("bg") || "transparent";
+  let selColor = urlParams.get("color") ? decodeURIComponent(urlParams.get("color")) : "#6366f1";
+  let selScale = parseFloat(urlParams.get("scale") || "1");
+  let selAlpha = parseFloat(urlParams.get("alpha") || "0.9");
+  let selHideEmoji = urlParams.get("noemoji") === "1";
+  let selHideDate = urlParams.get("nodate") === "1";
+  let selShowTicker = urlParams.get("ticker") !== "0";
+
+  function applyStyles(isLivePreview = false) {
+    const mount = document.getElementById("overlayMount");
+    mount.className = selLayout;
+
+    // Apply màu sắc
+    document.documentElement.style.setProperty("--primary", selColor);
+    document.documentElement.style.setProperty("--primary-gradient", `linear-gradient(135deg, ${selColor} 0%, #a855f7 100%)`);
+    document.documentElement.style.setProperty("--hud-alpha", selAlpha);
+    document.documentElement.style.setProperty("--hud-bg", `rgba(15, 23, 42, ${selAlpha})`);
+
+    // Thu phóng scale
+    if (selLayout !== "pos-fullscreen") {
+      mount.style.transform = `scale(${selScale})`;
+    } else {
+      mount.style.transform = "none";
+    }
+
+    // Ẩn hiện chi tiết
+    document.getElementById("hEmoji").style.display = selHideEmoji ? "none" : "block";
+    document.getElementById("hDate").style.display = selHideDate ? "none" : "block";
+    document.getElementById("streamTicker").style.display = selShowTicker ? "flex" : "none";
+
+    // Phông nền
+    const stage = document.getElementById("stageScreen");
+    if (isObs) {
+      document.body.className = "is-obs-mode";
+      if (selBg === "green") document.body.classList.add("chroma-green");
+      if (selBg === "blue") document.body.classList.add("chroma-blue");
+    } else if (stage) {
+      if (selBg === "green") stage.style.backgroundColor = "#00bb00";
+      else if (selBg === "blue") stage.style.backgroundColor = "#0000dd";
+      else stage.style.backgroundColor = "#060913";
+    }
+
+    // Sinh Link OBS hoàn chỉnh
+    if (!isObs) {
+      const baseUrl = window.location.origin + window.location.pathname;
+      const finalLink = `${baseUrl}?overlay=1&id=${selEventId}&pos=${selLayout}&bg=${selBg}&color=${encodeURIComponent(selColor)}&scale=${selScale}&alpha=${selAlpha}&noemoji=${selHideEmoji ? '1' : '0'}&nodate=${selHideDate ? '1' : '0'}&ticker=${selShowTicker ? '1' : '0'}`;
+      document.getElementById("obsFinalUrl").value = finalLink;
+    }
   }
 
-  function initStreamerPanel() {
-    const select = document.getElementById("selectEvent");
+  function initStudioControls() {
+    const select = document.getElementById("cfgEvent");
     select.innerHTML = "";
     allEvents.forEach(e => {
       const opt = document.createElement("option");
@@ -865,161 +816,120 @@
       select.appendChild(opt);
     });
 
-    const nearest = allEvents.find(e => e.diffDays >= 0) || allEvents[0];
+    // Mặc định chọn sự kiện gần nhất
+    const nearest = (selEventId ? allEvents.find(e => e.id === selEventId) : null) || allEvents.find(e => e.diffDays >= 0) || allEvents[0];
     if (nearest) {
-      selectedEvent = nearest;
+      currentEvent = nearest;
+      selEventId = nearest.id;
       select.value = nearest.id;
       updateHUD(nearest);
       startLiveTimer();
     }
 
+    // Lắng nghe thay đổi sự kiện
     select.addEventListener("change", (e) => {
-      selectedEvent = allEvents.find(ev => ev.id === e.target.value);
-      updateHUD(selectedEvent);
+      currentEvent = allEvents.find(ev => ev.id === e.target.value);
+      selEventId = currentEvent.id;
+      updateHUD(currentEvent);
       startLiveTimer();
-      updateGeneratedObsUrl();
+      applyStyles();
     });
 
-    // Thay đổi vị trí / Full màn hình
-    const posSelect = document.getElementById("selectPosition");
-    posSelect.addEventListener("change", (e) => {
-      const hud = document.getElementById("hudContainer");
-      const val = e.target.value;
-
-      if (val === "pos-free") {
-        hud.className = "overlay-container";
-        hud.style.left = "420px";
-        hud.style.top = "50px";
-        hud.style.right = "auto";
-        hud.style.bottom = "auto";
-      } else {
-        hud.style.left = "";
-        hud.style.top = "";
-        hud.style.right = "";
-        hud.style.bottom = "";
-        hud.className = `overlay-container ${val}`;
-      }
-      updateGeneratedObsUrl();
+    // Bố cục Layout
+    const cfgLayout = document.getElementById("cfgLayout");
+    cfgLayout.value = selLayout;
+    cfgLayout.addEventListener("change", (e) => {
+      selLayout = e.target.value;
+      applyStyles();
     });
 
-    // Kéo thả widget tự do bằng chuột
-    const dragTarget = document.getElementById("dragTarget");
-    const hudContainer = document.getElementById("hudContainer");
-    let isDragging = false, startX, startY, initLeft, initTop;
-
-    dragTarget.addEventListener("mousedown", (e) => {
-      if (posSelect.value !== "pos-free") return;
-      isDragging = true;
-      startX = e.clientX;
-      startY = e.clientY;
-      const rect = hudContainer.getBoundingClientRect();
-      initLeft = rect.left;
-      initTop = rect.top;
-    });
-
-    window.addEventListener("mousemove", (e) => {
-      if (!isDragging) return;
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      hudContainer.style.left = `${initLeft + dx}px`;
-      hudContainer.style.top = `${initTop + dy}px`;
-      hudContainer.style.right = "auto";
-      hudContainer.style.bottom = "auto";
-    });
-
-    window.addEventListener("mouseup", () => { isDragging = false; });
-
-    // Đổi Phông Nền
-    document.getElementById("btnChromaTrans").addEventListener("click", () => {
-      document.body.className = "is-transparent";
-      updateGeneratedObsUrl();
-    });
-    document.getElementById("btnChromaGreen").addEventListener("click", () => {
-      document.body.className = "chroma-green";
-      updateGeneratedObsUrl();
-    });
-    document.getElementById("btnChromaBlue").addEventListener("click", () => {
-      document.body.className = "chroma-blue";
-      updateGeneratedObsUrl();
-    });
-
-    // Bắn pháo hoa
-    document.getElementById("btnFireworkNow").addEventListener("click", launchFireworks);
-
-    // Bật tắt âm thanh
-    const sndBtn = document.getElementById("btnToggleSound");
-    sndBtn.addEventListener("click", () => {
-      isSoundEnabled = !isSoundEnabled;
-      sndBtn.textContent = isSoundEnabled ? "🔊 Âm thanh: BẬT" : "🔇 Âm thanh: TẮT";
-      sndBtn.className = isSoundEnabled ? "panel-btn btn-danger" : "panel-btn";
-    });
-
-    // Bật tắt Ticker
-    document.getElementById("btnToggleTicker").addEventListener("click", () => {
-      const t = document.getElementById("streamTicker");
-      t.style.display = (t.style.display === "none") ? "flex" : "none";
-    });
-
-    // Lời nhắn tuỳ chỉnh
-    document.getElementById("streamerCustomMsg").addEventListener("input", updateTickerTrack);
-
-    // Nút Copy link OBS
-    document.getElementById("btnCopyObsLink").addEventListener("click", () => {
-      const input = document.getElementById("obsLinkInput");
-      input.select();
-      navigator.clipboard.writeText(input.value).then(() => {
-        const btn = document.getElementById("btnCopyObsLink");
-        btn.textContent = "✓ Đã Chép!";
-        setTimeout(() => btn.textContent = "📋 Copy Link OBS", 2000);
+    // Phông nền
+    document.querySelectorAll(".btn-opt[data-bg]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".btn-opt[data-bg]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        selBg = btn.getAttribute("data-bg");
+        applyStyles();
       });
     });
 
-    updateGeneratedObsUrl();
-  }
+    // Màu sắc
+    document.querySelectorAll(".btn-opt[data-color]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".btn-opt[data-color]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        selColor = btn.getAttribute("data-color");
+        applyStyles();
+      });
+    });
 
-  // Nút đóng / mở bảng điều khiển
-  const streamerPanel = document.getElementById("streamerPanel");
-  const toggleDockBtn = document.getElementById("toggleDockBtn");
-  const closePanelBtn = document.getElementById("closePanelBtn");
+    // Scale
+    const cfgScale = document.getElementById("cfgScale");
+    cfgScale.addEventListener("input", (e) => {
+      selScale = (parseInt(e.target.value) / 100).toFixed(2);
+      document.getElementById("lblScale").textContent = `${e.target.value}%`;
+      applyStyles();
+    });
 
-  closePanelBtn.addEventListener("click", () => {
-    streamerPanel.classList.add("panel-hidden");
-  });
+    // Alpha
+    const cfgAlpha = document.getElementById("cfgAlpha");
+    cfgAlpha.addEventListener("input", (e) => {
+      selAlpha = (parseInt(e.target.value) / 100).toFixed(2);
+      document.getElementById("lblAlpha").textContent = `${e.target.value}%`;
+      applyStyles();
+    });
 
-  toggleDockBtn.addEventListener("click", () => {
-    streamerPanel.classList.remove("panel-hidden");
-  });
+    // Checkboxes
+    document.getElementById("cfgHideEmoji").addEventListener("change", (e) => {
+      selHideEmoji = e.target.checked;
+      applyStyles();
+    });
+    document.getElementById("cfgHideDate").addEventListener("change", (e) => {
+      selHideDate = e.target.checked;
+      applyStyles();
+    });
+    document.getElementById("cfgShowTicker").addEventListener("change", (e) => {
+      selShowTicker = e.target.checked;
+      applyStyles();
+    });
 
-  // Phím tắt bàn phím
-  window.addEventListener("keydown", (e) => {
-    if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
-    const key = e.key.toUpperCase();
-    if (key === "H") {
-      streamerPanel.classList.toggle("panel-hidden");
-    } else if (key === "F") {
-      launchFireworks();
-    } else if (key === "M") {
-      document.getElementById("btnToggleSound").click();
-    }
-  });
+    document.getElementById("cfgCustomMsg").addEventListener("input", () => {
+      updateTickerTrack();
+      applyStyles();
+    });
 
-  // Đọc URL Param nếu mở trong OBS
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get("overlay") === "1" || urlParams.get("obs") === "1") {
-    streamerPanel.classList.add("panel-hidden");
-    document.body.classList.add("is-transparent");
-  }
-  if (urlParams.get("chroma") === "green") document.body.className = "chroma-green";
-  if (urlParams.get("chroma") === "blue") document.body.className = "chroma-blue";
-  if (urlParams.get("pos")) {
-    const p = urlParams.get("pos");
-    const hud = document.getElementById("hudContainer");
-    hud.className = `overlay-container ${p}`;
+    // Nút Copy link OBS
+    document.getElementById("btnCopyObs").addEventListener("click", () => {
+      const input = document.getElementById("obsFinalUrl");
+      input.select();
+      navigator.clipboard.writeText(input.value).then(() => {
+        const btn = document.getElementById("btnCopyObs");
+        btn.textContent = "✓ ĐÃ SAO CHÉP! DÁN VÀO OBS NGAY";
+        setTimeout(() => {
+          btn.textContent = "📋 SAO CHÉP LINK DÁN VÀO OBS";
+        }, 2500);
+      });
+    });
   }
 
   // Khởi động
   loadAllEvents(curYear);
-  initStreamerPanel();
+
+  if (isObs) {
+    // CHẠY TRONG OBS: ẨN STUDIO, TỰ LOAD THEO URL PARAM
+    const targetEv = (selEventId ? allEvents.find(e => e.id === selEventId) : null) || allEvents.find(e => e.diffDays >= 0) || allEvents[0];
+    if (targetEv) {
+      currentEvent = targetEv;
+      updateHUD(targetEv);
+      startLiveTimer();
+    }
+    applyStyles();
+  } else {
+    // CHẠY TRÊN TRÌNH DUYỆT THƯỜNG: BẬT STUDIO
+    initStudioControls();
+    applyStyles();
+  }
+
   updateTickerTrack();
   setInterval(updateTickerTrack, 60000);
   </script>

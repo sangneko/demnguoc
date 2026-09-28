@@ -180,7 +180,7 @@
       cursor: not-allowed;
     }
 
-    /* MÀN HÌNH PREVIEW */
+    /* PREVIEW STAGE */
     .studio-stage {
       flex: 1;
       height: 100vh;
@@ -455,14 +455,11 @@
 
   <canvas id="fxCanvas"></canvas>
 
-  <!-- =========================================================
-       GIAO DIỆN STUDIO TRÊN TRÌNH DUYỆT
-       ========================================================= -->
   <div id="studioApp">
     <div class="studio-sidebar">
       <div class="studio-header">
         <div class="studio-title">⚙️ ĐẠI NIÊN BIỂU MASTER</div>
-        <div class="studio-sub">110+ Ngày Lễ, Tiết Khí, Ngành Nghề & Telemetry OBS</div>
+        <div class="studio-sub">Kho Dữ Liệu Ngày Lễ & Tự Động Đồng Bộ API</div>
       </div>
 
       <!-- TẠO SỰ KIỆN RIÊNG -->
@@ -503,11 +500,11 @@
         </div>
       </div>
 
-      <!-- LỌC & DANH SÁCH CHỌN SỰ KIỆN (110+ SỰ KIỆN) -->
-      <div class="section-label">📌 3. Chọn Sự Kiện Chiếu (110+ Ngày Lễ)</div>
+      <!-- LỌC & DANH SÁCH CHỌN SỰ KIỆN -->
+      <div class="section-label">📌 3. Chọn Sự Kiện Chiếu</div>
       <div class="form-group">
         <select id="cfgCategory" class="studio-select">
-          <option value="all">-- Xem tất cả danh mục (110+ ngày) --</option>
+          <option value="all">-- Xem tất cả danh mục --</option>
           <option value="off">🎌 Nghỉ Lễ Chính Thức (Nhà Nước)</option>
           <option value="lunar">🧧 Lễ Hội Âm Lịch Truyền Thống</option>
           <option value="solar">🇻🇳 Ngày Lễ Kỷ Niệm Dương Lịch</option>
@@ -832,7 +829,104 @@
   }
 
   /* ==========================================================================
-     3. QUẢN LÝ DỮ LIỆU SỰ KIỆN
+     2. DỮ LIỆU SỰ KIỆN GỐC (BẢO LƯU THUỘC TÍNH CAT ĐỂ SỬA LỖI LỌC DROPDOWN)
+     ========================================================================== */
+  const HOLIDAYS_SOLAR = [
+    { name: "Tết Dương Lịch", emoji: "🎉", month: 1, day: 1, cat: "off", trivia: "Chào đón ngày đầu tiên của năm mới theo lịch Gregory quốc tế." },
+    { name: "Học sinh - Sinh viên VN", emoji: "🎓", month: 1, day: 9, cat: "industry", trivia: "Kỷ niệm tinh thần đấu tranh anh dũng của học sinh, sinh viên (1950)." },
+    { name: "Thành lập Đảng", emoji: "🚩", month: 2, day: 3, cat: "solar", trivia: "Kỷ niệm ngày thành lập Đảng Cộng sản Việt Nam (03/02/1930)." },
+    { name: "Valentine Đỏ", emoji: "❤️", month: 2, day: 14, cat: "intl", trivia: "Ngày Lễ Tình nhân tôn vinh tình yêu lứa đôi trên toàn thế giới." },
+    { name: "Thầy thuốc Việt Nam", emoji: "⚕️", month: 2, day: 27, cat: "industry", trivia: "Tôn vinh các y bác sĩ và cán bộ y tế theo lời dạy Lương y như từ mẫu." },
+    { name: "Bộ đội Biên phòng VN", emoji: "🛡️", month: 3, day: 3, cat: "industry", trivia: "Kỷ niệm ngày truyền thống Bộ đội Biên phòng và ngày Biên phòng toàn dân." },
+    { name: "Quốc tế Phụ nữ", emoji: "🌸", month: 3, day: 8, cat: "intl", trivia: "Kỷ niệm cuộc đấu tranh vì quyền bình đẳng và hạnh phúc của phụ nữ toàn cầu." },
+    { name: "Valentine Trắng", emoji: "🤍", month: 3, day: 14, cat: "intl", trivia: "Ngày đáp lại tình cảm của người thương sau ngày Valentine Đỏ." },
+    { name: "Quốc tế Hạnh phúc", emoji: "😊", month: 3, day: 20, cat: "intl", trivia: "Khẳng định hạnh phúc là nguyện vọng và mục tiêu phát triển toàn cầu." },
+    { name: "Thành lập Đoàn TNCS HCM", emoji: "🌟", month: 3, day: 26, cat: "solar", trivia: "Kỷ niệm ngày thành lập Đoàn Thanh niên Cộng sản Hồ Chí Minh (1931)." },
+    { name: "Thể thao Việt Nam", emoji: "🏃", month: 3, day: 27, cat: "industry", trivia: "Kêu gọi toàn dân rèn luyện thân thể theo gương Chủ tịch Hồ Chí Minh." },
+    { name: "Dân quân tự vệ", emoji: "🪖", month: 3, day: 28, cat: "industry", trivia: "Kỷ niệm ngày truyền thống vẻ vang của lực lượng Dân quân tự vệ VN." },
+    { name: "Cá Tháng Tư", emoji: "🤡", month: 4, day: 1, cat: "intl", trivia: "Ngày nói dối vui vẻ mang lại tiếng cười và sự thoải mái." },
+    { name: "Sách & Văn hóa đọc VN", emoji: "📖", month: 4, day: 21, cat: "industry", trivia: "Khuyến khích và phát triển phong trào đọc sách sâu rộng trong cộng đồng." },
+    { name: "Giải phóng miền Nam", emoji: "🇻🇳", month: 4, day: 30, cat: "off", trivia: "Ngày Thống nhất Đất nước, non sông thu về một mối (Nghỉ lễ)." },
+    { name: "Quốc tế Lao động", emoji: "⚒️", month: 5, day: 1, cat: "off", trivia: "Ngày hội của giai cấp công nhân và nhân dân lao động toàn cầu (Nghỉ lễ)." },
+    { name: "Chiến thắng Điện Biên Phủ", emoji: "🎖️", month: 5, day: 7, cat: "solar", trivia: "Chiến thắng Điện Biên Phủ lừng lẫy năm châu, chấn động địa cầu (1954)." },
+    { name: "Thành lập Đội TNTP HCM", emoji: "🎺", month: 5, day: 15, cat: "solar", trivia: "Kỷ niệm ngày thành lập Đội Thiếu niên Tiền phong Hồ Chí Minh (1941)." },
+    { name: "Khoa học & Công nghệ VN", emoji: "🔬", month: 5, day: 18, cat: "industry", trivia: "Tôn vinh đóng góp của các nhà khoa học và đội ngũ đổi mới sáng tạo." },
+    { name: "Sinh nhật Bác Hồ", emoji: "🌟", month: 5, day: 19, cat: "solar", trivia: "Kỷ niệm ngày sinh Chủ tịch Hồ Chí Minh vĩ đại (19/05/1890)." },
+    { name: "Quốc tế Thiếu nhi", emoji: "🎈", month: 6, day: 1, cat: "intl", trivia: "Ngày hội bảo vệ, chăm sóc và nâng niu trẻ em toàn thế giới." },
+    { name: "Môi trường Thế giới", emoji: "🌱", month: 6, day: 5, cat: "intl", trivia: "Kêu gọi ý thức bảo vệ môi trường và hệ sinh thái Trái Đất xanh." },
+    { name: "Báo chí Cách mạng VN", emoji: "📰", month: 6, day: 21, cat: "industry", trivia: "Kỷ niệm ngày xuất bản số đầu tiên của báo Thanh Niên do Bác Hồ sáng lập (1925)." },
+    { name: "Gia đình Việt Nam", emoji: "👨‍👩‍👧‍👦", month: 6, day: 28, cat: "solar", trivia: "Tôn vinh những giá trị văn hóa truyền thống tốt đẹp của gia đình Việt." },
+    { name: "Bảo hiểm Y tế VN", emoji: "🏥", month: 7, day: 1, cat: "industry", trivia: "Khẳng định vai trò của chính sách an sinh xã hội chăm sóc sức khỏe toàn dân." },
+    { name: "Thương binh Liệt sĩ", emoji: "🕯️", month: 7, day: 27, cat: "solar", trivia: "Tưởng nhớ và tri ân các anh hùng liệt sĩ đã hy sinh vì Tổ quốc." },
+    { name: "Thành lập Công đoàn VN", emoji: "🤝", month: 7, day: 28, cat: "solar", trivia: "Kỷ niệm thành lập Công đoàn Việt Nam bảo vệ quyền lợi người lao động (1929)." },
+    { name: "Nạn nhân chất độc da cam", emoji: "🎗️", month: 8, day: 10, cat: "solar", trivia: "Cùng chung tay xoa dịu nỗi đau cho các nạn nhân chất độc da cam/dioxin." },
+    { name: "Cách mạng Tháng Tám", emoji: "🔥", month: 8, day: 19, cat: "solar", trivia: "Kỷ niệm thắng lợi vĩ đại của cuộc Tổng khởi nghĩa Cách mạng Tháng Tám (1945)." },
+    { name: "Truyền thống CAND", emoji: "👮", month: 8, day: 19, cat: "industry", trivia: "Ngày truyền thống Công an Nhân dân vì an ninh Tổ quốc, bình yên cuộc sống." },
+    { name: "Quốc khánh Việt Nam", emoji: "🎆", month: 9, day: 2, cat: "off", trivia: "Bác Hồ đọc Tuyên ngôn Độc lập khai sinh nước VNDCCH (Nghỉ lễ)." },
+    { name: "Toàn dân đưa trẻ đến trường", emoji: "🏫", month: 9, day: 5, cat: "solar", trivia: "Ngày hội khai trường tưng bừng mở đầu năm học mới trên cả nước." },
+    { name: "Quốc tế Người cao tuổi", emoji: "👴", month: 10, day: 1, cat: "intl", trivia: "Kính trọng, quan tâm và phụng dưỡng các bậc cao niên trong xã hội." },
+    { name: "Giải phóng Thủ đô", emoji: "🏛️", month: 10, day: 10, cat: "solar", trivia: "Kỷ niệm ngày đoàn quân giải phóng tiến về tiếp quản Thủ đô Hà Nội (1954)." },
+    { name: "Chuyển đổi số Quốc gia", emoji: "💻", month: 10, day: 10, cat: "industry", trivia: "Thúc đẩy ứng dụng công nghệ số và phát triển kinh tế số Việt Nam." },
+    { name: "Doanh nhân Việt Nam", emoji: "💼", month: 10, day: 13, cat: "industry", trivia: "Biểu dương lực lượng doanh nhân đóng góp xây dựng nền kinh tế đất nước." },
+    { name: "Nông dân Việt Nam", emoji: "🌾", month: 10, day: 14, cat: "industry", trivia: "Tri ân giai cấp nông dân làm nên hạt gạo và trụ cột nền nông nghiệp." },
+    { name: "Phụ nữ Việt Nam", emoji: "💐", month: 10, day: 20, cat: "solar", trivia: "Kỷ niệm thành lập Hội Phụ nữ VN, tôn vinh người phụ nữ Việt Nam." },
+    { name: "Halloween", emoji: "🎃", month: 10, day: 31, cat: "intl", trivia: "Lễ hội hóa trang phương Tây xua đuổi tà ma và đón mùa đông." },
+    { name: "Pháp luật Việt Nam", emoji: "⚖️", month: 11, day: 9, cat: "industry", trivia: "Khẳng định thượng tôn Hiến pháp và Pháp luật trong đời sống xã hội." },
+    { name: "Nhà giáo Việt Nam", emoji: "📚", month: 11, day: 20, cat: "solar", trivia: "Ngày hội tri ân các thầy cô giáo - những người lái đò thầm lặng." },
+    { name: "Xóa bỏ Bạo lực Phụ nữ", emoji: "🧡", month: 11, day: 25, cat: "intl", trivia: "Hành động toàn cầu nhằm loại bỏ hoàn toàn bạo lực đối với phụ nữ." },
+    { name: "Toàn quốc Kháng chiến", emoji: "⚔️", month: 12, day: 19, cat: "solar", trivia: "Lời kêu gọi Toàn quốc kháng chiến bất hủ của Chủ tịch Hồ Chí Minh (1946)." },
+    { name: "Thành lập QĐND", emoji: "🪖", month: 12, day: 22, cat: "solar", trivia: "Ngày thành lập Quân đội Nhân dân Việt Nam anh hùng (22/12/1944)." },
+    { name: "Giáng sinh (Noel)", emoji: "🎄", month: 12, day: 25, cat: "intl", trivia: "Mừng ngày Chúa Giê-su giáng sinh, mùa của an lành và yêu thương." }
+  ];
+
+  const HOLIDAYS_LUNAR = [
+    { name: "Tết Nguyên Đán (Mùng 1)", emoji: "🧧", month: 1, day: 1, lunarTxt: "01/01 AL", cat: "off", trivia: "Khoảnh khắc khởi đầu năm mới âm lịch sum vầy (Nghỉ lễ)." },
+    { name: "Tết Nguyên Đán (Mùng 2)", emoji: "🧧", month: 1, day: 2, lunarTxt: "02/01 AL", cat: "off", trivia: "Mùng hai tết mẹ - thăm hỏi chúc tết người thân bên ngoại (Nghỉ lễ)." },
+    { name: "Tết Nguyên Đán (Mùng 3)", emoji: "🧧", month: 1, day: 3, lunarTxt: "03/01 AL", cat: "off", trivia: "Mùng ba tết thầy - tri ân công ơn dạy dỗ của thầy cô giáo (Nghỉ lễ)." },
+    { name: "Vía Thần Tài", emoji: "💰", month: 1, day: 10, lunarTxt: "10/01 AL", cat: "lunar", trivia: "Mua vàng và cúng Thần Tài cầu mong một năm tài lộc dồi dào, may mắn." },
+    { name: "Rằm tháng Giêng", emoji: "🌕", month: 1, day: 15, lunarTxt: "15/01 AL", cat: "lunar", trivia: "Tết Thượng Nguyên - Lễ Phật quanh năm không bằng ngày rằm tháng Giêng." },
+    { name: "Tết Hàn Thực", emoji: "🥣", month: 3, day: 3, lunarTxt: "03/03 AL", cat: "lunar", trivia: "Tết bánh trôi, bánh chay tưởng nhớ tổ tiên và hướng về nguồn cội." },
+    { name: "Giỗ Tổ Hùng Vương", emoji: "👑", month: 3, day: 10, lunarTxt: "10/03 AL", cat: "off", trivia: "Dù ai đi ngược về xuôi, nhớ ngày Giỗ Tổ mùng mười tháng ba (Nghỉ lễ)." },
+    { name: "Đại lễ Phật Đản", emoji: "🪷", month: 4, day: 15, lunarTxt: "15/04 AL", cat: "lunar", trivia: "Kỷ niệm ngày Đức Phật Thích Ca Mâu Ni đản sinh và phổ độ chúng sinh." },
+    { name: "Tết Đoan Ngọ", emoji: "🍑", month: 5, day: 5, lunarTxt: "05/05 AL", cat: "lunar", trivia: "Tết giết sâu bọ, ăn cơm rượu nếp và hoa quả cầu sức khỏe trong ngày hạ chí." },
+    { name: "Lễ Thất Tịch", emoji: "🎋", month: 7, day: 7, lunarTxt: "07/07 AL", cat: "lunar", trivia: "Ngưu Lang Chức Nữ gặp nhau trên cầu Ô Thước, ăn chè đậu đỏ cầu duyên." },
+    { name: "Lễ Vu Lan (Báo hiếu)", emoji: "🙏", month: 7, day: 15, lunarTxt: "15/07 AL", cat: "lunar", trivia: "Mùa báo hiếu công ơn cha mẹ và ngày xá tội vong nhân." },
+    { name: "Tết Trung Thu", emoji: "🥮", month: 8, day: 15, lunarTxt: "15/08 AL", cat: "lunar", trivia: "Đêm rằm trông trăng, rước đèn ông sao, sum vầy ăn bánh nướng bánh dẻo." },
+    { name: "Tết Trùng Cửu (9/9 AL)", emoji: "🌼", month: 9, day: 9, lunarTxt: "09/09 AL", cat: "lunar", trivia: "Lên núi cao ngắm hoa cúc vàng và uống rượu cúc cầu sống thọ." },
+    { name: "Tết Hạ Nguyên (Cơm mới)", emoji: "🌾", month: 10, day: 15, lunarTxt: "15/10 AL", cat: "lunar", trivia: "Lễ cúng tạ ơn trời đất ban vụ mùa bội thu và thưởng thức gạo mới." },
+    { name: "Tiễn Ông Táo", emoji: "🐟", month: 12, day: 23, lunarTxt: "23/12 AL", cat: "lunar", trivia: "Thả cá chép tiễn Táo Quân cưỡi mây về trời báo cáo việc trần gian." },
+    { name: "Đêm Giao Thừa (30 Tết)", emoji: "🎆", month: 12, day: 30, lunarTxt: "30/12 AL", cat: "off", trivia: "Thời khắc thiêng liêng chuyển giao năm cũ sang năm mới (Nghỉ lễ)." }
+  ];
+
+  const TIET_KHI_LIST = [
+    { name: "Tiết Lập Xuân", emoji: "🌱", month: 2, day: 4, cat: "tietkhi", trivia: "Bắt đầu mùa xuân, vạn vật bắt đầu đâm chồi nảy lộc đón dương khí." },
+    { name: "Tiết Vũ Thủy", emoji: "🌧️", month: 2, day: 19, cat: "tietkhi", trivia: "Mưa phùn xuân ẩm ướt nuôi dưỡng mầm non xanh tốt." },
+    { name: "Tiết Kinh Trập", emoji: "⚡", month: 3, day: 5, cat: "tietkhi", trivia: "Sấm sét đầu mùa đánh thức côn trùng sau giấc ngủ đông." },
+    { name: "Tiết Xuân Phân", emoji: "🌸", month: 3, day: 20, cat: "tietkhi", trivia: "Thời điểm giữa mùa xuân, ngày và đêm dài bằng nhau." },
+    { name: "Tiết Thanh Minh", emoji: "🌿", month: 4, day: 5, cat: "tietkhi", trivia: "Khí trời trong sáng thanh khiết, thời điểm tảo mộ tổ tiên." },
+    { name: "Tiết Cốc Vũ", emoji: "🌾", month: 4, day: 20, cat: "tietkhi", trivia: "Mưa rào ấm áp nuôi dưỡng hoa màu chuẩn bị bước vào mùa hè." },
+    { name: "Tiết Lập Hạ", emoji: "☀️", month: 5, day: 5, cat: "tietkhi", trivia: "Khởi đầu mùa hè rực rỡ, đón nhận năng lượng dồi dào." },
+    { name: "Tiết Tiểu Mãn", emoji: "🌻", month: 5, day: 21, cat: "tietkhi", trivia: "Hạt lúa bắt đầu vào mẩy, nước sông dâng cao." },
+    { name: "Tiết Mang Chủng", emoji: "🌾", month: 6, day: 6, cat: "tietkhi", trivia: "Mùa gieo cấy lúa có râu, bà con nông dân tấp nập đồng áng." },
+    { name: "Tiết Hạ Chí", emoji: "🌞", month: 6, day: 21, cat: "tietkhi", trivia: "Ngày dài nhất và đêm ngắn nhất trong năm tại Bắc bán cầu." },
+    { name: "Tiết Tiểu Thử", emoji: "🌡️", month: 7, day: 7, cat: "tietkhi", trivia: "Nắng nóng oi ả bắt đầu bước vào cao điểm của mùa hè." },
+    { name: "Tiết Đại Thử", emoji: "🔥", month: 7, day: 23, cat: "tietkhi", trivia: "Thời điểm nắng nóng đỉnh điểm và gay gắt nhất trong năm." },
+    { name: "Tiết Lập Thu", emoji: "🍂", month: 8, day: 7, cat: "tietkhi", trivia: "Khởi đầu mùa thu dịu mát, đón những cơn gió heo may đầu tiên." },
+    { name: "Tiết Xử Thử", emoji: "⛅", month: 8, day: 23, cat: "tietkhi", trivia: "Cái nóng oi ả dần lui đi, trời đất mát mẻ dễ chịu." },
+    { name: "Tiết Bạch Lộ", emoji: "💧", month: 9, day: 7, cat: "tietkhi", trivia: "Hạt sương trắng ngưng tụ trên cành cây ngọn cỏ mỗi sáng sớm." },
+    { name: "Tiết Thu Phân", emoji: "🍁", month: 9, day: 23, cat: "tietkhi", trivia: "Thời điểm giữa mùa thu, ngày và đêm dài bằng nhau." },
+    { name: "Tiết Hàn Lộ", emoji: "❄️", month: 10, day: 8, cat: "tietkhi", trivia: "Sương lạnh bắt đầu buốt giá, chuẩn bị bước vào mùa đông." },
+    { name: "Tiết Sương Giáng", emoji: "🌫️", month: 10, day: 23, cat: "tietkhi", trivia: "Sương mù giá rét xuất hiện nhiều hơn ở khắp các thung lũng." },
+    { name: "Tiết Lập Đông", emoji: "🧣", month: 11, day: 7, cat: "tietkhi", trivia: "Khởi đầu mùa đông lạnh giá, chuẩn bị áo ấm đón gió mùa." },
+    { name: "Tiết Tiểu Tuyết", emoji: "🌨️", month: 11, day: 22, cat: "tietkhi", trivia: "Không khí lạnh tăng cường, miền núi bắt đầu chớm rét đậm." },
+    { name: "Tiết Đại Tuyết", emoji: "☃️", month: 12, day: 7, cat: "tietkhi", trivia: "Thời điểm rét buốt đỉnh điểm của mùa đông." },
+    { name: "Tiết Đông Chí", emoji: "🕯️", month: 12, day: 21, cat: "tietkhi", trivia: "Đêm dài nhất và ngày ngắn nhất trong năm ở Bắc bán cầu." },
+    { name: "Tiết Tiểu Hàn", emoji: "🥶", month: 1, day: 5, cat: "tietkhi", trivia: "Thời kỳ rét đậm đón không khí lạnh trước thềm Tết Nguyên Đán." },
+    { name: "Tiết Đại Hàn", emoji: "🧊", month: 1, day: 20, cat: "tietkhi", trivia: "Rét buốt cực độ khép lại chu kỳ 24 tiết khí của một năm." }
+  ];
+
+  /* ==========================================================================
+     3. QUẢN LÝ DỮ LIỆU & FIX TRIỆT ĐỂ LỖI MẤT THUỘC TÍNH CAT
      ========================================================================== */
   const curYear = new Date().getFullYear();
   let allEvents = [];
@@ -852,9 +946,11 @@
   }
 
   function loadAllEvents(year) {
+    // FIX: BẢO LƯU THUỘC TÍNH CAT ĐỂ DROPDOWN KHÔNG BỊ TRỐNG
     const solars = HOLIDAYS_SOLAR.map(e => ({
       ...e,
       id: `s_${e.month}_${e.day}`,
+      cat: e.cat || "solar",
       absolute: `${year}-${String(e.month).padStart(2,'0')}-${String(e.day).padStart(2,'0')}`
     }));
 
@@ -863,6 +959,7 @@
       return {
         ...e,
         id: `l_${e.month}_${e.day}`,
+        cat: e.cat || "lunar",
         absolute: `${d[2]}-${String(d[1]).padStart(2,'0')}-${String(d[0]).padStart(2,'0')}`
       };
     });
@@ -870,6 +967,7 @@
     const tietkhi = TIET_KHI_LIST.map(e => ({
       ...e,
       id: `tk_${e.month}_${e.day}`,
+      cat: "tietkhi",
       absolute: `${year}-${String(e.month).padStart(2,'0')}-${String(e.day).padStart(2,'0')}`
     }));
 
@@ -1036,7 +1134,7 @@
   let selShowHoangDao = urlParams.get("astronomy") !== "0";
   let selShowTrivia = urlParams.get("trivia") !== "0";
 
-  // GIẢI MÃ SỰ KIỆN RIÊNG TỪ URL PARAMETERS
+  // GIẢI MÃ THAM SỐ SỰ KIỆN RIÊNG TỪ URL PARAMETERS
   let obsDirectCustomEvent = null;
   if (urlParams.get("c_name")) {
     const cName = decodeURIComponent(urlParams.get("c_name"));
@@ -1119,7 +1217,6 @@
     }
   }
 
-  // TẠO LINK OBS RIÊNG (KHÔNG TRÙNG LẶP SỰ KIỆN CŨ)
   function generateNewObsLink() {
     const baseUrl = window.location.origin + window.location.pathname;
     let customEventParams = "";

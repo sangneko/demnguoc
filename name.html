@@ -51,7 +51,7 @@
     }
 
     .studio-sidebar {
-      width: 520px;
+      width: 530px;
       height: 100vh;
       background: #0f172a;
       border-right: 1px solid rgba(255, 255, 255, 0.12);
@@ -219,9 +219,7 @@
     .pos-bottom-right { bottom: 65px; right: 25px; transform-origin: bottom right; }
     .pos-top-center { top: 25px; left: 50%; transform: translateX(-50%); transform-origin: top center; }
 
-    /* =========================================================
-       FIX LỖI FULL MÀN HÌNH BỊ MẤT NỘI DUNG (CÂN ĐỐI 100%)
-       ========================================================= */
+    /* FULLSCREEN KHÔNG BỊ TRÀN CHỮ */
     #overlayMount.pos-fullscreen {
       top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
       width: 100vw !important; height: 100vh !important;
@@ -464,7 +462,7 @@
     <div class="studio-sidebar">
       <div class="studio-header">
         <div class="studio-title">⚙️ ĐẠI NIÊN BIỂU MASTER</div>
-        <div class="studio-sub">Tùy Biến Ngày & Bộ Sinh Link OBS Riêng Biệt</div>
+        <div class="studio-sub">110+ Ngày Lễ, Tiết Khí, Ngành Nghề & Telemetry OBS</div>
       </div>
 
       <!-- TẠO SỰ KIỆN RIÊNG -->
@@ -472,7 +470,7 @@
       <div class="custom-box">
         <div style="display:flex; gap:8px;">
           <input type="text" id="custEmoji" class="studio-input" value="⭐" style="width:50px; text-align:center; font-size:1.1rem;">
-          <input type="text" id="custName" class="studio-input" placeholder="Tên sự kiện (VD: Sinh Nhật Nguyễn Thái Sang...)">
+          <input type="text" id="custName" class="studio-input" placeholder="Tên sự kiện (VD: Sinh nhật, Ra mắt...)">
         </div>
         
         <div style="display:flex; gap:8px;">
@@ -505,11 +503,11 @@
         </div>
       </div>
 
-      <!-- LỌC & DANH SÁCH CHỌN SỰ KIỆN -->
-      <div class="section-label">📌 3. Chọn Sự Kiện Chiếu (80+ Ngày Lễ)</div>
+      <!-- LỌC & DANH SÁCH CHỌN SỰ KIỆN (110+ SỰ KIỆN) -->
+      <div class="section-label">📌 3. Chọn Sự Kiện Chiếu (110+ Ngày Lễ)</div>
       <div class="form-group">
         <select id="cfgCategory" class="studio-select">
-          <option value="all">-- Xem tất cả danh mục --</option>
+          <option value="all">-- Xem tất cả danh mục (110+ ngày) --</option>
           <option value="off">🎌 Nghỉ Lễ Chính Thức (Nhà Nước)</option>
           <option value="lunar">🧧 Lễ Hội Âm Lịch Truyền Thống</option>
           <option value="solar">🇻🇳 Ngày Lễ Kỷ Niệm Dương Lịch</option>
@@ -834,7 +832,7 @@
   }
 
   /* ==========================================================================
-     2. QUẢN LÝ DỮ LIỆU SỰ KIỆN
+     3. QUẢN LÝ DỮ LIỆU SỰ KIỆN
      ========================================================================== */
   const curYear = new Date().getFullYear();
   let allEvents = [];
@@ -869,18 +867,24 @@
       };
     });
 
+    const tietkhi = TIET_KHI_LIST.map(e => ({
+      ...e,
+      id: `tk_${e.month}_${e.day}`,
+      absolute: `${year}-${String(e.month).padStart(2,'0')}-${String(e.day).padStart(2,'0')}`
+    }));
+
     const customs = JSON.parse(localStorage.getItem("vn_custom_events_v10") || "[]").map(c => {
       let abs = c.absolute;
       if (c.isLunar) {
         const sol = convertLunar2Solar(c.lunarD, c.lunarM, year, 0, 7);
         abs = `${sol[2]}-${String(sol[1]).padStart(2,'0')}-${String(sol[0]).padStart(2,'0')}`;
       }
-      return { ...c, absolute: abs };
+      return { ...c, cat: "custom", absolute: abs };
     });
 
     const nowTime = new Date().getTime();
 
-    allEvents = [...solars, ...lunars, ...customs].map(e => {
+    allEvents = [...solars, ...lunars, ...tietkhi, ...customs].map(e => {
       const dateObj = parseDateTime(e.absolute);
       const diffMs = dateObj.getTime() - nowTime;
       const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
@@ -1015,7 +1019,6 @@
   const urlParams = new URLSearchParams(window.location.search);
   const isObs = urlParams.get("overlay") === "1";
 
-  // Biến tham số thiết kế
   let selEventId = urlParams.get("id") || "";
   let selLayout = urlParams.get("pos") || "pos-top-left";
   let selFont = urlParams.get("font") ? decodeURIComponent(urlParams.get("font")) : "'Plus Jakarta Sans', sans-serif";
@@ -1033,7 +1036,7 @@
   let selShowHoangDao = urlParams.get("astronomy") !== "0";
   let selShowTrivia = urlParams.get("trivia") !== "0";
 
-  // GIẢI MÃ THAM SỐ SỰ KIỆN RIÊNG TỪ URL (AN TOÀN TUYỆT ĐỐI KHÔNG DÙNG BASE64)
+  // GIẢI MÃ SỰ KIỆN RIÊNG TỪ URL PARAMETERS
   let obsDirectCustomEvent = null;
   if (urlParams.get("c_name")) {
     const cName = decodeURIComponent(urlParams.get("c_name"));
@@ -1121,7 +1124,6 @@
     const baseUrl = window.location.origin + window.location.pathname;
     let customEventParams = "";
 
-    // NẾU LÀ SỰ KIỆN CÁ NHÂN -> TRUYỀN TOÀN BỘ THUỘC TÍNH VÀO LINK
     if (currentEvent && String(currentEvent.id).startsWith("c_")) {
       customEventParams += `&c_name=${encodeURIComponent(currentEvent.name)}`;
       customEventParams += `&c_emoji=${encodeURIComponent(currentEvent.emoji)}`;
@@ -1386,10 +1388,8 @@
 
     document.getElementById("btnTestFx").addEventListener("click", launchFireworks);
 
-    // BẤM NÚT MỚI TẠO LINK
     document.getElementById("btnGenerateUrl").addEventListener("click", generateNewObsLink);
 
-    // BẤM NÚT COPY LINK
     document.getElementById("btnCopyObs").addEventListener("click", () => {
       const input = document.getElementById("obsFinalUrl");
       if (!input.value) return;
@@ -1406,7 +1406,7 @@
 
   /* ==========================================================================
      5. DSP AUDIO & PARTICLE ENGINE
-     ========================================================================= */
+     ========================================================================== */
   let audioCtx = null;
   function initAudio() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1499,7 +1499,6 @@
   loadAllEvents(curYear);
 
   if (isObs) {
-    // GIẢI MÃ SỰ KIỆN TRỰC TIẾP TỪ THAM SỐ URL (KHÔNG BỊ LỖI CHUYỂN NGÀY)
     if (obsDirectCustomEvent) {
       currentEvent = obsDirectCustomEvent;
     } else {

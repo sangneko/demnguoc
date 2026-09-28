@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Đại Niên Biểu & Studio Overlay Đếm Ngược Lễ Hội VN</title>
+  <title>Đại Niên Biểu Master & OBS Stream Overlay Studio</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,7 +34,7 @@
       background: #080c16;
     }
 
-    /* OBS STANDBY / OVERLAY MODE */
+    /* OBS MODE */
     body.is-obs-mode { background: transparent !important; }
     body.is-obs-mode.chroma-green { background: #00FF00 !important; }
     body.is-obs-mode.chroma-blue { background: #0000FF !important; }
@@ -51,7 +51,7 @@
     }
 
     .studio-sidebar {
-      width: 500px;
+      width: 520px;
       height: 100vh;
       background: #0f172a;
       border-right: 1px solid rgba(255, 255, 255, 0.12);
@@ -59,7 +59,7 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 11px;
+      gap: 12px;
       box-shadow: 12px 0 35px rgba(0, 0, 0, 0.7);
     }
     .studio-sidebar::-webkit-scrollbar { width: 5px; }
@@ -104,13 +104,13 @@
     .studio-select option { background: #0f172a; color: #fff; }
 
     .custom-box {
-      background: rgba(30, 41, 59, 0.6);
-      border: 1px solid rgba(56, 189, 248, 0.25);
+      background: rgba(30, 41, 59, 0.65);
+      border: 1px solid rgba(56, 189, 248, 0.3);
       border-radius: 10px;
-      padding: 10px 12px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 8px;
       margin-top: 2px;
     }
 
@@ -229,7 +229,7 @@
       backdrop-filter: blur(14px);
     }
     .pos-fullscreen .stream-hud {
-      max-width: 1100px;
+      max-width: 1150px;
       width: 90%;
       flex-direction: column !important;
       padding: 40px 30px !important;
@@ -250,16 +250,16 @@
       background: var(--hud-bg);
       border: var(--hud-border-width) solid var(--hud-border-color);
       border-radius: var(--hud-radius);
-      padding: 14px 22px;
+      padding: 16px 24px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       box-shadow: var(--glow-shadow), 0 10px 30px rgba(0, 0, 0, 0.45);
       backdrop-filter: blur(12px);
       position: relative;
       overflow: hidden;
-      min-width: 400px;
-      max-width: 650px;
+      min-width: 440px;
+      max-width: 700px;
       transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -276,7 +276,7 @@
       gap: 16px;
     }
 
-    .hud-emoji { font-size: 3.2rem; line-height: 1; }
+    .hud-emoji { font-size: 3.4rem; line-height: 1; }
     .hud-meta { display: flex; flex-direction: column; gap: 3px; }
     .hud-tag {
       font-size: 0.65rem;
@@ -288,9 +288,9 @@
       align-items: center;
       gap: 5px;
     }
-    .hud-title { font-size: 1.25rem; font-weight: 800; white-space: nowrap; }
-    .hud-date { font-size: 0.78rem; font-weight: 600; color: #94a3b8; }
-    .hud-lunar { font-size: 0.74rem; font-weight: 700; color: #38bdf8; }
+    .hud-title { font-size: 1.3rem; font-weight: 800; white-space: nowrap; }
+    .hud-date { font-size: 0.8rem; font-weight: 600; color: #94a3b8; }
+    .hud-lunar { font-size: 0.76rem; font-weight: 700; color: #38bdf8; }
 
     .hud-timer { display: flex; align-items: center; gap: 6px; margin-left: auto; }
     .hud-box {
@@ -313,11 +313,11 @@
     /* TELEMETRY & ASTRONOMY PANEL */
     .hud-telemetry-panel {
       border-top: 1px dashed rgba(255, 255, 255, 0.15);
-      padding-top: 8px;
+      padding-top: 10px;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      font-size: 0.72rem;
+      font-size: 0.74rem;
     }
     .telemetry-row {
       display: flex;
@@ -327,7 +327,7 @@
       color: #cbd5e1;
     }
     .telemetry-pill {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.08);
       padding: 2px 8px;
       border-radius: 4px;
       font-weight: 700;
@@ -336,9 +336,9 @@
     }
     .progress-bar-container {
       width: 100%;
-      height: 4px;
+      height: 5px;
       background: rgba(255, 255, 255, 0.1);
-      border-radius: 2px;
+      border-radius: 3px;
       overflow: hidden;
       margin-top: 2px;
     }
@@ -584,11 +584,11 @@
         🎆 Bắn Pháo Hoa & Fanfare (Test Thử)
       </button>
 
-      <!-- HỘP XUẤT LINK THEO YÊU CẦU: BẤM NÚT MỚI TẠO LINK MỚI -->
+      <!-- HỘP XUẤT LINK -->
       <div class="export-box">
         <label style="font-size:0.75rem; font-weight:800; color:#38bdf8;">LIÊN KẾT NHÚNG OBS BROWSER SOURCE:</label>
-        <button id="btnGenerateUrl" class="btn-gen-url">⚡ TẠO LINK OBS MỚI</button>
-        <input type="text" id="obsFinalUrl" readonly class="studio-input" placeholder="Bấm 'Tạo Link OBS Mới' ở trên để lấy liên kết..." style="font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:#38bdf8;">
+        <button id="btnGenerateUrl" class="btn-gen-url">⚡ TẠO LINK OBS RIÊNG (FIX GHIM 100%)</button>
+        <input type="text" id="obsFinalUrl" readonly class="studio-input" placeholder="Bấm 'Tạo Link OBS Riêng' để lấy liên kết chuẩn..." style="font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:#38bdf8;">
         <button id="btnCopyObs" class="btn-copy-url" disabled>
           📋 SAO CHÉP LINK DÁN VÀO OBS
         </button>
@@ -1013,7 +1013,7 @@
   const urlParams = new URLSearchParams(window.location.search);
   const isObs = urlParams.get("overlay") === "1";
 
-  // Biến cấu hình
+  // Biến tham số thiết kế
   let selEventId = urlParams.get("id") || "";
   let selLayout = urlParams.get("pos") || "pos-top-left";
   let selFont = urlParams.get("font") ? decodeURIComponent(urlParams.get("font")) : "'Plus Jakarta Sans', sans-serif";
@@ -1031,13 +1031,35 @@
   let selShowHoangDao = urlParams.get("astronomy") !== "0";
   let selShowTrivia = urlParams.get("trivia") !== "0";
 
-  // Đọc dữ liệu sự kiện cá nhân từ URL Param 'cust' (khắc phục lỗi LocalStorage trên OBS)
-  const rawCustData = urlParams.get("cust");
-  let obsCustomEvent = null;
-  if (rawCustData) {
-    try {
-      obsCustomEvent = JSON.parse(decodeURIComponent(escape(atob(rawCustData))));
-    } catch(err){}
+  // FIX LỖI TRIỆT ĐỂ: Đọc dữ liệu sự kiện riêng trực tiếp qua từng tham số URL độc lập
+  let obsDirectCustomEvent = null;
+  if (urlParams.get("c_name")) {
+    const cName = decodeURIComponent(urlParams.get("c_name"));
+    const cEmoji = decodeURIComponent(urlParams.get("c_emoji") || "⭐");
+    const cTrivia = decodeURIComponent(urlParams.get("c_trivia") || "");
+    const cDate = urlParams.get("c_date") || "";
+    const cIsLunar = urlParams.get("c_lunar") === "1";
+    const cLunarD = parseInt(urlParams.get("c_ld") || "1");
+    const cLunarM = parseInt(urlParams.get("c_lm") || "1");
+
+    let finalAbs = cDate;
+    if (cIsLunar) {
+      const sol = convertLunar2Solar(cLunarD, cLunarM, curYear, 0, 7);
+      finalAbs = `${sol[2]}-${String(sol[1]).padStart(2,'0')}-${String(sol[0]).padStart(2,'0')}T00:00`;
+    }
+
+    const dObj = parseDateTime(finalAbs);
+    const l = convertSolar2Lunar(dObj.getDate(), dObj.getMonth() + 1, dObj.getFullYear(), 7);
+
+    obsDirectCustomEvent = {
+      id: "c_direct_obs",
+      name: cName,
+      emoji: cEmoji,
+      trivia: cTrivia,
+      absolute: finalAbs,
+      dateObj: dObj,
+      lunarFull: `Âm lịch: ${l[0]}/${l[1]} (${getCanChiYear(l[2])})`
+    };
   }
 
   function applyStyles() {
@@ -1092,34 +1114,32 @@
     }
   }
 
-  // HÀM TẠO LINK CHỈ CHẠY KHI STREAMER BẤM NÚT "TẠO LINK OBS MỚI"
+  // TẠO LINK OBS CHÍNH XÁC VÀ KHÔNG BAO GIỜ BỊ SAI LỆCH SỰ KIỆN
   function generateNewObsLink() {
     const baseUrl = window.location.origin + window.location.pathname;
-    let custParam = "";
+    let customEventParams = "";
+
+    // NẾU LÀ SỰ KIỆN CÁ NHÂN -> TRUYỀN THẲNG TRỰC TIẾP CÁC THUỘC TÍNH VÀO URL
     if (currentEvent && String(currentEvent.id).startsWith("c_")) {
-      const payload = {
-        id: currentEvent.id,
-        name: currentEvent.name,
-        emoji: currentEvent.emoji,
-        trivia: currentEvent.trivia,
-        absolute: currentEvent.absolute,
-        isLunar: currentEvent.isLunar,
-        lunarD: currentEvent.lunarD,
-        lunarM: currentEvent.lunarM
-      };
-      custParam = `&cust=${btoa(unescape(encodeURIComponent(JSON.stringify(payload))))}`;
+      customEventParams += `&c_name=${encodeURIComponent(currentEvent.name)}`;
+      customEventParams += `&c_emoji=${encodeURIComponent(currentEvent.emoji)}`;
+      customEventParams += `&c_trivia=${encodeURIComponent(currentEvent.trivia || '')}`;
+      customEventParams += `&c_date=${encodeURIComponent(currentEvent.absolute || '')}`;
+      if (currentEvent.isLunar) {
+        customEventParams += `&c_lunar=1&c_ld=${currentEvent.lunarD}&c_lm=${currentEvent.lunarM}`;
+      }
     }
 
-    const finalLink = `${baseUrl}?overlay=1&id=${selEventId}${custParam}&pos=${selLayout}&font=${encodeURIComponent(selFont)}&style=${selStyle}&color=${encodeURIComponent(selColor)}&bg=${selBg}&scale=${selScale}&alpha=${selAlpha}&tiltx=${selTiltX}&tilty=${selTiltY}&ms=${selShowMs ? '1' : '0'}&hours=${selShowTotalHours ? '1' : '0'}&yearprog=${selShowYearProgress ? '1' : '0'}&astronomy=${selShowHoangDao ? '1' : '0'}&trivia=${selShowTrivia ? '1' : '0'}`;
+    const finalLink = `${baseUrl}?overlay=1&id=${selEventId}${customEventParams}&pos=${selLayout}&font=${encodeURIComponent(selFont)}&style=${selStyle}&color=${encodeURIComponent(selColor)}&bg=${selBg}&scale=${selScale}&alpha=${selAlpha}&tiltx=${selTiltX}&tilty=${selTiltY}&ms=${selShowMs ? '1' : '0'}&hours=${selShowTotalHours ? '1' : '0'}&yearprog=${selShowYearProgress ? '1' : '0'}&astronomy=${selShowHoangDao ? '1' : '0'}&trivia=${selShowTrivia ? '1' : '0'}`;
     
     const input = document.getElementById("obsFinalUrl");
     input.value = finalLink;
     document.getElementById("btnCopyObs").disabled = false;
 
     const btnGen = document.getElementById("btnGenerateUrl");
-    btnGen.textContent = "✓ ĐÃ TẠO XONG LINK!";
+    btnGen.textContent = "✓ ĐÃ TẠO XONG LINK RIÊNG!";
     setTimeout(() => {
-      btnGen.textContent = "⚡ TẠO LINK OBS MỚI";
+      btnGen.textContent = "⚡ TẠO LINK OBS RIÊNG (FIX GHIM 100%)";
     }, 2000);
   }
 
@@ -1229,7 +1249,7 @@
       startMasterLiveTimer();
       applyStyles();
 
-      alert(`Đã lưu thành công sự kiện: ${name}. Hãy bấm nút '⚡ TẠO LINK OBS MỚI' ở góc dưới để lấy liên kết!`);
+      alert(`Đã lưu sự kiện: "${name}". Hãy bấm nút "⚡ TẠO LINK OBS RIÊNG" ở góc dưới để lấy liên kết ghim chuẩn vào OBS!`);
     });
 
     // KỊCH BẢN ONE-CLICK
@@ -1477,16 +1497,9 @@
   loadAllEvents(curYear);
 
   if (isObs) {
-    // GIẢI MÃ NỘI DUNG SỰ KIỆN TỪ URL PARAM
-    if (obsCustomEvent) {
-      if (obsCustomEvent.isLunar) {
-        const sol = convertLunar2Solar(obsCustomEvent.lunarD, obsCustomEvent.lunarM, curYear, 0, 7);
-        obsCustomEvent.absolute = `${sol[2]}-${String(sol[1]).padStart(2,'0')}-${String(sol[0]).padStart(2,'0')}T00:00`;
-      }
-      obsCustomEvent.dateObj = parseDateTime(obsCustomEvent.absolute);
-      const l = convertSolar2Lunar(obsCustomEvent.dateObj.getDate(), obsCustomEvent.dateObj.getMonth() + 1, obsCustomEvent.dateObj.getFullYear(), 7);
-      obsCustomEvent.lunarFull = `Âm lịch: ${l[0]}/${l[1]} (${getCanChiYear(l[2])})`;
-      currentEvent = obsCustomEvent;
+    // NẾU LÀ SỰ KIỆN TRUYỀN TRỰC TIẾP QUA URL -> DÙNG NGAY KHÔNG CẦN QUA LOCALSTORAGE
+    if (obsDirectCustomEvent) {
+      currentEvent = obsDirectCustomEvent;
     } else {
       currentEvent = (selEventId ? allEvents.find(e => e.id === selEventId) : null) || allEvents.find(e => e.diffDays >= 0) || allEvents[0];
     }

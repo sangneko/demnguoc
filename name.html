@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Deep-Engine Studio v10.0: Custom Events & Master Data Overlay</title>
+  <title>Deep-Engine Studio: Master Data & OBS Stream Overlay</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,7 +55,7 @@
       height: 100vh;
       background: #0f172a;
       border-right: 1px solid rgba(255, 255, 255, 0.12);
-      padding: 18px 20px;
+      padding: 16px 20px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -401,22 +401,22 @@
   <div id="studioApp">
     <div class="studio-sidebar">
       <div class="studio-header">
-        <div class="studio-title">⚙️ DEEP-ENGINE v10.0 MASTER</div>
-        <div class="studio-sub">Tùy Biến Ngày Riêng, Lịch Âm & Telemetry Chuyên Sâu</div>
+        <div class="studio-title">⚙️ DEEP-ENGINE STUDIO MASTER</div>
+        <div class="studio-sub">Tùy Biến Ngày Riêng & Telemetry Chuyên Sâu</div>
       </div>
 
-      <!-- TẠO SỰ KIỆN RIÊNG CỦA STREAMER -->
+      <!-- TẠO SỰ KIỆN RIÊNG -->
       <div class="section-label">✨ 1. Tạo Sự Kiện Riêng (Custom Event)</div>
       <div class="custom-box">
         <div style="display:flex; gap:8px;">
           <input type="text" id="custEmoji" class="studio-input" value="⭐" style="width:50px; text-align:center; font-size:1.1rem;">
-          <input type="text" id="custName" class="studio-input" placeholder="Tên sự kiện (VD: Sinh nhật, Ra mắt game...)">
+          <input type="text" id="custName" class="studio-input" placeholder="Tên sự kiện (VD: Sinh nhật, Khai trương...)">
         </div>
         
         <div style="display:flex; gap:8px;">
           <select id="custCalType" class="studio-select" style="flex:1;">
-            <option value="solar">Hệ Dương Lịch</option>
-            <option value="lunar">Hệ Âm Lịch (Quy đổi)</option>
+            <option value="solar">Dương Lịch</option>
+            <option value="lunar">Âm Lịch</option>
           </select>
           <input type="datetime-local" id="custDateTime" class="studio-input" style="flex:2;">
         </div>
@@ -426,13 +426,13 @@
           <input type="number" id="custLunarM" class="studio-input" placeholder="Tháng AL (1-12)" min="1" max="12">
         </div>
 
-        <input type="text" id="custTrivia" class="studio-input" placeholder="Ghi chú / Lời chúc hiển thị trên HUD...">
+        <input type="text" id="custTrivia" class="studio-input" placeholder="Lời chúc / Ghi chú hiển thị trên HUD...">
         <button id="btnSaveCustom" class="btn-opt" style="background:#0284c7; border:none; padding:8px;">
           ➕ Lưu & Chọn Sự Kiện Này Ngay
         </button>
       </div>
 
-      <!-- KỊCH BẢN ONE-CLICK -->
+      <!-- PRESET KỊCH BẢN -->
       <div class="section-label">⚡ 2. Kịch Bản Preset Nhanh</div>
       <div class="form-group">
         <div class="btn-group">
@@ -482,7 +482,7 @@
         </div>
       </div>
 
-      <!-- TÙY CHỌN DỮ LIỆU HIỂN THỊ MỞ RỘNG -->
+      <!-- TELEMETRY SÂU -->
       <div class="section-label">📊 6. Dữ Liệu & Telemetry Hiển Thị Sâu</div>
       <div class="form-group" style="gap:6px; font-size:0.75rem;">
         <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
@@ -578,8 +578,6 @@
        ========================================================= -->
   <div id="overlayMount" class="pos-top-left">
     <div class="stream-hud" id="hudWidget">
-      
-      <!-- HÀNG TIÊU ĐỀ & ĐỒNG HỒ CHÍNH -->
       <div class="hud-main-row">
         <div class="hud-emoji" id="hEmoji">🎉</div>
         <div class="hud-meta">
@@ -624,7 +622,7 @@
         </div>
         
         <div class="telemetry-row" id="rowYear">
-          <span id="telYearLbl">Tiến độ năm 2026:</span>
+          <span id="telYearLbl">Tiến độ năm:</span>
           <span class="telemetry-pill" id="telYearPercent">0%</span>
         </div>
         <div class="progress-bar-container" id="barYear">
@@ -763,50 +761,7 @@
   }
 
   /* ==========================================================================
-     2. DỮ LIỆU SỰ KIỆN GỐC
-     ========================================================================== */
-  const HOLIDAYS_SOLAR = [
-    { name: "Tết Dương Lịch", emoji: "🎉", month: 1, day: 1, trivia: "Chào đón ngày đầu tiên của năm mới theo lịch Gregory quốc tế." },
-    { name: "Thành lập Đảng", emoji: "🚩", month: 2, day: 3, trivia: "Kỷ niệm ngày thành lập Đảng Cộng sản Việt Nam (03/02/1930)." },
-    { name: "Valentine", emoji: "❤️", month: 2, day: 14, trivia: "Ngày Lễ Tình nhân tôn vinh tình yêu lứa đôi trên toàn thế giới." },
-    { name: "Thầy thuốc Việt Nam", emoji: "⚕️", month: 2, day: 27, trivia: "Tôn vinh các y bác sĩ và cán bộ y tế theo lời dạy Lương y như từ mẫu." },
-    { name: "Quốc tế Phụ nữ", emoji: "🌸", month: 3, day: 8, trivia: "Kỷ niệm cuộc đấu tranh vì quyền bình đẳng và hạnh phúc của phụ nữ toàn cầu." },
-    { name: "Thành lập Đoàn", emoji: "🌟", month: 3, day: 26, trivia: "Kỷ niệm ngày thành lập Đoàn Thanh niên Cộng sản Hồ Chí Minh (1931)." },
-    { name: "Cá Tháng Tư", emoji: "🤡", month: 4, day: 1, trivia: "Ngày nói dối vui vẻ mang lại tiếng cười và sự thoải mái." },
-    { name: "Giải phóng miền Nam", emoji: "🇻🇳", month: 4, day: 30, trivia: "Ngày Thống nhất Đất nước, kết thúc chiến tranh (30/04/1975)." },
-    { name: "Quốc tế Lao động", emoji: "⚒️", month: 5, day: 1, trivia: "Ngày hội của giai cấp công nhân và người lao động trên khắp năm châu." },
-    { name: "Sinh nhật Bác Hồ", emoji: "🌟", month: 5, day: 19, trivia: "Kỷ niệm ngày sinh Chủ tịch Hồ Chí Minh vĩ đại (19/05/1890)." },
-    { name: "Quốc tế Thiếu nhi", emoji: "🎈", month: 6, day: 1, trivia: "Ngày hội bảo vệ, chăm sóc và nâng niu trẻ em toàn thế giới." },
-    { name: "Gia đình Việt Nam", emoji: "👨‍👩‍👧‍👦", month: 6, day: 28, trivia: "Tôn vinh những giá trị văn hóa truyền thống tốt đẹp của gia đình Việt." },
-    { name: "Thương binh Liệt sĩ", emoji: "🕯️", month: 7, day: 27, trivia: "Tưởng nhớ và tri ân các anh hùng liệt sĩ đã hy sinh vì Tổ quốc." },
-    { name: "Cách mạng Tháng Tám", emoji: "🔥", month: 8, day: 19, trivia: "Kỷ niệm thắng lợi vĩ đại của cuộc Tổng khởi nghĩa Cách mạng Tháng Tám (1945)." },
-    { name: "Quốc khánh Việt Nam", emoji: "🎆", month: 9, day: 2, trivia: "Ngày Bác Hồ đọc Tuyên ngôn Độc lập khai sinh nước VNDCCH (02/09/1945)." },
-    { name: "Giải phóng Thủ đô", emoji: "🏛️", month: 10, day: 10, trivia: "Kỷ niệm ngày đoàn quân giải phóng tiến về tiếp quản Thủ đô Hà Nội (1954)." },
-    { name: "Phụ nữ Việt Nam", emoji: "💐", month: 10, day: 20, trivia: "Kỷ niệm thành lập Hội Phụ nữ phản đế VN, tôn vinh người phụ nữ Việt." },
-    { name: "Halloween", emoji: "🎃", month: 10, day: 31, trivia: "Lễ hội hóa trang phương Tây xua đuổi tà ma và đón mùa đông." },
-    { name: "Nhà giáo Việt Nam", emoji: "📚", month: 11, day: 20, trivia: "Ngày hội tri ân các thầy cô giáo - những người lái đò thầm lặng." },
-    { name: "Thành lập QĐND", emoji: "🪖", month: 12, day: 22, trivia: "Ngày thành lập Quân đội Nhân dân Việt Nam anh hùng (22/12/1944)." },
-    { name: "Giáng sinh (Noel)", emoji: "🎄", month: 12, day: 25, trivia: "Mừng ngày Chúa Giê-su giáng sinh, mùa của an lành và yêu thương." }
-  ];
-
-  const HOLIDAYS_LUNAR = [
-    { name: "Tết Nguyên Đán (Mùng 1)", emoji: "🧧", month: 1, day: 1, lunarTxt: "01/01 AL", trivia: "Khoảnh khắc khởi đầu năm mới âm lịch, sum vầy và chúc tết gia đình." },
-    { name: "Tết Nguyên Đán (Mùng 2)", emoji: "🧧", month: 1, day: 2, lunarTxt: "02/01 AL", trivia: "Mùng một tết cha, mùng hai tết mẹ - thăm hỏi quê ngoại và người thân." },
-    { name: "Tết Nguyên Đán (Mùng 3)", emoji: "🧧", month: 1, day: 3, lunarTxt: "03/01 AL", trivia: "Mùng ba tết thầy - tri ân công ơn dạy dỗ của những bậc tiền bối." },
-    { name: "Rằm tháng Giêng", emoji: "🌕", month: 1, day: 15, lunarTxt: "15/01 AL", trivia: "Tết Thượng Nguyên - Lễ Phật quanh năm không bằng ngày rằm tháng Giêng." },
-    { name: "Tết Hàn Thực", emoji: "🥣", month: 3, day: 3, lunarTxt: "03/03 AL", trivia: "Tết bánh trôi, bánh chay tưởng nhớ tổ tiên và nguồn cội." },
-    { name: "Giỗ Tổ Hùng Vương", emoji: "👑", month: 3, day: 10, lunarTxt: "10/03 AL", trivia: "Dù ai đi ngược về xuôi, nhớ ngày Giỗ Tổ mùng mười tháng ba." },
-    { name: "Đại lễ Phật Đản", emoji: "🪷", month: 4, day: 15, lunarTxt: "15/04 AL", trivia: "Kỷ niệm ngày Đức Phật Thích Ca Mâu Ni đản sinh." },
-    { name: "Tết Đoan Ngọ", emoji: "🍑", month: 5, day: 5, lunarTxt: "05/05 AL", trivia: "Tết giết sâu bọ, ăn cơm rượu nếp và hoa quả cầu sức khỏe mùa hè." },
-    { name: "Lễ Thất Tịch", emoji: "🎋", month: 7, day: 7, lunarTxt: "07/07 AL", trivia: "Ngày Ngưu Lang Chức Nữ gặp nhau trên cầu Ô Thước, ăn chè đậu đỏ." },
-    { name: "Lễ Vu Lan", emoji: "🙏", month: 7, day: 15, lunarTxt: "15/07 AL", trivia: "Mùa báo hiếu công ơn cha mẹ và ngày xá tội vong nhân." },
-    { name: "Tết Trung Thu", emoji: "🥮", month: 8, day: 15, lunarTxt: "15/08 AL", trivia: "Đêm rằm trông trăng, rước đèn ông sao, ăn bánh dẻo bánh nướng sum vầy." },
-    { name: "Tiễn Ông Táo", emoji: "🐟", month: 12, day: 23, lunarTxt: "23/12 AL", trivia: "Thả cá chép tiễn Táo Quân cưỡi mây về trời báo cáo Ngọc Hoàng." },
-    { name: "Đêm Giao Thừa (30 Tết)", emoji: "🎆", month: 12, day: 30, lunarTxt: "30/12 AL", trivia: "Thời khắc thiêng liêng chuyển giao năm cũ sang năm mới." }
-  ];
-
-  /* ==========================================================================
-     3. QUẢN LÝ DỮ LIỆU & ENGINE ĐẾM NGƯỢC MASTER
+     2. QUẢN LÝ DỮ LIỆU SỰ KIỆN
      ========================================================================== */
   const curYear = new Date().getFullYear();
   let allEvents = [];
@@ -814,7 +769,7 @@
   let timerAnimFrame = null;
 
   function parseDateTime(str) {
-    // Hỗ trợ cả YYYY-MM-DD và YYYY-MM-DDTHH:mm
+    if (!str) return new Date();
     if (str.includes("T")) {
       const [dPart, tPart] = str.split("T");
       const [y, m, d] = dPart.split('-').map(Number);
@@ -943,7 +898,7 @@
       document.getElementById("telYearPercent").textContent = `${yearPct}%`;
       document.getElementById("telYearFill").style.width = `${yearPct}%`;
 
-      // Thiên văn học hôm nay
+      // Thiên văn
       const dNow = now.getDate(), mNow = now.getMonth() + 1;
       const canChiDay = getCanChiDay(dNow, mNow, curY);
       const canChiMonth = getCanChiMonth(mNow, curY);
@@ -982,12 +937,12 @@
   }
 
   /* ==========================================================================
-     4. TÙY BIẾN STUDIO TRÊN TRÌNH DUYỆT & URL PARAMETER PARSER
+     4. TÙY BIẾN STUDIO TRÊN TRÌNH DUYỆT & GIẢI MÃ URL DATA CHO OBS
      ========================================================================== */
   const urlParams = new URLSearchParams(window.location.search);
   const isObs = urlParams.get("overlay") === "1";
 
-  // Biến tham số thiết kế
+  // Biến cấu hình
   let selEventId = urlParams.get("id") || "";
   let selLayout = urlParams.get("pos") || "pos-top-left";
   let selFont = urlParams.get("font") ? decodeURIComponent(urlParams.get("font")) : "'Plus Jakarta Sans', sans-serif";
@@ -1004,6 +959,15 @@
   let selShowYearProgress = urlParams.get("yearprog") !== "0";
   let selShowHoangDao = urlParams.get("astronomy") !== "0";
   let selShowTrivia = urlParams.get("trivia") !== "0";
+
+  // SỬA LỖI OBS KHÔNG NHẬN SỰ KIỆN TỰ TẠO: Đọc trực tiếp từ URL Param 'cust'
+  const rawCustData = urlParams.get("cust");
+  let obsCustomEvent = null;
+  if (rawCustData) {
+    try {
+      obsCustomEvent = JSON.parse(decodeURIComponent(escape(atob(rawCustData))));
+    } catch(err){}
+  }
 
   function applyStyles() {
     const mount = document.getElementById("overlayMount");
@@ -1056,9 +1020,25 @@
       else stage.style.backgroundColor = "#060913";
     }
 
+    // ĐÓNG GÓI LINK OBS (NẾU LÀ SỰ KIỆN CÁ NHÂN SẼ TỰ MÃ HÓA NỘI DUNG VÀO URL)
     if (!isObs) {
       const baseUrl = window.location.origin + window.location.pathname;
-      const finalLink = `${baseUrl}?overlay=1&id=${selEventId}&pos=${selLayout}&font=${encodeURIComponent(selFont)}&style=${selStyle}&color=${encodeURIComponent(selColor)}&bg=${selBg}&scale=${selScale}&alpha=${selAlpha}&tiltx=${selTiltX}&tilty=${selTiltY}&ms=${selShowMs ? '1' : '0'}&hours=${selShowTotalHours ? '1' : '0'}&yearprog=${selShowYearProgress ? '1' : '0'}&astronomy=${selShowHoangDao ? '1' : '0'}&trivia=${selShowTrivia ? '1' : '0'}`;
+      let custParam = "";
+      if (currentEvent && String(currentEvent.id).startsWith("c_")) {
+        const payload = {
+          id: currentEvent.id,
+          name: currentEvent.name,
+          emoji: currentEvent.emoji,
+          trivia: currentEvent.trivia,
+          absolute: currentEvent.absolute,
+          isLunar: currentEvent.isLunar,
+          lunarD: currentEvent.lunarD,
+          lunarM: currentEvent.lunarM
+        };
+        custParam = `&cust=${btoa(unescape(encodeURIComponent(JSON.stringify(payload))))}`;
+      }
+
+      const finalLink = `${baseUrl}?overlay=1&id=${selEventId}${custParam}&pos=${selLayout}&font=${encodeURIComponent(selFont)}&style=${selStyle}&color=${encodeURIComponent(selColor)}&bg=${selBg}&scale=${selScale}&alpha=${selAlpha}&tiltx=${selTiltX}&tilty=${selTiltY}&ms=${selShowMs ? '1' : '0'}&hours=${selShowTotalHours ? '1' : '0'}&yearprog=${selShowYearProgress ? '1' : '0'}&astronomy=${selShowHoangDao ? '1' : '0'}&trivia=${selShowTrivia ? '1' : '0'}`;
       document.getElementById("obsFinalUrl").value = finalLink;
     }
   }
@@ -1091,7 +1071,7 @@
       applyStyles();
     });
 
-    // MODULE TẠO SỰ KIỆN RIÊNG
+    // TẠO SỰ KIỆN RIÊNG
     document.getElementById("custCalType").addEventListener("change", (e) => {
       const isLunar = e.target.value === "lunar";
       document.getElementById("custLunarRow").style.display = isLunar ? "flex" : "none";
@@ -1110,7 +1090,7 @@
         id: `c_${Date.now()}`,
         name: name,
         emoji: emoji,
-        trivia: trivia || "Sự kiện được tạo bởi streamer."
+        trivia: trivia || "Sự kiện cá nhân của Streamer."
       };
 
       if (calType === "solar") {
@@ -1121,12 +1101,13 @@
         const lD = parseInt(document.getElementById("custLunarD").value);
         const lM = parseInt(document.getElementById("custLunarM").value);
         if (!lD || !lM || lD < 1 || lD > 30 || lM < 1 || lM > 12) {
-          alert("Vui lòng nhập ngày (1-30) và tháng (1-12) Âm Lịch hợp lệ!"); return;
+          alert("Vui lòng nhập ngày (1-30) và tháng (1-12) Âm Lịch!"); return;
         }
         customObj.isLunar = true;
         customObj.lunarD = lD;
         customObj.lunarM = lM;
-        customObj.absolute = ""; // loadAllEvents sẽ tự tính
+        const sol = convertLunar2Solar(lD, lM, curYear, 0, 7);
+        customObj.absolute = `${sol[2]}-${String(sol[1]).padStart(2,'0')}-${String(sol[0]).padStart(2,'0')}T00:00`;
       }
 
       const currentList = JSON.parse(localStorage.getItem("vn_custom_events_v10") || "[]");
@@ -1136,7 +1117,6 @@
       loadAllEvents(curYear);
       initStudioControls();
 
-      // Tự động chọn sự kiện vừa tạo
       selEventId = customObj.id;
       document.getElementById("cfgEvent").value = customObj.id;
       currentEvent = allEvents.find(e => e.id === customObj.id);
@@ -1144,10 +1124,10 @@
       startMasterLiveTimer();
       applyStyles();
 
-      alert(`Đã tạo thành công sự kiện: ${name}`);
+      alert(`Đã tạo và chọn sự kiện: ${name}`);
     });
 
-    // KỊCH BẢN ONE-CLICK PRESETS
+    // KỊCH BẢN ONE-CLICK
     document.querySelectorAll(".btn-opt[data-preset]").forEach(btn => {
       btn.addEventListener("click", () => {
         const p = btn.getAttribute("data-preset");
@@ -1184,23 +1164,16 @@
       });
     });
 
-    // Bố cục Layout
-    const cfgLayout = document.getElementById("cfgLayout");
-    cfgLayout.value = selLayout;
-    cfgLayout.addEventListener("change", (e) => {
+    document.getElementById("cfgLayout").addEventListener("change", (e) => {
       selLayout = e.target.value;
       applyStyles();
     });
 
-    // Phông chữ
-    const cfgFont = document.getElementById("cfgFont");
-    cfgFont.value = selFont;
-    cfgFont.addEventListener("change", (e) => {
+    document.getElementById("cfgFont").addEventListener("change", (e) => {
       selFont = e.target.value;
       applyStyles();
     });
 
-    // Style Khung
     document.querySelectorAll(".btn-opt[data-style]").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".btn-opt[data-style]").forEach(b => b.classList.remove("active"));
@@ -1210,7 +1183,6 @@
       });
     });
 
-    // Màu Preset
     document.querySelectorAll(".btn-opt[data-color]").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".btn-opt[data-color]").forEach(b => b.classList.remove("active"));
@@ -1227,7 +1199,6 @@
       applyStyles();
     });
 
-    // Nền Chroma Key
     document.querySelectorAll(".btn-opt[data-bg]").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".btn-opt[data-bg]").forEach(b => b.classList.remove("active"));
@@ -1237,7 +1208,6 @@
       });
     });
 
-    // Sliders
     document.getElementById("cfgScale").addEventListener("input", (e) => {
       selScale = (parseInt(e.target.value) / 100).toFixed(2);
       document.getElementById("lblScale").textContent = `${e.target.value}%`;
@@ -1261,7 +1231,6 @@
       applyStyles();
     });
 
-    // Checkboxes Telemetry
     document.getElementById("cfgShowMs").addEventListener("change", (e) => {
       selShowMs = e.target.checked;
       applyStyles();
@@ -1290,7 +1259,6 @@
 
     document.getElementById("btnTestFx").addEventListener("click", launchFireworks);
 
-    // Copy Link OBS
     document.getElementById("btnCopyObs").addEventListener("click", () => {
       const input = document.getElementById("obsFinalUrl");
       input.select();
@@ -1399,10 +1367,22 @@
   loadAllEvents(curYear);
 
   if (isObs) {
-    const targetEv = (selEventId ? allEvents.find(e => e.id === selEventId) : null) || allEvents.find(e => e.diffDays >= 0) || allEvents[0];
-    if (targetEv) {
-      currentEvent = targetEv;
-      updateHUD(targetEv);
+    // NẾU CÓ DỮ LIỆU CÁ NHÂN ĐƯỢC MÃ HÓA TRÊN URL -> NẠP TRỰC TIẾP
+    if (obsCustomEvent) {
+      if (obsCustomEvent.isLunar) {
+        const sol = convertLunar2Solar(obsCustomEvent.lunarD, obsCustomEvent.lunarM, curYear, 0, 7);
+        obsCustomEvent.absolute = `${sol[2]}-${String(sol[1]).padStart(2,'0')}-${String(sol[0]).padStart(2,'0')}T00:00`;
+      }
+      obsCustomEvent.dateObj = parseDateTime(obsCustomEvent.absolute);
+      const l = convertSolar2Lunar(obsCustomEvent.dateObj.getDate(), obsCustomEvent.dateObj.getMonth() + 1, obsCustomEvent.dateObj.getFullYear(), 7);
+      obsCustomEvent.lunarFull = `Âm lịch: ${l[0]}/${l[1]} (${getCanChiYear(l[2])})`;
+      currentEvent = obsCustomEvent;
+    } else {
+      currentEvent = (selEventId ? allEvents.find(e => e.id === selEventId) : null) || allEvents.find(e => e.diffDays >= 0) || allEvents[0];
+    }
+
+    if (currentEvent) {
+      updateHUD(currentEvent);
       startMasterLiveTimer();
     }
     applyStyles();

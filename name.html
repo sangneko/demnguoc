@@ -2,131 +2,128 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Trình Tạo OBS Overlay Đếm Ngược Lễ Tết</title>
+  <title>Deep-Engine Studio: OBS Stream Overlay v8.0</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700;800&family=Montserrat:wght@800;900&family=Playfair+Display:wght@700;900&family=Plus+Jakarta+Sans:wght@600;700;800&family=Quicksand:wght@700&family=VT323&display=swap" rel="stylesheet">
   <style>
     :root {
       --primary: #6366f1;
       --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
       --accent: #06b6d4;
-      --danger: #ef4444;
-      --success: #10b981;
-      --warning: #f59e0b;
       --hud-bg: rgba(15, 23, 42, 0.9);
-      --hud-border: rgba(255, 255, 255, 0.18);
+      --hud-border-color: rgba(255, 255, 255, 0.18);
+      --hud-border-width: 1px;
+      --hud-radius: 18px;
       --hud-scale: 1;
       --hud-alpha: 0.9;
+      --hud-font: 'Plus Jakarta Sans', sans-serif;
+      --glow-shadow: none;
+      --tilt-x: 0deg;
+      --tilt-y: 0deg;
+      --rot-z: 0deg;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: var(--hud-font);
       color: #fff;
       overflow: hidden;
       width: 100vw;
       height: 100vh;
-      background: #0f172a;
+      background: #080c16;
     }
 
-    /* =========================================================
-       CHẾ ĐỘ OBS (CHỈ KÍCH HOẠT KHI DÁN LINK VÀO OBS: ?overlay=1)
-       ========================================================= */
-    body.is-obs-mode {
-      background: transparent !important;
-    }
+    /* CHẾ ĐỘ OBS */
+    body.is-obs-mode { background: transparent !important; }
     body.is-obs-mode.chroma-green { background: #00FF00 !important; }
     body.is-obs-mode.chroma-blue { background: #0000FF !important; }
-    body.is-obs-mode #appStudio { display: none !important; }
+    body.is-obs-mode #studioApp { display: none !important; }
 
-    /* =========================================================
-       GIAO DIỆN TRÊN TRÌNH DUYỆT (STUDIO THIẾT KẾ & PREVIEW)
-       ========================================================= */
-    #appStudio {
+    /* STUDIO TRÊN TRÌNH DUYỆT */
+    #studioApp {
       display: flex;
       width: 100vw;
       height: 100vh;
       position: relative;
       z-index: 10000;
-      background: #090d16;
+      background: #060913;
     }
 
-    /* BẢNG CÀI ĐẶT BÊN TRÁI TRÌNH DUYỆT */
     .studio-sidebar {
-      width: 420px;
+      width: 460px;
       height: 100vh;
       background: #0f172a;
-      border-right: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 20px;
+      border-right: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 18px 20px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+      gap: 12px;
+      box-shadow: 12px 0 35px rgba(0, 0, 0, 0.7);
     }
-    .studio-header {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      padding-bottom: 10px;
-    }
+    .studio-sidebar::-webkit-scrollbar { width: 5px; }
+    .studio-sidebar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
     .studio-title {
-      font-size: 1.15rem;
+      font-size: 1.18rem;
       font-weight: 800;
-      color: #38bdf8;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .studio-sub {
-      font-size: 0.75rem;
-      color: #94a3b8;
-      margin-top: 3px;
-    }
+    .studio-sub { font-size: 0.73rem; color: #94a3b8; margin-top: 2px; }
 
-    .form-group {
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-top: 4px;
       display: flex;
-      flex-direction: column;
+      align-items: center;
       gap: 6px;
     }
-    .form-group label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 0.7rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
     .studio-input, .studio-select {
       background: #1e293b;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.18);
       color: #fff;
-      padding: 9px 12px;
-      border-radius: 8px;
+      padding: 8px 10px;
+      border-radius: 7px;
       font-family: inherit;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       outline: none;
       width: 100%;
     }
-    .studio-select option { background: #0f172a; }
+    .studio-select option { background: #0f172a; color: #fff; }
 
-    .btn-group { display: flex; gap: 8px; }
+    .btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
     .btn-opt {
       flex: 1;
-      padding: 8px 10px;
+      min-width: 60px;
+      padding: 6px 10px;
       background: #1e293b;
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 6px;
       color: #fff;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
       text-align: center;
-      transition: 0.2s;
+      transition: all 0.2s;
     }
     .btn-opt:hover { background: #334155; }
     .btn-opt.active {
       background: var(--primary);
       border-color: var(--primary);
+      box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
     }
 
     .export-box {
@@ -143,10 +140,10 @@
       background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
       color: #fff;
       border: none;
-      padding: 12px;
+      padding: 11px;
       border-radius: 8px;
       font-weight: 800;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       cursor: pointer;
       transition: 0.2s;
       display: flex;
@@ -154,88 +151,89 @@
       justify-content: center;
       gap: 8px;
     }
-    .btn-copy-url:hover { filter: brightness(1.15); transform: translateY(-1px); }
+    .btn-copy-url:hover { filter: brightness(1.2); }
 
-    /* MÀN HÌNH PREVIEW MÔ PHỎNG LIVE TRÊN TRÌNH DUYỆT */
+    /* STAGE PREVIEW */
     .studio-stage {
       flex: 1;
       height: 100vh;
       position: relative;
       background: radial-gradient(#1e293b 1px, transparent 1px);
-      background-size: 20px 20px;
+      background-size: 24px 24px;
       background-color: #060913;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
+      perspective: 1000px;
     }
     .stage-notice {
       position: absolute;
-      top: 15px;
-      right: 20px;
-      background: rgba(0,0,0,0.6);
+      top: 15px; right: 20px;
+      background: rgba(0,0,0,0.65);
       border: 1px solid rgba(255,255,255,0.15);
       padding: 6px 14px;
       border-radius: 20px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: #94a3b8;
       pointer-events: none;
     }
 
-    /* =========================================================
-       THÀNH PHẦN HUD ĐẾM NGƯỢC (HIỂN THỊ CHÍNH)
-       ========================================================= */
+    /* OVERLAY MOUNT CONTAINER */
     #overlayMount {
       position: absolute;
       z-index: 500;
       transform-origin: top left;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    /* Các layout vị trí */
     .pos-top-left { top: 30px; left: 30px; transform-origin: top left; }
     .pos-top-right { top: 30px; right: 30px; transform-origin: top right; }
-    .pos-bottom-left { bottom: 60px; left: 30px; transform-origin: bottom left; }
-    .pos-bottom-right { bottom: 60px; right: 30px; transform-origin: bottom right; }
+    .pos-bottom-left { bottom: 65px; left: 30px; transform-origin: bottom left; }
+    .pos-bottom-right { bottom: 65px; right: 30px; transform-origin: bottom right; }
     .pos-top-center { top: 30px; left: 50%; transform: translateX(-50%); transform-origin: top center; }
 
-    /* BỐ CỤC FULL MÀN HÌNH */
+    /* FULLSCREEN CINEMA */
     .pos-fullscreen {
       top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
       width: 100vw !important; height: 100vh !important;
       display: flex !important; align-items: center; justify-content: center;
       transform: none !important;
       background: rgba(8, 12, 24, var(--hud-alpha)) !important;
+      backdrop-filter: blur(14px);
     }
     .pos-fullscreen .stream-hud {
-      max-width: 960px;
-      width: 85%;
+      max-width: 980px;
+      width: 88%;
       flex-direction: column !important;
-      padding: 40px !important;
-      border: 3px solid var(--primary) !important;
-      box-shadow: 0 0 50px rgba(99, 102, 241, 0.5) !important;
+      padding: 40px 30px !important;
+      border: calc(var(--hud-border-width) + 2px) solid var(--primary) !important;
+      box-shadow: 0 0 60px rgba(99, 102, 241, 0.45) !important;
+      transform: none !important;
     }
-    .pos-fullscreen .hud-emoji { font-size: 6rem !important; }
-    .pos-fullscreen .hud-title { font-size: 2.8rem !important; text-align: center; margin: 10px 0 !important; }
-    .pos-fullscreen .hud-date { font-size: 1.25rem !important; text-align: center; margin-bottom: 24px; }
+    .pos-fullscreen .hud-emoji { font-size: 6.5rem !important; }
+    .pos-fullscreen .hud-title { font-size: 3rem !important; text-align: center; margin: 10px 0 !important; }
+    .pos-fullscreen .hud-date { font-size: 1.25rem !important; text-align: center; margin-bottom: 20px; }
     .pos-fullscreen .hud-timer { margin: 0 auto !important; gap: 16px !important; }
-    .pos-fullscreen .hud-box { min-width: 120px !important; padding: 18px !important; border-radius: 14px !important; }
+    .pos-fullscreen .hud-box { min-width: 120px !important; padding: 18px !important; border-radius: 16px !important; }
     .pos-fullscreen .hud-val { font-size: 3.4rem !important; }
     .pos-fullscreen .hud-lbl { font-size: 0.95rem !important; }
 
     /* WIDGET HUD */
     .stream-hud {
       background: var(--hud-bg);
-      border: 1px solid var(--hud-border);
-      border-radius: 18px;
-      padding: 14px 20px;
+      border: var(--hud-border-width) solid var(--hud-border-color);
+      border-radius: var(--hud-radius);
+      padding: 14px 22px;
       display: flex;
       align-items: center;
       gap: 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      box-shadow: var(--glow-shadow), 0 10px 30px rgba(0, 0, 0, 0.45);
       backdrop-filter: blur(12px);
       position: relative;
       overflow: hidden;
-      min-width: 330px;
+      min-width: 340px;
+      transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) rotateZ(var(--rot-z));
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .stream-hud::before {
       content: "";
@@ -243,20 +241,21 @@
       top: 0; left: 0; width: 5px; height: 100%;
       background: var(--primary-gradient);
     }
-    .hud-emoji { font-size: 3rem; line-height: 1; }
-    .hud-meta { display: flex; flex-direction: column; gap: 3px; }
+    .hud-emoji { font-size: 3.2rem; line-height: 1; }
+    .hud-meta { display: flex; flex-direction: column; gap: 4px; }
     .hud-tag {
       font-size: 0.65rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.6px;
       color: #38bdf8;
       display: flex;
       align-items: center;
       gap: 5px;
     }
-    .hud-title { font-size: 1.2rem; font-weight: 800; white-space: nowrap; }
-    .hud-date { font-size: 0.78rem; font-weight: 600; color: var(--hud-sub); }
+    .hud-title { font-size: 1.22rem; font-weight: 800; white-space: nowrap; }
+    .hud-date { font-size: 0.78rem; font-weight: 600; color: #94a3b8; }
+    .hud-lunar { font-size: 0.74rem; font-weight: 700; color: #38bdf8; }
 
     .hud-timer { display: flex; align-items: center; gap: 8px; margin-left: auto; }
     .hud-box {
@@ -281,15 +280,15 @@
       background: rgba(16, 185, 129, 0.25);
       border: 1px solid #10b981;
       color: #34d399;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 800;
-      padding: 10px 20px;
+      padding: 10px 22px;
       border-radius: 30px;
       animation: pulseAlert 1.5s infinite;
       text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
     }
 
-    /* TICKER DƯỚI ĐÁY */
+    /* TICKER */
     #streamTicker {
       position: fixed;
       bottom: 0; left: 0; width: 100vw;
@@ -314,11 +313,7 @@
       text-transform: uppercase;
       white-space: nowrap;
     }
-    .ticker-content-track {
-      flex: 1;
-      overflow: hidden;
-      white-space: nowrap;
-    }
+    .ticker-content-track { flex: 1; overflow: hidden; white-space: nowrap; }
     .ticker-text {
       display: inline-block;
       white-space: nowrap;
@@ -344,82 +339,154 @@
   <canvas id="fxCanvas"></canvas>
 
   <!-- =========================================================
-       GIAO DIỆN BẢNG ĐIỀU KHIỂN STUDIO TRÊN TRÌNH DUYỆT
+       GIAO DIỆN STUDIO TRÊN TRÌNH DUYỆT
        ========================================================= -->
-  <div id="appStudio">
+  <div id="studioApp">
     <div class="studio-sidebar">
       <div class="studio-header">
-        <div class="studio-title">⚙️ STUDIO OVERLAY OBS</div>
-        <div class="studio-sub">Tùy biến trực quan & copy link dán vào OBS</div>
+        <div class="studio-title">⚙️ DEEP-ENGINE STUDIO v8.0</div>
+        <div class="studio-sub">Tùy biến đa tầng & Sinh URL thông minh cho OBS</div>
       </div>
 
+      <!-- KỊCH BẢN STREAM ONE-CLICK -->
+      <div class="section-label">⚡ 1. Kịch Bản Nhanh (Preset Scenarios)</div>
       <div class="form-group">
-        <label>1. Chọn sự kiện đếm ngược:</label>
+        <div class="btn-group">
+          <div class="btn-opt" data-preset="esports">Esports</div>
+          <div class="btn-opt" data-preset="chill">Lo-Fi Chill</div>
+          <div class="btn-opt" data-preset="cyber">Cyberpunk</div>
+          <div class="btn-opt" data-preset="cinema">Giao Thừa TV</div>
+        </div>
+      </div>
+
+      <!-- CHỌN SỰ KIỆN -->
+      <div class="section-label">📌 2. Sự Kiện Đếm Ngược</div>
+      <div class="form-group">
         <select id="cfgEvent" class="studio-select"></select>
       </div>
 
+      <!-- VỊ TRÍ & BỐ CỤC -->
+      <div class="section-label">📐 3. Bố Cục Màn Hình</div>
       <div class="form-group">
-        <label>2. Bố cục hiển thị:</label>
         <select id="cfgLayout" class="studio-select">
           <option value="pos-top-left">Góc trên Trái (Top-Left)</option>
           <option value="pos-top-right">Góc trên Phải (Top-Right)</option>
           <option value="pos-bottom-left">Góc dưới Trái (Bottom-Left)</option>
           <option value="pos-bottom-right">Góc dưới Phải (Bottom-Right)</option>
           <option value="pos-top-center">Chính giữa Trên (Top-Center)</option>
-          <option value="pos-fullscreen">🖥️ Full Màn Hình (Standby / Cinema)</option>
+          <option value="pos-fullscreen">🖥️ Full Màn Hình (Standby Cinema)</option>
         </select>
       </div>
 
+      <!-- TYPOGRAPHY & KHUNG -->
+      <div class="section-label">🔤 4. Phông Chữ & Khung Viền</div>
       <div class="form-group">
-        <label>3. Phông nền hiển thị trên OBS:</label>
+        <select id="cfgFont" class="studio-select">
+          <option value="'Plus Jakarta Sans', sans-serif">Plus Jakarta Sans (Hiện đại)</option>
+          <option value="'JetBrains Mono', monospace">JetBrains Mono (Coding / Tech)</option>
+          <option value="'Montserrat', sans-serif">Montserrat (Esports / Đậm nét)</option>
+          <option value="'VT323', monospace">VT323 (Retro 8-Bit Pixel)</option>
+          <option value="'Quicksand', sans-serif">Quicksand (Bo tròn / Chill)</option>
+          <option value="'Playfair Display', serif">Playfair Display (Sang trọng TV)</option>
+        </select>
+      </div>
+      <div class="form-group">
         <div class="btn-group">
-          <div class="btn-opt active" data-bg="transparent">Trong suốt</div>
+          <div class="btn-opt active" data-style="glass">Kính Mờ</div>
+          <div class="btn-opt" data-style="neon">Neon Glow</div>
+          <div class="btn-opt" data-style="minimal">Tối Giản</div>
+        </div>
+      </div>
+
+      <!-- GPU 3D TRANSFORM TILT SLIDERS -->
+      <div class="section-label">🎮 5. Phối Cảnh Góc Nghiêng 3D (GPU Matrix)</div>
+      <div class="form-group">
+        <label>Nghiêng X (Pitch: <span id="lblTiltX">0°</span>)</label>
+        <input type="range" id="cfgTiltX" min="-30" max="30" value="0" style="cursor:pointer;">
+      </div>
+      <div class="form-group">
+        <label>Nghiêng Y (Yaw: <span id="lblTiltY">0°</span>)</label>
+        <input type="range" id="cfgTiltY" min="-30" max="30" value="0" style="cursor:pointer;">
+      </div>
+      <div class="form-group">
+        <label>Xoay Z (Roll: <span id="lblRotZ">0°</span>)</label>
+        <input type="range" id="cfgRotZ" min="-20" max="20" value="0" style="cursor:pointer;">
+      </div>
+
+      <!-- MÀU SẮC -->
+      <div class="section-label">🎨 6. Màu Sắc & Phông Nền</div>
+      <div class="form-group">
+        <div class="btn-group">
+          <div class="btn-opt active" data-color="#6366f1" style="background:#6366f1;">Indigo</div>
+          <div class="btn-opt" data-color="#06b6d4" style="background:#06b6d4;">Cyan</div>
+          <div class="btn-opt" data-color="#10b981" style="background:#10b981;">Emerald</div>
+          <div class="btn-opt" data-color="#f59e0b" style="background:#f59e0b;">Amber</div>
+          <div class="btn-opt" data-color="#ec4899" style="background:#ec4899;">Pink</div>
+        </div>
+      </div>
+      <div class="form-group" style="flex-direction:row; align-items:center; gap:8px;">
+        <label style="flex:1;">Màu Tự Chọn (Hex):</label>
+        <input type="color" id="cfgColorPicker" value="#6366f1" style="height:32px; width:65px; border:none; border-radius:6px; cursor:pointer;">
+      </div>
+      <div class="form-group">
+        <label>Phông Nền Để Lọc OBS:</label>
+        <div class="btn-group">
+          <div class="btn-opt active" data-bg="transparent">Trong Suốt</div>
           <div class="btn-opt" data-bg="green" style="color:#4ade80;">Xanh Lá</div>
           <div class="btn-opt" data-bg="blue" style="color:#60a5fa;">Xanh Dương</div>
         </div>
       </div>
 
+      <!-- KÍCH THƯỚC & BO GÓC -->
+      <div class="section-label">🎚️ 7. Kích Thước & Bo Góc</div>
       <div class="form-group">
-        <label>4. Màu sắc chủ đạo:</label>
-        <div class="btn-group">
-          <div class="btn-opt active" data-color="#6366f1" style="background:#6366f1;">Indigo</div>
-          <div class="btn-opt" data-color="#06b6d4" style="background:#06b6d4;">Cyan</div>
-          <div class="btn-opt" data-color="#10b981" style="background:#10b981;">Green</div>
-          <div class="btn-opt" data-color="#f59e0b" style="background:#f59e0b;">Amber</div>
-          <div class="btn-opt" data-color="#ef4444" style="background:#ef4444;">Red</div>
-        </div>
+        <label>Thu Phóng (Scale: <span id="lblScale">100%</span>)</label>
+        <input type="range" id="cfgScale" min="50" max="170" value="100" style="cursor:pointer;">
+      </div>
+      <div class="form-group">
+        <label>Độ Mờ Nền (Opacity: <span id="lblAlpha">90%</span>)</label>
+        <input type="range" id="cfgAlpha" min="0" max="100" value="90" style="cursor:pointer;">
+      </div>
+      <div class="form-group">
+        <label>Độ Bo Góc (Radius: <span id="lblRadius">18px</span>)</label>
+        <input type="range" id="cfgRadius" min="0" max="30" value="18" style="cursor:pointer;">
       </div>
 
+      <!-- ẨN HIỆN & HIỆU ỨNG ĐỘNG -->
+      <div class="section-label">👁️ 8. Thành Phần & Hạt Hiệu Ứng</div>
+      <div class="form-group" style="gap:6px; font-size:0.8rem;">
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" id="cfgHideEmoji"> Ẩn Icon Emoji
+        </label>
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" id="cfgHideDate"> Ẩn Ngày Dương Lịch
+        </label>
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" id="cfgShowLunar" checked> Hiện Âm Lịch & Can Chi
+        </label>
+        <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
+          <input type="checkbox" id="cfgShowTicker" checked> Bật Chữ Chạy Dưới Đáy
+        </label>
+      </div>
       <div class="form-group">
-        <label>5. Kích thước tỷ lệ: <span id="lblScale" style="color:#38bdf8;">100%</span></label>
-        <input type="range" id="cfgScale" min="60" max="160" value="100" style="width:100%; cursor:pointer;">
+        <label>Hiệu Ứng Hạt Nền Bay (Particle Physics):</label>
+        <select id="cfgParticles" class="studio-select">
+          <option value="none">Không hạt</option>
+          <option value="stars">Bụi Sao Bay Lơ Lửng (Starfield)</option>
+          <option value="sakura">Cánh Hoa Đào Rơi (Tết / Sakura)</option>
+        </select>
       </div>
 
+      <!-- LỜI NHẮN & TEST ÂM THANH -->
+      <div class="section-label">💬 9. Lời Nhắn Ticker & Test</div>
       <div class="form-group">
-        <label>6. Độ mờ đục nền: <span id="lblAlpha" style="color:#38bdf8;">90%</span></label>
-        <input type="range" id="cfgAlpha" min="0" max="100" value="90" style="width:100%; cursor:pointer;">
+        <input type="text" id="cfgCustomMsg" class="studio-input" placeholder="Nhập lời chào, thông báo của streamer...">
       </div>
+      <button id="btnTestFx" class="btn-opt" style="background:#4338ca; border-color:#6366f1; padding:9px;">
+        🎆 Bắn Pháo Hoa & Fanfare (Test Thử)
+      </button>
 
-      <div class="form-group">
-        <label>7. Tùy chọn hiển thị:</label>
-        <div style="display:flex; flex-direction:column; gap:6px; font-size:0.8rem;">
-          <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
-            <input type="checkbox" id="cfgHideEmoji"> Ẩn Icon Emoji
-          </label>
-          <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
-            <input type="checkbox" id="cfgHideDate"> Ẩn Ngày tháng
-          </label>
-          <label style="cursor:pointer; display:flex; align-items:center; gap:8px;">
-            <input type="checkbox" id="cfgShowTicker" checked> Bật dòng chữ chạy dưới đáy
-          </label>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>8. Lời nhắn tuỳ chỉnh trên Ticker:</label>
-        <input type="text" id="cfgCustomMsg" class="studio-input" placeholder="Ví dụ: Chào mừng tới livestream của mình...">
-      </div>
-
+      <!-- HỘP XUẤT LINK -->
       <div class="export-box">
         <label style="font-size:0.75rem; font-weight:800; color:#38bdf8;">LINK DÁN VÀO OBS BROWSER SOURCE:</label>
         <input type="text" id="obsFinalUrl" readonly class="studio-input" style="font-family:'JetBrains Mono', monospace; font-size:0.7rem; color:#38bdf8;">
@@ -429,14 +496,14 @@
       </div>
     </div>
 
-    <!-- MÀN HÌNH XEM TRƯỚC THỜI GIAN THỰC -->
+    <!-- MÀN HÌNH PREVIEW -->
     <div class="studio-stage" id="stageScreen">
-      <div class="stage-notice">🔴 MÀN HÌNH XEM TRƯỚC TRÊN STREAM (LIVE PREVIEW)</div>
+      <div class="stage-notice">🔴 MÀN HÌNH XEM TRƯỚC STREAM (LIVE PREVIEW 16:9)</div>
     </div>
   </div>
 
   <!-- =========================================================
-       WIDGET HUD ĐẾM NGƯỢC (HIỂN THỊ TRÊN OBS & PREVIEW)
+       WIDGET HUD OVERLAY (HIỂN THỊ CHÍNH)
        ========================================================= -->
   <div id="overlayMount" class="pos-top-left">
     <div class="stream-hud" id="hudWidget">
@@ -448,6 +515,7 @@
         </div>
         <div class="hud-title" id="hTitle">Tết Nguyên Đán</div>
         <div class="hud-date" id="hDate">Đang tính toán...</div>
+        <div class="hud-lunar" id="hLunar">Âm lịch: Đang cập nhật</div>
       </div>
       
       <div class="hud-timer" id="hTimerGroup">
@@ -475,7 +543,7 @@
     </div>
   </div>
 
-  <!-- DÒNG TICKER CHẠY TIN DƯỚI ĐÁY -->
+  <!-- TICKER DƯỚI ĐÁY -->
   <div id="streamTicker">
     <div class="ticker-badge">🔴 LIVE INFO</div>
     <div class="ticker-content-track">
@@ -487,7 +555,7 @@
 
   <script>
   /* ==========================================================================
-     1. THUẬT TOÁN THIÊN VĂN HỒ NGỌC ĐỨC (BẢO LƯU CHÍNH XÁC 100%)
+     1. THUẬT TOÁN THIÊN VĂN HỒ NGỌC ĐỨC
      ========================================================================== */
   function INT(d){ return Math.floor(d); }
   function jdFromDate(dd, mm, yy) {
@@ -661,7 +729,11 @@
     allEvents = [...solars, ...lunars, ...customs].map(e => {
       const dateObj = parseLocalDate(e.absolute);
       const diffDays = Math.round((dateObj - todayZero) / (1000 * 60 * 60 * 24));
-      return { ...e, dateObj, diffDays };
+      
+      const l = convertSolar2Lunar(dateObj.getDate(), dateObj.getMonth() + 1, dateObj.getFullYear(), 7);
+      const lunarFull = `Âm lịch: ${l[0]}/${l[1]} (${getCanChiYear(l[2])})`;
+
+      return { ...e, dateObj, diffDays, lunarFull };
     }).sort((a,b) => a.dateObj - b.dateObj);
   }
 
@@ -673,7 +745,8 @@
     const dateMeta = ev.dateObj.toLocaleDateString("vi-VN", {
       weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric'
     });
-    document.getElementById("hDate").textContent = `${dateMeta} ${ev.lunarTxt ? `(${ev.lunarTxt})` : ''}`;
+    document.getElementById("hDate").textContent = `📅 ${dateMeta}`;
+    document.getElementById("hLunar").textContent = `🌕 ${ev.lunarFull}`;
   }
 
   function startLiveTimer() {
@@ -747,7 +820,7 @@
   }
 
   /* ==========================================================================
-     4. ĐIỀU KHIỂN STUDIO TRÊN TRÌNH DUYỆT & TỰ ĐỘNG SINH LINK CHO OBS
+     4. TÙY BIẾN STUDIO TRÊN TRÌNH DUYỆT & URL PARAMETER PARSER
      ========================================================================== */
   const urlParams = new URLSearchParams(window.location.search);
   const isObs = urlParams.get("overlay") === "1";
@@ -755,34 +828,62 @@
   // Biến cấu hình
   let selEventId = urlParams.get("id") || "";
   let selLayout = urlParams.get("pos") || "pos-top-left";
-  let selBg = urlParams.get("bg") || "transparent";
+  let selFont = urlParams.get("font") ? decodeURIComponent(urlParams.get("font")) : "'Plus Jakarta Sans', sans-serif";
+  let selStyle = urlParams.get("style") || "glass";
   let selColor = urlParams.get("color") ? decodeURIComponent(urlParams.get("color")) : "#6366f1";
+  let selBg = urlParams.get("bg") || "transparent";
   let selScale = parseFloat(urlParams.get("scale") || "1");
   let selAlpha = parseFloat(urlParams.get("alpha") || "0.9");
+  let selRadius = parseInt(urlParams.get("radius") || "18");
   let selHideEmoji = urlParams.get("noemoji") === "1";
   let selHideDate = urlParams.get("nodate") === "1";
+  let selShowLunar = urlParams.get("lunar") !== "0";
   let selShowTicker = urlParams.get("ticker") !== "0";
+  let selTiltX = parseInt(urlParams.get("tiltx") || "0");
+  let selTiltY = parseInt(urlParams.get("tilty") || "0");
+  let selRotZ = parseInt(urlParams.get("rotz") || "0");
+  let selParticles = urlParams.get("particles") || "none";
 
-  function applyStyles(isLivePreview = false) {
+  function applyStyles() {
     const mount = document.getElementById("overlayMount");
     mount.className = selLayout;
 
-    // Apply màu sắc
+    document.documentElement.style.setProperty("--hud-font", selFont);
     document.documentElement.style.setProperty("--primary", selColor);
     document.documentElement.style.setProperty("--primary-gradient", `linear-gradient(135deg, ${selColor} 0%, #a855f7 100%)`);
     document.documentElement.style.setProperty("--hud-alpha", selAlpha);
     document.documentElement.style.setProperty("--hud-bg", `rgba(15, 23, 42, ${selAlpha})`);
+    document.documentElement.style.setProperty("--hud-radius", `${selRadius}px`);
 
-    // Thu phóng scale
+    // GPU Matrix 3D Tilt
+    document.documentElement.style.setProperty("--tilt-x", `${selTiltX}deg`);
+    document.documentElement.style.setProperty("--tilt-y", `${selTiltY}deg`);
+    document.documentElement.style.setProperty("--rot-z", `${selRotZ}deg`);
+
+    // Style Khung
+    if (selStyle === "neon") {
+      document.documentElement.style.setProperty("--hud-border-color", selColor);
+      document.documentElement.style.setProperty("--hud-border-width", "2px");
+      document.documentElement.style.setProperty("--glow-shadow", `0 0 25px ${selColor}`);
+    } else if (selStyle === "minimal") {
+      document.documentElement.style.setProperty("--hud-border-color", "transparent");
+      document.documentElement.style.setProperty("--hud-border-width", "0px");
+      document.documentElement.style.setProperty("--glow-shadow", "none");
+    } else {
+      document.documentElement.style.setProperty("--hud-border-color", "rgba(255, 255, 255, 0.18)");
+      document.documentElement.style.setProperty("--hud-border-width", "1px");
+      document.documentElement.style.setProperty("--glow-shadow", "none");
+    }
+
     if (selLayout !== "pos-fullscreen") {
       mount.style.transform = `scale(${selScale})`;
     } else {
       mount.style.transform = "none";
     }
 
-    // Ẩn hiện chi tiết
     document.getElementById("hEmoji").style.display = selHideEmoji ? "none" : "block";
     document.getElementById("hDate").style.display = selHideDate ? "none" : "block";
+    document.getElementById("hLunar").style.display = selShowLunar ? "block" : "none";
     document.getElementById("streamTicker").style.display = selShowTicker ? "flex" : "none";
 
     // Phông nền
@@ -800,7 +901,7 @@
     // Sinh Link OBS hoàn chỉnh
     if (!isObs) {
       const baseUrl = window.location.origin + window.location.pathname;
-      const finalLink = `${baseUrl}?overlay=1&id=${selEventId}&pos=${selLayout}&bg=${selBg}&color=${encodeURIComponent(selColor)}&scale=${selScale}&alpha=${selAlpha}&noemoji=${selHideEmoji ? '1' : '0'}&nodate=${selHideDate ? '1' : '0'}&ticker=${selShowTicker ? '1' : '0'}`;
+      const finalLink = `${baseUrl}?overlay=1&id=${selEventId}&pos=${selLayout}&font=${encodeURIComponent(selFont)}&style=${selStyle}&color=${encodeURIComponent(selColor)}&bg=${selBg}&scale=${selScale}&alpha=${selAlpha}&radius=${selRadius}&tiltx=${selTiltX}&tilty=${selTiltY}&rotz=${selRotZ}&particles=${selParticles}&noemoji=${selHideEmoji ? '1' : '0'}&nodate=${selHideDate ? '1' : '0'}&lunar=${selShowLunar ? '1' : '0'}&ticker=${selShowTicker ? '1' : '0'}`;
       document.getElementById("obsFinalUrl").value = finalLink;
     }
   }
@@ -816,7 +917,6 @@
       select.appendChild(opt);
     });
 
-    // Mặc định chọn sự kiện gần nhất
     const nearest = (selEventId ? allEvents.find(e => e.id === selEventId) : null) || allEvents.find(e => e.diffDays >= 0) || allEvents[0];
     if (nearest) {
       currentEvent = nearest;
@@ -826,13 +926,60 @@
       startLiveTimer();
     }
 
-    // Lắng nghe thay đổi sự kiện
     select.addEventListener("change", (e) => {
       currentEvent = allEvents.find(ev => ev.id === e.target.value);
       selEventId = currentEvent.id;
       updateHUD(currentEvent);
       startLiveTimer();
       applyStyles();
+    });
+
+    // KỊCH BẢN ONE-CLICK PRESETS
+    document.querySelectorAll(".btn-opt[data-preset]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const p = btn.getAttribute("data-preset");
+        if (p === "esports") {
+          selFont = "'Montserrat', sans-serif";
+          selColor = "#ef4444";
+          selStyle = "neon";
+          selRadius = 6;
+          selTiltY = -12;
+          selTiltX = 6;
+          selParticles = "none";
+        } else if (p === "chill") {
+          selFont = "'Quicksand', sans-serif";
+          selColor = "#06b6d4";
+          selStyle = "glass";
+          selRadius = 24;
+          selTiltX = 0; selTiltY = 0; selRotZ = 0;
+          selParticles = "stars";
+        } else if (p === "cyber") {
+          selFont = "'VT323', monospace";
+          selColor = "#ec4899";
+          selStyle = "neon";
+          selRadius = 0;
+          selTiltX = 8; selTiltY = 14;
+          selParticles = "none";
+        } else if (p === "cinema") {
+          selLayout = "pos-fullscreen";
+          selFont = "'Playfair Display', serif";
+          selColor = "#f59e0b";
+          selStyle = "glass";
+          selRadius = 20;
+          selParticles = "sakura";
+        }
+        document.getElementById("cfgLayout").value = selLayout;
+        document.getElementById("cfgFont").value = selFont;
+        document.getElementById("cfgColorPicker").value = selColor;
+        document.getElementById("cfgRadius").value = selRadius;
+        document.getElementById("lblRadius").textContent = `${selRadius}px`;
+        document.getElementById("cfgTiltX").value = selTiltX;
+        document.getElementById("lblTiltX").textContent = `${selTiltX}°`;
+        document.getElementById("cfgTiltY").value = selTiltY;
+        document.getElementById("lblTiltY").textContent = `${selTiltY}°`;
+        document.getElementById("cfgParticles").value = selParticles;
+        applyStyles();
+      });
     });
 
     // Bố cục Layout
@@ -843,7 +990,42 @@
       applyStyles();
     });
 
-    // Phông nền
+    // Phông chữ
+    const cfgFont = document.getElementById("cfgFont");
+    cfgFont.value = selFont;
+    cfgFont.addEventListener("change", (e) => {
+      selFont = e.target.value;
+      applyStyles();
+    });
+
+    // Style Khung
+    document.querySelectorAll(".btn-opt[data-style]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".btn-opt[data-style]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        selStyle = btn.getAttribute("data-style");
+        applyStyles();
+      });
+    });
+
+    // Màu Preset
+    document.querySelectorAll(".btn-opt[data-color]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".btn-opt[data-color]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        selColor = btn.getAttribute("data-color");
+        document.getElementById("cfgColorPicker").value = selColor;
+        applyStyles();
+      });
+    });
+
+    document.getElementById("cfgColorPicker").addEventListener("input", (e) => {
+      selColor = e.target.value;
+      document.querySelectorAll(".btn-opt[data-color]").forEach(b => b.classList.remove("active"));
+      applyStyles();
+    });
+
+    // Nền Chroma Key
     document.querySelectorAll(".btn-opt[data-bg]").forEach(btn => {
       btn.addEventListener("click", () => {
         document.querySelectorAll(".btn-opt[data-bg]").forEach(b => b.classList.remove("active"));
@@ -853,29 +1035,39 @@
       });
     });
 
-    // Màu sắc
-    document.querySelectorAll(".btn-opt[data-color]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".btn-opt[data-color]").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        selColor = btn.getAttribute("data-color");
-        applyStyles();
-      });
-    });
-
-    // Scale
-    const cfgScale = document.getElementById("cfgScale");
-    cfgScale.addEventListener("input", (e) => {
+    // Sliders
+    document.getElementById("cfgScale").addEventListener("input", (e) => {
       selScale = (parseInt(e.target.value) / 100).toFixed(2);
       document.getElementById("lblScale").textContent = `${e.target.value}%`;
       applyStyles();
     });
 
-    // Alpha
-    const cfgAlpha = document.getElementById("cfgAlpha");
-    cfgAlpha.addEventListener("input", (e) => {
+    document.getElementById("cfgAlpha").addEventListener("input", (e) => {
       selAlpha = (parseInt(e.target.value) / 100).toFixed(2);
       document.getElementById("lblAlpha").textContent = `${e.target.value}%`;
+      applyStyles();
+    });
+
+    document.getElementById("cfgRadius").addEventListener("input", (e) => {
+      selRadius = parseInt(e.target.value);
+      document.getElementById("lblRadius").textContent = `${e.target.value}px`;
+      applyStyles();
+    });
+
+    // GPU Matrix Tilt Sliders
+    document.getElementById("cfgTiltX").addEventListener("input", (e) => {
+      selTiltX = parseInt(e.target.value);
+      document.getElementById("lblTiltX").textContent = `${selTiltX}°`;
+      applyStyles();
+    });
+    document.getElementById("cfgTiltY").addEventListener("input", (e) => {
+      selTiltY = parseInt(e.target.value);
+      document.getElementById("lblTiltY").textContent = `${selTiltY}°`;
+      applyStyles();
+    });
+    document.getElementById("cfgRotZ").addEventListener("input", (e) => {
+      selRotZ = parseInt(e.target.value);
+      document.getElementById("lblRotZ").textContent = `${selRotZ}°`;
       applyStyles();
     });
 
@@ -888,8 +1080,17 @@
       selHideDate = e.target.checked;
       applyStyles();
     });
+    document.getElementById("cfgShowLunar").addEventListener("change", (e) => {
+      selShowLunar = e.target.checked;
+      applyStyles();
+    });
     document.getElementById("cfgShowTicker").addEventListener("change", (e) => {
       selShowTicker = e.target.checked;
+      applyStyles();
+    });
+
+    document.getElementById("cfgParticles").addEventListener("change", (e) => {
+      selParticles = e.target.value;
       applyStyles();
     });
 
@@ -898,25 +1099,150 @@
       applyStyles();
     });
 
-    // Nút Copy link OBS
+    document.getElementById("btnTestFx").addEventListener("click", launchFireworks);
+
+    // Copy Link OBS
     document.getElementById("btnCopyObs").addEventListener("click", () => {
       const input = document.getElementById("obsFinalUrl");
       input.select();
       navigator.clipboard.writeText(input.value).then(() => {
         const btn = document.getElementById("btnCopyObs");
-        btn.textContent = "✓ ĐÃ SAO CHÉP! DÁN VÀO OBS NGAY";
+        btn.textContent = "✓ ĐÃ SAO CHÉP THÀNH CÔNG!";
         setTimeout(() => {
           btn.textContent = "📋 SAO CHÉP LINK DÁN VÀO OBS";
-        }, 2500);
+        }, 2200);
       });
     });
   }
 
-  // Khởi động
+  /* ==========================================================================
+     5. PARTICLE PHYSICS & SOUND SYNTHESIZER
+     ========================================================================== */
+  let audioCtx = null;
+  function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  function playFanfare() {
+    try {
+      initAudio();
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.12);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime + idx * 0.12);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.12 + 0.45);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + idx * 0.12);
+        osc.stop(audioCtx.currentTime + idx * 0.12 + 0.5);
+      });
+    } catch(e){}
+  }
+
+  const canvas = document.getElementById("fxCanvas");
+  const ctx = canvas.getContext("2d");
+  let width = canvas.width = window.innerWidth;
+  let height = canvas.height = window.innerHeight;
+  let activeParticles = [];
+
+  window.addEventListener("resize", () => {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  });
+
+  function launchFireworks() {
+    playFanfare();
+    const colors = ["#6366f1", "#06b6d4", "#f59e0b", "#10b981", "#ef4444", "#ec4899", "#ffffff"];
+    for (let i = 0; i < 150; i++) {
+      activeParticles.push({
+        x: width / 2, y: height / 2,
+        vx: (Math.random() - 0.5) * 18,
+        vy: (Math.random() - 0.5) * 18 - 4,
+        size: Math.random() * 6 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        alpha: 1,
+        decay: Math.random() * 0.015 + 0.008,
+        type: 'firework'
+      });
+    }
+  }
+
+  // LOOP RENDER PARTICLE CHO TOÀN BỘ CÁC CHẾ ĐỘ
+  let ambientParticles = [];
+  function initAmbientParticles() {
+    ambientParticles = [];
+    for (let i = 0; i < 40; i++) {
+      ambientParticles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: Math.random() * 0.8 + 0.3,
+        size: Math.random() * 4 + 2,
+        rot: Math.random() * 360,
+        rotSpeed: (Math.random() - 0.5) * 2
+      });
+    }
+  }
+  initAmbientParticles();
+
+  function renderParticlePhysics() {
+    ctx.clearRect(0, 0, width, height);
+
+    // HẠT RƠI AMBIENT (STARS / SAKURA)
+    if (selParticles !== 'none') {
+      ambientParticles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rot += p.rotSpeed;
+        if (p.y > height) { p.y = -10; p.x = Math.random() * width; }
+        if (p.x > width) p.x = 0;
+        if (p.x < 0) p.x = width;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rot * Math.PI) / 180);
+        if (selParticles === 'sakura') {
+          ctx.fillStyle = "rgba(244, 114, 182, 0.75)";
+          ctx.beginPath();
+          ctx.ellipse(0, 0, p.size * 2, p.size, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (selParticles === 'stars') {
+          ctx.fillStyle = "rgba(56, 189, 248, 0.8)";
+          ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+        }
+        ctx.restore();
+      });
+    }
+
+    // PHÁO HOA ĂN MỪNG
+    for (let i = activeParticles.length - 1; i >= 0; i--) {
+      const p = activeParticles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.22;
+      p.alpha -= p.decay;
+
+      if (p.alpha <= 0) {
+        activeParticles.splice(i, 1);
+      } else {
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+        ctx.restore();
+      }
+    }
+
+    requestAnimationFrame(renderParticlePhysics);
+  }
+  renderParticlePhysics();
+
+  // KHỞI ĐỘNG
   loadAllEvents(curYear);
 
   if (isObs) {
-    // CHẠY TRONG OBS: ẨN STUDIO, TỰ LOAD THEO URL PARAM
     const targetEv = (selEventId ? allEvents.find(e => e.id === selEventId) : null) || allEvents.find(e => e.diffDays >= 0) || allEvents[0];
     if (targetEv) {
       currentEvent = targetEv;
@@ -925,7 +1251,6 @@
     }
     applyStyles();
   } else {
-    // CHẠY TRÊN TRÌNH DUYỆT THƯỜNG: BẬT STUDIO
     initStudioControls();
     applyStyles();
   }
